@@ -37,14 +37,12 @@ services:
       - CONNECTOR_ID=${ID_country}
       - AUTHORIZE_KEY=${TOKEN_country}
       - WEBHOOK_PORT=8004
-      - DATA_URL=http://data-server/country.xlsx
-      - DATA_FORMAT=xlsx
+      - DATA_URL=http://data-server/country.json
+      - DATA_FORMAT=json
     depends_on:
       - data-server
-    networks:
-      default:
-        aliases:
-          - country.con.bbk
+    ports:
+      - 8004:8004
 
   bbk-con-heritagenatural:
     build:
@@ -57,14 +55,12 @@ services:
       - CONNECTOR_ID=${ID_heritagenatural}
       - AUTHORIZE_KEY=${TOKEN_heritagenatural}
       - WEBHOOK_PORT=8004
-      - DATA_URL=http://data-server/heritage-site-natural.xlsx
-      - DATA_FORMAT=xlsx
+      - DATA_URL=http://data-server/heritage-site-natural.json
+      - DATA_FORMAT=json
     depends_on:
       - data-server
-    networks:
-      default:
-        aliases:
-          - heritagenatural.con.bbk
+    ports:
+      - 8005:8004
 
   bbk-con-heritagecultural:
     build:
@@ -77,19 +73,17 @@ services:
       - CONNECTOR_ID=${ID_heritagecultural}
       - AUTHORIZE_KEY=${TOKEN_heritagecultural}
       - WEBHOOK_PORT=8004
-      - DATA_URL=http://data-server/heritage-site-cultural.xlsx
-      - DATA_FORMAT=xlsx
+      - DATA_URL=http://data-server/heritage-site-cultural.json
+      - DATA_FORMAT=json
     depends_on:
       - data-server
-    networks:
-      default:
-        aliases:
-          - heritagecultural.con.bbk
+    ports:
+      - 8006:8004
 
   data-server:
     image: nginx:latest
     container_name: data-server
     ports:
-      - 8005:80
+      - 8007:80
     volumes:
     - ../../data:/usr/share/nginx/html:ro

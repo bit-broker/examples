@@ -26,6 +26,11 @@ It provides data from a file-based data sources, loaded over REST at start up.
 It supports JSON formatted data, or, spreadsheet data (xlsx, csv et al) through the XLSX node module.
 On loading the dataset, it upserts the data to the catalog, and makes a webhook available.
 
+The webhook conditionally fetches some extra entity data dynamically (from wikidata), and merges 
+it in the response.
+
+Th webhook also supports timeseries data where available on an entity (JSON source data only)
+
 If you do not know what a data connector is, please contact the controller
 of your bbk instance.
 
@@ -37,6 +42,7 @@ of your bbk instance.
 
 require('dotenv').config();
 const fetch = require('node-fetch');
+const moment = require('moment');
 const XLSX = require("xlsx");
 
 // --- local bbk libaries
@@ -66,37 +72,37 @@ class MyCatalog extends BBKCatalog {
 
     // --- converts a 'flat' spreadsheet row to BBK entity structure
 
-    rowToBBKData(entity) {
-        let entityKeys = Object.keys(entity);
-        entity.entity = {}
-        entity.instance = {}
-        entityKeys.forEach((key, index) => {
-            if ((key !== 'id') && (key !== 'name')) {
+    rowToBBKData(record) {
+        let recordKeys = Object.keys(record);
+        record.entity = {}
+        record.instance = {}
+        recordKeys.forEach((key, index) => {
+            if ((key !== 'id') && (key !== 'name') && key.indexOf('_') != 0) {
                 let modKey = key
                 const entityPrefix = 'entity/'
                 const instancePrefix = 'instance/'
                 if (key.indexOf(entityPrefix) == 0) {
                     modKey = key.substring(entityPrefix.length);
-                    entity.entity[modKey] = entity[key]
+                    record.entity[modKey] = record[key]
                 } else if (key.indexOf(instancePrefix) == 0) {
                     modKey = key.substring(instancePrefix.length);
-                    entity.instance[modKey] = entity[key]
-                } else { // fallback for anything unprefixed; assume its entity data
-                    entity.entity[modKey] = entity[key]
+                    record.instance[modKey] = record[key]
+                } else { // fallback for anything unprefixed; assume it is entity data
+                    record.entity[modKey] = record[key]
                 }
-                delete entity[key]
+                delete record[key]
             }
         });
-        if ((entity.entity.hasOwnProperty("longitude")) && (entity.entity.hasOwnProperty("latitude"))) {
-            entity.entity.location = {
+        if ((record.entity.hasOwnProperty("longitude")) && (record.entity.hasOwnProperty("latitude"))) {
+            record.entity.location = {
                 "type": "Point",
                 "coordinates": [
-                    entity.entity.longitude,
-                    entity.entity.latitude
+                    record.entity.longitude,
+                    record.entity.latitude
                 ]
             }
-            delete entity.entity.longitude;
-            delete entity.entity.latitude;;
+            delete record.entity.longitude;
+            delete record.entity.latitude;;
 
         }
     }
@@ -125,10 +131,10 @@ class MyCatalog extends BBKCatalog {
             }
         })
         .then(json => {
+            data = json; // make json data available to webhook callbacks...
             return json.map(({ _population, _wikidata, ...item }) => item);
         })
         .then(items => {
-            data = items; // make json data available to webhook callbacks...
             return this.session(BBKCatalog.SESSION_STREAM, BBKCatalog.ACTION_UPSERT, items)
 
         })
@@ -148,16 +154,36 @@ class MyWebhook extends BBKWebhook {
       >>> IMPLEMENTATION NOTE <<<
 
       In this example entity webhook, we provide basic information about the
-      requested entity. In this example code we just return the base data, but
-      you can load and merge data from your downstream data source.
+      requested entity form cached data loaded from the file at startup. We also conditionally 
+      fetch some extra entity data dynamically (from wikidata), and merge it in the response.
 
     */
 
     entity(eid, cb) // provides us back with our own entity key
     {
         var record = data.find(x => x.id === eid)
-        if (record !== undefined) {
-            cb(record);
+        if (record) {
+            if (record.hasOwnProperty('_wikidata')) {
+                // A full list is here: https://www.wikidata.org/wiki/Q142
+                let query_str = `SELECT ?country ?flag WHERE { ?country wdt:P41 ?flag VALUES ?country { wd:${record._wikidata} } }`;
+                let url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query_str)}&format=json`;
+                fetch(url)
+                .then(res => res.json())
+                .then(json => {
+                    let clean_record = (({ _population, _wikidata, ...x }) => x)(record);
+                    clean_record.entity.flag = json.results.bindings[0].flag.value;
+                    cb(clean_record); // will HTTP/404
+                })
+                .catch(function(err) {
+                    const reason = new Error(`webhook error`);
+                    reason.stack += `\nCaused By:\n` + err.stack;
+                    console.error(reason);
+                    cb(null); // will HTTP/404
+                });
+            } else {
+                let clean_record = (({ _population, _wikidata, ...x }) => x)(record);
+                cb(clean_record); // will HTTP/404
+            }
         } else {
             cb(null); // will HTTP/404
         }
@@ -166,14 +192,40 @@ class MyWebhook extends BBKWebhook {
     /*
       >>> IMPLEMENTATION NOTE <<<
 
-      In this example entity webhook, we provide timeseries information about
-      the requested country. In this example code we just return random data,
-      but you can load from your downstream data source.
+      In this example entity webhook, we provide timeseries information about the requested entity 
+      (the timeseris data is stored in our data set prefixed with an '_'). 
     */
 
-    timeseries(eid, tsid, limit, from, to, cb) // provides us back with our own entity and timeseries key
+    timeseries(eid, tsid, start, end, limit, cb) // provides us back with our own entity and timeseries key
     {
-        cb(null); // will HTTP/404
+        var record = data.find(x => x.id === eid)
+        if (record) {
+            let ts_prop = `_${ tsid }`; // stored in test data with a leading underscore
+            if (record.hasOwnProperty(ts_prop)) {
+
+                let timeseries = record[ts_prop] || [];
+
+                if (start) {
+                    timeseries = timeseries.filter(i => moment(i.from.toString()).isSameOrAfter(start));
+                }
+
+                if (end) {
+                    timeseries = timeseries.filter(i => moment(i.from.toString()).isBefore(end));
+                }
+
+                if (limit) {
+                    timeseries = timeseries.slice(0, limit);
+                }
+
+                cb(timeseries);
+            } else {
+                console.warn(`timeseries property ${ts_prop} not found`);
+                cb([]); // no timeseries match
+            }
+        } else {
+            console.warn(`entity ${eid} not found`);
+            cb([]); // no entity match
+        }
     }
 }
 
