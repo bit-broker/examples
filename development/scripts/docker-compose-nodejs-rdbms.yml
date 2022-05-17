@@ -1,0 +1,102 @@
+# Copyright 2022 Cisco and its affiliates
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+
+##################################################################################
+# BitBroker docker compose - node file connector(s) 
+##################################################################################
+
+version: "3"
+
+volumes:
+  connectordbdata:
+
+services:
+
+  bbk-connector-db:
+    image: postgis/postgis:13-3.1-alpine
+    container_name: bbk-connector-db
+    volumes:
+      - connectordbdata:/var/lib/postgresql/data
+      - ../../database:/docker-entrypoint-initdb.d 
+    environment:
+      POSTGRES_PASSWORD: "bitbr0ker"
+    ports:
+      - 5433:5432
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'psql -U postgres -lqt | cut -d \| -f 1 | grep -qw bit_broker',
+        ]
+      interval: 4s
+      timeout: 4s
+      retries: 4
+
+  bbk-con-country:
+    build:
+      context: ../..
+      dockerfile: ./build/connector-nodejs-rdbms/Dockerfile
+    container_name: bbk-con-country
+    environment:
+      - NODE_ENV=production
+      - ENTITY_TYPE=country
+      - CATALOG_HOST=http://bbk-contributor:8002/v1/
+      - CONNECTOR_ID=${ID_country}
+      - AUTHORIZE_KEY=${TOKEN_country}
+      - WEBHOOK_PORT=8004
+      - CONNECTOR_DATABASE=postgresql://bbk_connector:bbk_connector_pwd@bbk-con-db:5433/bbk_connector_data
+    ports:
+      - 8004:8004
+    depends_on:
+      - bbk-connector-db
+
+  bbk-con-heritagenatural:
+    build:
+      context: ../..
+      dockerfile: ./build/connector-nodejs-rdbms/Dockerfile
+    container_name: bbk-con-heritagenatural
+    environment:
+      - NODE_ENV=production
+      - ENTITY_TYPE=heritagesites
+      - CATALOG_HOST=http://bbk-contributor:8002/v1/
+      - CONNECTOR_ID=${ID_heritagenatural}
+      - AUTHORIZE_KEY=${TOKEN_heritagenatural}
+      - WEBHOOK_PORT=8004
+      - FILTER=CATEGORY_EQ_NATURAL
+      - CONNECTOR_DATABASE=postgresql://bbk_connector:bbk_connector_pwd@bbk-con-db:5433/bbk_connector_data
+    ports:
+      - 8005:8004
+    depends_on:
+      - bbk-connector-db
+
+  bbk-con-heritagecultural:
+    build:
+      context: ../..
+      dockerfile: ./build/connector-nodejs-rdbms/Dockerfile
+    container_name: bbk-con-heritagecultural
+    environment:
+      - NODE_ENV=production
+      - ENTITY_TYPE=heritagesites
+      - CATALOG_HOST=http://bbk-contributor:8002/v1/
+      - CONNECTOR_ID=${ID_heritagecultural}
+      - AUTHORIZE_KEY=${TOKEN_heritagecultural}
+      - WEBHOOK_PORT=8004
+      - FILTER=CATEGORY_EQ_CULTURAL
+      - CONNECTOR_DATABASE=postgresql://bbk_connector:bbk_connector_pwd@bbk-con-db:5433/bbk_connector_data
+    ports:
+      - 8006:8004
+    depends_on:
+      - bbk-connector-db

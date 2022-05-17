@@ -29,10 +29,16 @@ Then, run the following commands to register the entities and their associated c
 
 ```
 
-And run the following docker-compose command to deploy the connector instances:
+To run the file based connectors, run
 
 ```
 docker-compose -f ./docker-compose-nodejs-file.yml up --build
+```
+
+Alternatively, to run the rdbms connectors, run
+
+```
+docker-compose -f ./docker-compose-nodejs-rdbms.yml up --build
 ```
 
 optionally, run
@@ -47,7 +53,7 @@ to add an 'access all areas' policy, register a consumer and get a token to acce
 
 ToDo
 
-## To use the connector with xlsx data
+## To use the file based connector with xlsx data
 
 - search & replace docker-compose-nodejs-file.yml 'json' -> 'xlsx'
 - redeploy
