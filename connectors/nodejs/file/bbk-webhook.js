@@ -107,16 +107,16 @@ module.exports = class BBKWebhook {
 
         // --- handler /timeseries route
 
-        this.router.get('/timeseries/:eid/:tsid/:limit/:from?/:to?', (req, res) => {
-            console.log(`heard request for entity: '${ req.params.eid }', timeseries: '${ req.params.tsid }', limit: '${ req.params.limit }', from: '${ req.params.from }', to: '${ req.params.to }'`);
+        this.router.get('/timeseries/:et/:eid/:tsid?', (req, res) => {
+            console.log(`heard request for entity: '${ req.params.eid }', timeseries: '${ req.params.tsid }', start: '${ req.query.start }', end: '${ req.query.end }', limit: '${ req.query.limit }'`);
 
             // when present, we can assume parameters are valid integers here
 
-            var limit = parseInt(req.params.limit); // limit is always present
-            var from = req.params.from === undefined ? null : parseInt(req.params.from);
-            var to = req.params.to === undefined ? null : parseInt(req.params.to);
+            let start = req.query.start;
+            let end = req.query.end;
+            let limit = req.query.limit;
 
-            this.timeseries(req.params.eid, req.params.tsid, limit, from, to, (timeseries) => {
+            this.timeseries(req.params.eid, req.params.tsid, start, end, limit, (timeseries) => {
                 timeseries ? res.json(timeseries) : BBKWebhook._http_not_found(res);
             });
         });
