@@ -20,10 +20,6 @@
 
 version: "3"
 
-networks:
-  default:
-    name: bbk-net
-
 services:
 
   bbk-con-country:

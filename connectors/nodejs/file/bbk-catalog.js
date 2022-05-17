@@ -65,7 +65,7 @@ module.exports = class BBKCatalog {
 
     handleFetchErrors(response) {
         if (!response.ok) {
-            throw Error(response.status + ": " + response.statusText);
+            return response.text().then(text => { throw new Error(text) })
         }
         return response;
     }
@@ -103,13 +103,14 @@ module.exports = class BBKCatalog {
     // --- make an action within an active session
 
     action(actionVerb, items, page) {
+        let act = Promise.resolve();
+        let url = this.cat + this.sid + '/' + actionVerb;
+        for (let start = 0; start < items.length; start += page) {
 
-        let tasks = [];
-        for (let i = 0; i < items.length; i += page) {
-            let start = i;
-            let end = Math.min(i + page, items.length);
-            tasks.push(() => {
-                return fetch(this.cat + this.sid + '/' + actionVerb, {
+            // sequential post in batches of 'page' items...
+            let end = Math.min(start + page, items.length);
+            act = act.then(() => {
+                return fetch(url, {
                         method: 'post',
                         headers: {
                             'Content-Type': 'application/json',
@@ -122,8 +123,7 @@ module.exports = class BBKCatalog {
                 .then(json => console.log(actionVerb + ": " + Object.keys(json).length + " item(s)"))
             })
         }
-        const arrayOfPromises = tasks.map(task => task())
-        return Promise.all(arrayOfPromises)
+        return act
     }
 
     // --- create a session, make an action, and close the session

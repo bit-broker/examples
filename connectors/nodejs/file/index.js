@@ -154,7 +154,7 @@ class MyWebhook extends BBKWebhook {
       >>> IMPLEMENTATION NOTE <<<
 
       In this example entity webhook, we provide basic information about the
-      requested entity form cached data loaded from the file at startup. We also conditionally 
+      requested entity from cached data loaded from the file at startup. We also conditionally 
       fetch some extra entity data dynamically (from wikidata), and merge it in the response.
 
     */
@@ -168,10 +168,18 @@ class MyWebhook extends BBKWebhook {
                 let query_str = `SELECT ?country ?flag WHERE { ?country wdt:P41 ?flag VALUES ?country { wd:${record._wikidata} } }`;
                 let url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query_str)}&format=json`;
                 fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => { throw new Error(text) })
+                    }
+                    return response;
+                })
                 .then(res => res.json())
                 .then(json => {
                     let clean_record = (({ _population, _wikidata, ...x }) => x)(record);
-                    clean_record.entity.flag = json.results.bindings[0].flag.value;
+                    if (json?.results?.bindings[0]?.flag?.value !== undefined) {
+                        clean_record.entity.flag = json.results.bindings[0].flag.value;
+                    }
                     cb(clean_record); // will HTTP/404
                 })
                 .catch(function(err) {
@@ -192,7 +200,7 @@ class MyWebhook extends BBKWebhook {
     /*
       >>> IMPLEMENTATION NOTE <<<
 
-      In this example entity webhook, we provide timeseries information about the requested entity 
+      In this example timeseries webhook, we provide timeseries information about the requested entity 
       (the timeseris data is stored in our data set prefixed with an '_'). 
     */
 

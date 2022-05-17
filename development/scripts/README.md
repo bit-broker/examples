@@ -23,8 +23,9 @@ Then, run the following commands to register the entities and their associated c
 
 ```
 . ./register-connector.sh country country 8004
-. ./register-connector.sh heritage heritagecultural 8005
-. ./register-connector.sh heritage heritagenatural 8006
+. ./register-connector.sh heritage heritagenatural 8005
+. ./register-connector.sh heritage heritagecultural 8006
+
 
 ```
 
