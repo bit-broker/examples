@@ -10,7 +10,16 @@ updates:
     schedule:
       interval: "daily"
     open-pull-requests-limit: 10
+  - package-ecosystem: "npm"
+    directory: "/connectors/nodejs/rdbms"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 10
   - package-ecosystem: "docker"
     directory: "/build/connector-nodejs-file"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/build/connector-nodejs-rdbms"
     schedule:
       interval: "daily"

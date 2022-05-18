@@ -15,12 +15,25 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+# WARNING: this script assumes specific user id's and will only work on a clean BBK deployment.
+
 BOOTSTRAP_KEY="abc123"
 COORD_BASE="http://bbk-coordinator:8001"
-echo "add AAA policy"
-curl -X POST $COORD_BASE/v1/policy/access-all-areas -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d '{"name":"Access All Areas","description":"Global access to every record","policy":{"access_control":{"enabled":true,"quota":{"max_number":86400,"interval_type":"day"},"rate":100},"data_segment":{"segment_query":{},"field_masks":[]},"legal_context":[{"type":"attribution","text":"Data is supplied by Wikipedia","link":"https://en.wikipedia.org/"}]}}'
-echo "create consumer user"
-curl -X POST $COORD_BASE/v1/user -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d '{"name":"bob","email":"bob@domain.com","addendum":{"opaque1":"lorem ipsum","opaque2":"consectetur adipisicing elit","opaque3":"sed do eiusmod tempor incididunt"}}'
-echo "give user acess"
-TOKEN="$(curl -sS -X POST $COORD_BASE/v1/user/2/access/access-all-areas -H "x-bbk-auth-token:$BOOTSTRAP_KEY")"
-echo "AAA consumer token: $TOKEN"
+
+POLICY_LIST=("access-all-areas" "geo-british-isles" "heritage-natural")
+
+USER_ID=1
+
+for POLICY_SLUG in ${POLICY_LIST[*]}; do
+
+    ((USER_ID++))
+    echo "add policy: $POLICY_SLUG"
+    curl -X POST $COORD_BASE/v1/policy/$POLICY_SLUG -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d "@policy_$POLICY_SLUG.json"
+    USER="$POLICY_SLUG-user"
+    echo "create consumer user: $USER"
+    curl -X POST $COORD_BASE/v1/user -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d "{\"name\":\"$USER\",\"email\":\"$USER@domain.com\"}"
+    echo "give user $USER access to policy $POLICY_SLUG"
+    TOKEN="$(curl -sS -X POST $COORD_BASE/v1/user/$USER_ID/access/$POLICY_SLUG -H "x-bbk-auth-token:$BOOTSTRAP_KEY")"
+    echo "user: $USER policy: $POLICY_SLUG token: $TOKEN"
+
+done
