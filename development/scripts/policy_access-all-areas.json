@@ -1,0 +1,25 @@
+{
+    "name": "Access All Areas",
+    "description": "Global access to every record",
+    "policy": {
+        "access_control": {
+            "enabled": true,
+            "quota": {
+                "max_number": 86400,
+                "interval_type": "day"
+            },
+            "rate": 250
+        },
+        "data_segment": {
+            "segment_query": {},
+            "field_masks": []
+        },
+        "legal_context": [
+            {
+                "type": "attribution",
+                "text": "Data is supplied by Wikipedia",
+                "link": "https://en.wikipedia.org/"
+            }
+        ]
+    }
+}

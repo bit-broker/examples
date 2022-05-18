@@ -1,0 +1,22 @@
+{
+    "name": "Natural World Heritage Sites",
+    "description": "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO",
+    "policy": {
+        "access_control": {
+            "enabled": true,
+            "quota": {
+                "max_number": 86400,
+                "interval_type": "day"
+            },
+            "rate": 250
+        },
+        "data_segment": {
+            "segment_query": {
+                "type": "heritage-site",
+                "entity.category": "natural"
+            },
+            "field_masks": []
+        },
+        "legal_context": []
+    }
+}

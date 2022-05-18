@@ -1,0 +1,57 @@
+{
+    "name": "The British Isles",
+    "description": "Everything within the geography of the British Isles.",
+    "policy": {
+        "access_control": {
+            "enabled": true,
+            "quota": {
+                "max_number": 86400,
+                "interval_type": "day"
+            },
+            "rate": 250
+        },
+        "data_segment": {
+            "segment_query": {
+                "entity.location": {
+                    "$within": {
+                        "$geometry": {
+                            "type": "Polygon",
+                            "coordinates": [
+                                [
+                                    [
+                                        -12.386341,
+                                        59.062341
+                                    ],
+                                    [
+                                        -12.386341,
+                                        49.952269
+                                    ],
+                                    [
+                                        2.500282,
+                                        49.952269
+                                    ],
+                                    [
+                                        2.500282,
+                                        59.062341
+                                    ],
+                                    [
+                                        -12.386341,
+                                        59.062341
+                                    ]
+                                ]
+                            ]
+                        }
+                    }
+                }
+            },
+            "field_masks": []
+        },
+        "legal_context": [
+            {
+                "type": "attribution",
+                "text": "Data is supplied by Wikipedia",
+                "link": "https://en.wikipedia.org/"
+            }
+        ]
+    }
+}
