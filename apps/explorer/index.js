@@ -338,6 +338,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
       let policy = policies.find(e => e.name === text);
       const token = document.getElementById("token");
       token.value = policy.token;
+      const policyName = document.getElementById("policyName");
+      policyName.value = policy.name;
       myToken = policy.token;
       myPolicy = policy.name;
 
