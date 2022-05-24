@@ -1,0 +1,111 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="css/styles.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+
+</head>
+<body class="bg-secondary">
+  <div class="container">
+
+  <div class="px-3 py-3 my-2 bg-light rounded text-center">
+    <img class="d-block mx-auto mb-4" src="./assets/logo.svg" alt="" width="80" height="60">
+    <h1 class="display-5 fw-bold">BitBroker: Policy Based data Explorer</h1>
+    <div class="col-lg-6 mx-auto">
+      <p class="lead mb-4">Select a policy, and explore the example queries against the sample data set of world countries and Unesco heritage sites.</p>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="px-3 py-3 my-2 bg-light rounded">
+    <h2 class="fw-bold">Config</h2>
+    <div class="row">
+      <div class="col-md-2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Policy
+          </button>
+          <ul class="dropdown-menu" id="policyDropDown" aria-labelledby="dropdownMenuButton1">
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-5">
+        <input type="search"  id="token"  class="form-control mr-3" placeholder="Submit Token"/>
+      </div>
+      <div class="col-md-5">
+      <input type="search"  id="baseurl"  class="form-control mr-3" placeholder="http://bbk-consumer:8003/v1"/>
+    </div>
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="px-3 py-3 my-2 bg-light rounded">
+    <h2 class="fw-bold">Catalog Query</h2>
+    <div class="row">
+      <div class="col-md-2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+            Example Queries
+          </button>
+          <ul class="dropdown-menu" id="queryDropDown" aria-labelledby="dropdownMenuButton2">
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <input type="search"  id="queryCatalog" class="form-control mr-3" placeholder="Search Catalog" />
+      </div>
+
+      <div class="col-md-4">
+        <button id ="go" class="btn btn-dark mr-2" style='font-size:15px'>Go!</button>
+        <button id ="go-back" class="btn btn-dark mr-2" style='font-size:15px'>Previous</button>
+        <button id ="go-forward" class="btn btn-dark mr-2" style='font-size:15px'>Next</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="b-example-divider"></div>
+
+  <div class="px-3 py-3 my-2 bg-light rounded">
+    <h2 class="fw-bold">Results</h2>
+    <div class= "result" id="results"></div>
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+       
+        <li class="page-item">
+          <button class="page-link" id="next">Next</button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+  
+</div>
+<div class="container">
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+    <p class="col-md-4 mb-0 text-muted">© 2022 The BitBroker Team</p>
+
+    <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+      <img class="d-block mx-auto mb-4" src="./assets/logo.svg" alt="" width="40" height="30">
+    </a>
+
+    <ul class="nav col-md-4 justify-content-end">
+      <li class="nav-item"><a href="https://bit-broker.io" class="nav-link px-2 text-muted">bit-broker.io</a></li>
+    </ul>
+  </footer>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.5/dist/umd/popper.min.js" integrity="sha384-Xe+8cL9oJa6tN/veChSP7q+mnSPaj5Bcu9mPX5F5xIGE0DVittaqT5lorf0EI7Vk" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+<script src="index.js"> </script>
+
+</body>
+
+</html> 
