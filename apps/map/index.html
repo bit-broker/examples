@@ -1,0 +1,44 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Map Sample App</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto');
+        </style>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+            integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+            crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+            integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+            crossorigin=""></script>
+        <script type="text/javascript" src="/script.js"></script>
+    </head>
+    <body>
+        <header>
+            <h3>BitBroker Map Data Example</h3>
+            <div class="selection-inputs">
+                <div>
+                    <select
+                        id="policy-selector"
+                        placeholder="Select Policy"
+                        type="text"
+                        name="policy"
+                        placeholder="Select a policy"
+                    >
+                    </select>
+                </div>
+                <div>
+                    <select id="entity-selector" placeholder="Select Entity" type="text" name="entity"></select>
+                </div>
+                <button id="get-data-button">Get Data</button>
+            </div>
+        </header>
+        <main>
+            <div id="map"></div>
+        </main>
+    </body>
+</html>

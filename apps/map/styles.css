@@ -1,0 +1,48 @@
+body {
+    font-family: Roboto;
+    margin: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-content {
+    overflow-y: scroll;
+}
+
+header {
+    flex: 0 0 70px;
+    margin: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main {
+    flex: 1 1 600px;
+}
+
+#map {
+    height: 100%;
+}
+
+.selection-inputs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.selection-inputs select {
+    height: 45px;
+    width: 225px;
+    padding: 10px;
+}
+
+button {
+    height: 45px;
+    width: 100px;
+}
+
+button:hover {
+    cursor: pointer;
+}

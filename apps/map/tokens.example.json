@@ -1,0 +1,10 @@
+[{
+  "policyId": "access-all-areas",
+  "token": "<TOKEN GOES HERE>"
+}, {
+  "policyId": "geo-british-isles",
+  "token": "<TOKEN GOES HERE>"
+}, {
+  "policyId": "heritage-natural",
+  "token": "<TOKEN GOES HERE>"
+}]
