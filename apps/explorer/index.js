@@ -28,14 +28,17 @@ const policies = [
   {
     name: "access-all-areas",
     token: "4e04e60d-b88b-4212-a50f-2414c8c870a6.70414dbe-ac0e-44d5-9303-3add93b5a666.a967616e-d97b-4d91-9c0f-c84f2d205184",
+    description: "Global access to every record",
   },
   {
     name: "geo-british-isles",
     token: "a460b968-4f90-4fc8-b11b-f890e0e31161.d850b6d3-7a15-4af1-9a96-6bdf407db416.8175ed75-28e3-4988-a26a-3c7c32c925cc",
+    description: "Everything within the geography of the British Isles",
   },
   {
     name: "heritage-natural",
     token: "e73510c3-8934-4a53-947c-a7d0e6994366.285a4caf-f1fe-4a3a-9452-b6177b007f81.5bfd064c-feda-4817-bd9f-faa6821b06f1",
+    description: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO",
   },
 ];
 
@@ -340,6 +343,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
       token.value = policy.token;
       const policyName = document.getElementById("policyName");
       policyName.value = policy.name;
+      const policydescription = document.getElementById("policydescription");
+      policydescription.value = policy.description;
       myToken = policy.token;
       myPolicy = policy.name;
 
