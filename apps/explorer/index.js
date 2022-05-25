@@ -23,6 +23,8 @@ let fowardHistory = [];
 let myToken = null;
 let myPolicy = null;
 const default_limit = 10;
+const baseURL = document.getElementById("baseurl").value;
+console.log("base!", baseURL)
 
 const policies = [
   {
@@ -293,7 +295,7 @@ const go = document.getElementById("go");
 go.addEventListener("click", (event) => {
   const queryCatalog = document.getElementById("queryCatalog");
   let query = encodeURIComponent(queryCatalog.value);
-  consumerAPIFetch(`http://bbk-consumer:8003/v1/catalog?q=${query}`);
+  consumerAPIFetch(`${baseURL}/catalog?q=${query}`);
 });
 
 const token = document.getElementById("token");
@@ -345,6 +347,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
       policyName.value = policy.name;
       const policydescription = document.getElementById("policydescription");
       policydescription.value = policy.description;
+      policydescription.readOnly = true;
       myToken = policy.token;
       myPolicy = policy.name;
 

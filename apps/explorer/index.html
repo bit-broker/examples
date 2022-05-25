@@ -24,28 +24,46 @@
 
   <div class="px-3 py-3 my-2 bg-light rounded">
     <h2 class="fw-bold">Config</h2>
-    <div class="col-md-5 mx-auto  my-2">
+   <div class="row">
+    <div class="col-md-2">
+      <div class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+          Select Policy
+        </button>
+        <ul class="dropdown-menu" id="policyDropDown" aria-labelledby="dropdownMenuButton1">
+        </ul>
+      </div>
+    </div>
+
+    <div class="col-md-5  my-2">
       <input type="search"  id="policyName"  class="form-control " placeholder="Submit Policy Name"/>
     </div>
+    <div class="col-md-5"></div>
+
+   </div>
     <div class="row">
+  
       <div class="col-md-2">
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-            Select Policy
-          </button>
-          <ul class="dropdown-menu" id="policyDropDown" aria-labelledby="dropdownMenuButton1">
-          </ul>
-        </div>
+        
       </div>
       <div class="col-md-5">
         <input type="search"  id="token"  class="form-control mr-3" placeholder="Submit Token"/>
       </div>
       <div class="col-md-5">
-      <input type="search"  id="baseurl"  class="form-control mr-3" placeholder="http://bbk-consumer:8003/v1"/>
+      <input type="search"  id="baseurl"  class="form-control mr-3" value="http://bbk-consumer:8003/v1"/>
     </div>
     </div>
-    <div class="col-md-5 mx-auto  my-2">
-      <input type="search"  id="policydescription"  class="form-control " placeholder="Policy Description"/>
+    <div class="row">
+  
+      <div class="col-md-2">
+        
+      </div>
+      <div class="col-md-5 my-2">
+        <input type="text"  id="policydescription"  class="form-control " placeholder="Policy Description"/>
+      </div>
+      <div class="col-md-5">
+
+    </div>
     </div>
   </div>
 
