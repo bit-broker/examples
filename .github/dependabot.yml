@@ -23,3 +23,7 @@ updates:
     directory: "/build/connector-nodejs-rdbms"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/build/flyway"
+    schedule:
+      interval: "daily"
