@@ -56,6 +56,7 @@ const CATALOG_HOST = process.env.CATALOG_HOST;
 const CONNECTOR_ID = process.env.CONNECTOR_ID;
 const AUTHORIZE_KEY = process.env.AUTHORIZE_KEY;
 const WEBHOOK_PORT = process.env.WEBHOOK_PORT;
+const ENTITY_TYPE = process.env.ENTITY_TYPE;
 const DATA_URL = process.env.DATA_URL;
 const DATA_FORMAT = process.env.DATA_FORMAT;
 
@@ -247,6 +248,6 @@ new MyCatalog().upsert();
   all your data into the bbk catalog instead.
 */
 
-new MyWebhook().listen(WEBHOOK_PORT, () => {
+new MyWebhook({ name: "BBK File Example Connector", entity: ENTITY_TYPE, connectorId: CONNECTOR_ID }).listen(WEBHOOK_PORT, () => {
     console.log(`Webhook is listening on port ${ WEBHOOK_PORT }`);
 });

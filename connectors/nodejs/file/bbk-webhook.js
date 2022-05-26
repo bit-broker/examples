@@ -70,7 +70,7 @@ module.exports = class BBKWebhook {
 
     // --- constructs a bbk webhook object
 
-    constructor() {
+    constructor(info) {
         this.app = express();
         this.router = express.Router();
 
@@ -93,6 +93,15 @@ module.exports = class BBKWebhook {
             } else {
                 BBKWebhook._http_server_error(res);
             }
+        });
+
+        this.info = info || {};
+
+        // --- handler / route
+
+        this.router.get('/', (req, res) => {
+            this.info.now = new Date().toISOString();
+            res.json(this.info);
         });
 
         // --- handler /entity route
