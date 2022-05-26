@@ -20,6 +20,7 @@
     <body>
         <header>
             <h3>BitBroker Map Data Example</h3>
+            <span class="no-data-info">No data found for this policy</span>
             <div class="selection-inputs">
                 <div>
                     <select
@@ -32,7 +33,13 @@
                     </select>
                 </div>
                 <div>
-                    <select id="entity-selector" placeholder="Select Entity" type="text" name="entity"></select>
+                    <select
+                        id="entity-selector"
+                        placeholder="Select Entity"
+                        type="text"
+                        name="entity"
+                        onfocus="this.selectedIndex = -1;"
+                    ></select>
                 </div>
                 <button id="get-data-button">Get Data</button>
             </div>
