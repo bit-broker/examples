@@ -24,7 +24,6 @@ let myToken = null;
 let myPolicy = null;
 const default_limit = 10;
 const baseURL = document.getElementById("baseurl").value;
-console.log("base!", baseURL)
 
 const policies = [
   {
@@ -294,7 +293,10 @@ const copyToClickBoard = () => {
 
   navigator.clipboard.writeText(curl)
       .then(() => {
-      console.log("Text copied to clipboard...")
+        document.getElementById('copybutton').innerText = 'Copied';
+      setTimeout(function () {
+        document.getElementById('copybutton').innerText = 'copy' ;
+      }, 1200);
   })
       .catch(err => {
       console.log('Something went wrong', err);
