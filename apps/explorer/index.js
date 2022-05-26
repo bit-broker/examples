@@ -284,11 +284,30 @@ const queryDropdownValue = () => {
   });
 };
 
+/* copy baseurl as curl
+ */
+
+const copyToClickBoard = () => {
+  const content = document.getElementById('baseurl').value;
+  curl = "curl" + ' ' + "--location" + ' ' + "--request" + ' ' + "GET" + ' ' + content + ' ' + "-H" + ' ' +  "x-bbk-auth-token:" + myToken + ' ' + "-H" + ' ' + "x-bbk-audience:" + myPolicy
+  console.log( curl)
+
+  navigator.clipboard.writeText(curl)
+      .then(() => {
+      console.log("Text copied to clipboard...")
+  })
+      .catch(err => {
+      console.log('Something went wrong', err);
+  })
+
+}
+
 /* event handlers
  */
 
 const next = document.getElementById("next");
 next.addEventListener("click", (event) => nextPage());
+
 
 const go = document.getElementById("go");
 
@@ -297,6 +316,10 @@ go.addEventListener("click", (event) => {
   let query = encodeURIComponent(queryCatalog.value);
   consumerAPIFetch(`${baseURL}/catalog?q=${query}`);
 });
+
+
+const copybutton = document.getElementById("copybutton");
+copybutton.addEventListener("click", (event) => copyToClickBoard());
 
 const token = document.getElementById("token");
 
@@ -364,3 +387,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
       queryCatalog.value = query.query;
   }))
 });
+
+
+
