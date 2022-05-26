@@ -221,6 +221,6 @@ new MyCatalog().upsert();
   all your data into the bbk catalog instead.
 */
 
-new MyWebhook().listen(WEBHOOK_PORT, () => {
+new MyWebhook({ name: "BBK RDBMS Example Connector", entity: ENTITY_TYPE, connectorId: CONNECTOR_ID }).listen(WEBHOOK_PORT, () => {
     console.log(`Webhook is listening on port ${ WEBHOOK_PORT }`);
 });

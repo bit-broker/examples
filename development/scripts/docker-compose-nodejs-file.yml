@@ -29,6 +29,7 @@ services:
     container_name: bbk-con-country
     environment:
       - NODE_ENV=production
+      - ENTITY_TYPE=country
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
       - CONNECTOR_ID=${ID_country}
       - AUTHORIZE_KEY=${TOKEN_country}
@@ -47,6 +48,7 @@ services:
     container_name: bbk-con-heritagenatural
     environment:
       - NODE_ENV=production
+      - ENTITY_TYPE=heritagesites
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
       - CONNECTOR_ID=${ID_heritagenatural}
       - AUTHORIZE_KEY=${TOKEN_heritagenatural}
@@ -65,6 +67,7 @@ services:
     container_name: bbk-con-heritagecultural
     environment:
       - NODE_ENV=production
+      - ENTITY_TYPE=heritagesites
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
       - CONNECTOR_ID=${ID_heritagecultural}
       - AUTHORIZE_KEY=${TOKEN_heritagecultural}
