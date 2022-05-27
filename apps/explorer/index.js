@@ -23,25 +23,7 @@ let fowardHistory = [];
 let myToken = null;
 let myPolicy = null;
 const default_limit = 10;
-const baseURL = document.getElementById("baseurl").value;
-
-const policies = [
-  {
-    name: "access-all-areas",
-    token: "4e04e60d-b88b-4212-a50f-2414c8c870a6.70414dbe-ac0e-44d5-9303-3add93b5a666.a967616e-d97b-4d91-9c0f-c84f2d205184",
-    description: "Global access to every record",
-  },
-  {
-    name: "geo-british-isles",
-    token: "a460b968-4f90-4fc8-b11b-f890e0e31161.d850b6d3-7a15-4af1-9a96-6bdf407db416.8175ed75-28e3-4988-a26a-3c7c32c925cc",
-    description: "Everything within the geography of the British Isles",
-  },
-  {
-    name: "heritage-natural",
-    token: "e73510c3-8934-4a53-947c-a7d0e6994366.285a4caf-f1fe-4a3a-9452-b6177b007f81.5bfd064c-feda-4817-bd9f-faa6821b06f1",
-    description: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO",
-  },
-];
+let baseURL = "";
 
 const queries = [
   {
@@ -254,7 +236,7 @@ const nextPage = () => {
 /* populate Policy Dropdown
  */
 
-const policyDropdownValue = () => {
+const policyDropdownValue = (policies) => {
   const ul = document.getElementById("policyDropDown");
   policies.forEach((policy) => { 
     const item = document.createElement("a");
@@ -270,7 +252,7 @@ const policyDropdownValue = () => {
 /* populate Queries Dropdown
  */
 
-const queryDropdownValue = () => {
+const queryDropdownValue = (queries) => {
   const ul = document.getElementById("queryDropDown");
   queries.forEach((query) => {  
       const item = document.createElement("a");
@@ -357,28 +339,37 @@ forward.addEventListener("click", (event) => {
 
 window.addEventListener('DOMContentLoaded', (event) => {
 
-  // ToDo: fetch policy & query defaults from seperate json file...
+  // ToDo: fetch policy & query defaults from separate json file...
 
-  policyDropdownValue();
+  fetch("./config.json")
+    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+    .then((config) => {
 
-  let policyOpts = document.querySelectorAll('#policyDropDown .dropdown-item')
-  policyOpts.forEach(element => element.addEventListener("click", function () {
-      let text = element.innerText;
-      console.log (`text: ${text}`);
-      let policy = policies.find(e => e.name === text);
-      const token = document.getElementById("token");
-      token.value = policy.token;
-      const policyName = document.getElementById("policyName");
-      policyName.value = policy.name;
-      const policydescription = document.getElementById("policydescription");
-      policydescription.value = policy.description;
-      policydescription.readOnly = true;
-      myToken = policy.token;
-      myPolicy = policy.name;
+      baseURL = config.baseUrl;
+      document.getElementById("baseurl").value = baseURL;
 
-  }))
+      policyDropdownValue(config.policies);
 
-  queryDropdownValue();
+      let policyOpts = document.querySelectorAll('#policyDropDown .dropdown-item')
+      policyOpts.forEach(element => element.addEventListener("click", function () {
+          let text = element.innerText;
+          console.log (`text: ${text}`);
+          let policy =     config.policies.find(e => e.name === text);
+          const token = document.getElementById("token");
+          token.value = policy.token;
+          const policyName = document.getElementById("policyName");
+          policyName.value = policy.name;
+          const policydescription = document.getElementById("policydescription");
+          policydescription.value = policy.description;
+          policydescription.readOnly = true;
+          myToken = policy.token;
+          myPolicy = policy.name;
+
+      }))
+    })
+    .catch(console.error);
+
+  queryDropdownValue(queries);
 
   let queryOpts = document.querySelectorAll('#queryDropDown .dropdown-item')
   queryOpts.forEach(element => element.addEventListener("click", function () {
@@ -387,8 +378,5 @@ window.addEventListener('DOMContentLoaded', (event) => {
       let query = queries.find(e => e.name === text);
       const queryCatalog = document.getElementById("queryCatalog");
       queryCatalog.value = query.query;
-  }))
-});
-
-
-
+  }));
+})

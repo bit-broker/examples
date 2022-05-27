@@ -1,0 +1,20 @@
+{
+    "policies": [
+        {
+            "name": "access-all-areas",
+            "token": "",
+            "description": "Global access to every record"
+        },
+        {
+            "name": "geo-british-isles",
+            "token": "",
+            "description": "Everything within the geography of the British Isles"
+        },
+        {
+            "name": "heritage-natural",
+            "token": "",
+            "description": "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+        }
+    ],
+    "baseUrl": "http://bbk-consumer:8003/v1"
+}
