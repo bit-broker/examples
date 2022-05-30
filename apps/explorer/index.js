@@ -333,7 +333,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
     // ToDo: fetch policy & query defaults from separate json file...
 
-    fetch("./config.json")
+    fetch("./config/config.json")
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((config) => {
 
