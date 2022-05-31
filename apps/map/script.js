@@ -54,7 +54,7 @@ async function getData() {
     return;
   }
 
-  const response = await fetch(`http://bbk-consumer:8003/v1/entity/${selectedEntity.id}`, {
+  const response = await fetch(`${window.config.services.consumer}/v1/entity/${selectedEntity.id}`, {
     headers: {
       'x-bbk-audience': selectedPolicy.id,
       'x-bbk-auth-token': 'something'
@@ -72,7 +72,7 @@ async function getData() {
 
   const buildPopup = entity =>
   `<div class="popup-content">
-    ${Object.entries(entity).map(([key, value]) => 
+    ${Object.entries(entity).map(([key, value]) =>
     `<div class="popup-entry"><span><strong>${key}</strong>: ${getValue(value)}</span></div>`).join('')}
   </div>`
 
@@ -117,7 +117,7 @@ function initEvents() {
 }
 
 async function getEntities() {
-  const entities = await fetch('http://bbk-consumer:8003/v1/entity', {
+  const entities = await fetch(`${window.config.services.consumer}/v1/entity`, {
     headers: {
       'x-bbk-auth-token': window.selectedPolicy.token,
       'x-bbk-audience': window.selectedPolicy.id,
@@ -140,15 +140,25 @@ async function refreshEntities() {
   this.selectedEntity = entities[0];
 }
 
-async function refreshPolicies(entity) {
-  const policies = await fetch('http://bbk-coordinator:8001/v1/policy').then(res => res.json());
+async function getPoliciesFromCoordinator() {
+  const policies = await fetch(`${window.config.services.coordinator}/v1/policy`).then(res => res.json());
 
-  const tokens = await fetch('/tokens.json').then(res => res.json());
-  const policiesWithToken = policies.map(policy => ({
+  const { policies: configPolicies } = window.config;
+  return policies.map(policy => ({
     ...policy,
-    token: tokens.find(t => t.policyId === policy.id)?.token ?? null
-  }))
-  window.policies = policiesWithToken;
+    token: configPolicies.find(t => t.id === policy.id)?.token ?? null
+  }));
+}
+
+async function getPolicies() {
+  const config = { window };
+  return config.useStaticPolicies === true
+    ? Promise.resolve(config.policies)
+    : getPoliciesFromCoordinator();
+}
+
+async function refreshPolicies(entity) {
+  window.policies = await getPolicies();
   const policyList = document.getElementById('policy-selector');
 
   policyList.innerHTML = '';
@@ -165,6 +175,10 @@ async function refreshPolicies(entity) {
     policyList.appendChild(option);
   });
   policyList.selectedIndex = 0;
+}
+
+async function initConfig() {
+  window.config = await fetch('/config.json').then(res => res.json());
 }
 
 function getInitialEntitySelection() {
@@ -196,6 +210,7 @@ async function applyQueryParams() {
 }
 
 async function init() {
+  await initConfig();
   initEvents();
   initMap();
   await refreshPolicies();
