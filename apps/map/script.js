@@ -57,7 +57,7 @@ async function getData() {
   const response = await fetch(`${window.config.services.consumer}/v1/entity/${selectedEntity.id}`, {
     headers: {
       'x-bbk-audience': selectedPolicy.id,
-      'x-bbk-auth-token': 'something'
+      'x-bbk-auth-token': selectedPolicy.token
     }
   });
   const data = await response.json();
@@ -65,7 +65,7 @@ async function getData() {
   const dataDetails = await Promise.all(data.map(d => fetch(d.url, {
     headers: {
       'x-bbk-audience': selectedPolicy.id,
-      'x-bbk-auth-token': 'something'
+      'x-bbk-auth-token':  selectedPolicy.token
     },
   }).then(res => res.json())));
   window.data = dataDetails;
