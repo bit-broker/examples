@@ -178,7 +178,7 @@ async function refreshPolicies(entity) {
 }
 
 async function initConfig() {
-  window.config = await fetch('/config.json').then(res => res.json());
+  window.config = await fetch('./config.json').then(res => res.json());
 }
 
 function getInitialEntitySelection() {
