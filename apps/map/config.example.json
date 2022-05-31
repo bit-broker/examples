@@ -1,0 +1,17 @@
+{
+  "services": {
+    "consumer":  "http://bbk-consumer:8003",
+    "coordinator": "http://bbk-coordinator:8001"
+  },
+  "useStaticPolicies": true,
+  "policies": [{
+    "id": "access-all-areas",
+    "token": "<TOKEN GOES HERE>"
+  }, {
+    "id": "geo-british-isles",
+    "token": "<TOKEN GOES HERE>"
+  }, {
+    "id": "heritage-natural",
+    "token": "<TOKEN GOES HERE>"
+  }]
+}
