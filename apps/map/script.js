@@ -151,7 +151,8 @@ async function getPoliciesFromCoordinator() {
 }
 
 async function getPolicies() {
-  const config = { window };
+  const { config } = window;
+  console.log('config is', config);
   return config.useStaticPolicies === true
     ? Promise.resolve(config.policies)
     : getPoliciesFromCoordinator();

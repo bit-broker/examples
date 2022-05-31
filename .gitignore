@@ -6,4 +6,4 @@ logs/
 tests/*.json
 *.out
 .swp
-tokens.json
+config.json
