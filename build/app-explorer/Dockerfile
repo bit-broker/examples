@@ -21,7 +21,7 @@ COPY apps/explorer/css/styles.css ./css
 COPY apps/explorer/index.js .
 COPY apps/explorer/config/example-config.json ./config/config.json
 
-COPY ./build/explorer/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY ./build/app-explorer/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Containers run nginx with global directives and daemon off

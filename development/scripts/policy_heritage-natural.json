@@ -12,7 +12,7 @@
         },
         "data_segment": {
             "segment_query": {
-                "type": "heritage-site",
+                "type": "heritage",
                 "entity.category": "natural"
             },
             "field_masks": []
