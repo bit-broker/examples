@@ -14,22 +14,32 @@ function initMap() {
 
   map.addLayer(BASE_LAYER);
   window.map = map;
+
+  document.querySelector('.no-data-info').style.visibility = 'hidden';
 }
 
-function entitySelectionChanged(event) {
-  const selectedEntity = window.entities.find(e => e.id?.toLowerCase() === event.target.value.toLowerCase());
-  if (selectedEntity != null) {
-    window.selectedEntity = selectedEntity;
-  } else {
-    console.log('entity not found', window.entities, event.target.value);
+function mergeQueryParam(name, value) {
+  const url = new URL(window.location);
+  if (!value) {
+    url.searchParams.delete(name);
+    return;
   }
+
+  url.searchParams.set(name, value);
+  window.history.replaceState(null, null, url.toString());
 }
 
-function policySelectionChanged(event) {
-  console.log('event.target.value', event.target.value)
-  const selectedPolicy = window.policies.find(p => p.id.toLowerCase() === event.target.value.toLowerCase());
+function entitySelectionChanged(value) {
+  const selectedEntity = window.entities.find(e => e.id?.toLowerCase() === value.toLowerCase());
+  window.selectedEntity = selectedEntity;
+  mergeQueryParam('entity', selectedEntity?.id);
+}
+
+async function policySelectionChanged(value) {
+  const selectedPolicy = window.policies.find(p => p.id.toLowerCase() === value.toLowerCase());
   window.selectedPolicy = selectedPolicy;
-  refreshEntities();
+  mergeQueryParam('policy', selectedPolicy?.id);
+  return refreshEntities();
 }
 
 function getValue(value) {
@@ -58,12 +68,12 @@ async function getData() {
       'x-bbk-auth-token': 'something'
     },
   }).then(res => res.json())));
-  console.log('dataDetails', dataDetails);
   window.data = dataDetails;
 
   const buildPopup = entity =>
   `<div class="popup-content">
-    ${Object.entries(entity).map(([key, value]) => `<div><span>${key}: ${getValue(value)}</span></div>`).join('')}
+    ${Object.entries(entity).map(([key, value]) =>
+    `<div class="popup-entry"><span><strong>${key}</strong>: ${getValue(value)}</span></div>`).join('')}
   </div>`
 
   window.mapData = dataDetails.map(
@@ -79,18 +89,34 @@ async function getData() {
   );
 
   clearGroup();
+
+  const visibility = window.mapData.length === 0 ? 'visible' : 'hidden';
+  document.querySelector('.no-data-info').style.visibility = visibility;
+  if (window.mapData.length === 0) {
+    return;
+  }
+
   const group = L.featureGroup(window.mapData).addTo(window.map);
   clearGroup = () => group.remove();
   window.map.fitBounds(group.getBounds());
 }
 
+function getPolicySelector() {
+  return document.getElementById('policy-selector');
+}
+
+function getEntitySelector() {
+  return document.getElementById('entity-selector');
+}
+
 function initEvents() {
-  document.getElementById('entity-selector').addEventListener('change', entitySelectionChanged);
-  document.getElementById('policy-selector').addEventListener('change', policySelectionChanged);
+  const pickValue = func => event => func(event.target.value);
+  getEntitySelector().addEventListener('change', pickValue(entitySelectionChanged));
+  getPolicySelector().addEventListener('change', pickValue(policySelectionChanged));
   document.getElementById('get-data-button').addEventListener('click', getData);
 }
 
-async function refreshEntities() {
+async function getEntities() {
   const entities = await fetch(`${window.config.services.consumer}/v1/entity`, {
     headers: {
       'x-bbk-auth-token': window.selectedPolicy.token,
@@ -98,8 +124,12 @@ async function refreshEntities() {
     },
   }).then(res => res.json());
   window.entities = entities;
-  const entityList = document.getElementById('entity-selector');
+}
 
+async function refreshEntities() {
+  await getEntities();
+
+  const entityList = document.getElementById('entity-selector');
   entityList.innerHTML = '';
   entities.forEach(entity => {
     const option = document.createElement('option');
@@ -107,6 +137,7 @@ async function refreshEntities() {
     option.text = entity.name;
     entityList.appendChild(option);
   });
+  this.selectedEntity = entities[0];
 }
 
 async function getPoliciesFromCoordinator() {
@@ -150,11 +181,40 @@ async function initConfig() {
   window.config = await fetch('/config.json').then(res => res.json());
 }
 
+function getInitialEntitySelection() {
+  const params = new URLSearchParams(window.location.search);
+
+  const entityId = params.get('entity');
+  const policyId = params.get('policy');
+  return { entityId, policyId };
+}
+
+async function applyQueryParams() {
+  const { entityId, policyId } = getInitialEntitySelection();
+
+  if (policyId) {
+    await policySelectionChanged(policyId);
+    const selector = getPolicySelector();
+    selector.value = policyId;
+  }
+
+  if (entityId) {
+    entitySelectionChanged(entityId);
+    const selector = getEntitySelector();
+    selector.value = entityId;
+  }
+
+  if (entityId && policyId) {
+    getData();
+  }
+}
+
 async function init() {
   await initConfig();
   initEvents();
   initMap();
-  refreshPolicies();
+  await refreshPolicies();
+  applyQueryParams();
 }
 
 document.addEventListener("DOMContentLoaded", init);
