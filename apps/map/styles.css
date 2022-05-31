@@ -46,3 +46,8 @@ button {
 button:hover {
     cursor: pointer;
 }
+
+.popup-entry {
+    max-height: 60px;
+    overflow-y: auto;
+}
