@@ -104,7 +104,7 @@ services:
       DESC_1: "Everything within the geography of the British Isles"
       DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
     ports:
-      - 8008:80
+      - 8008:8080
 
   bbk-app-map:
     build:
@@ -123,4 +123,4 @@ services:
       DESC_1: "Everything within the geography of the British Isles"
       DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
     ports:
-      - 8009:80
+      - 8009:8080
