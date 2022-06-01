@@ -71,7 +71,7 @@ You should be able to access the apps on ports 8008 & 8009 respectively in your 
 
 First, deploy a BBK instance using the [k8s repo instructions](https://github.com/bit-broker/bit-broker/blob/main/development/docker-compose/docker-compose.yml), but targetting a namespace 'bbk-demo' (the rest of these steps assume this!)
 
-Next, check the config vars at the top of the bbk-demo-config.sh script. in particular, make sure the WEBHOOK_BASE & COORD_BASE values reflect the BBK deployment, that the BOOTSTRAP_KEY is set correctly, and that HELM_DEPLOY=1
+Next, check the config vars at the top of the [bbk-demo-config.sh](./bbk-demo-config.s) script. in particular, make sure the WEBHOOK_BASE & COORD_BASE values reflect the BBK deployment, that the BOOTSTRAP_KEY is set correctly, and that HELM_DEPLOY=1
 
 Then, source the following script:
 
@@ -88,7 +88,7 @@ kubectl create namespace bbk-demo-apps
 
 ```
 
-and then deploy the demo app chart, making sure the global.bbkBaseUrl reflects the BBK deployment.
+and then deploy the demo app chart (charts/bit-broker-demo), making sure the global.bbkBaseUrl reflects the BBK deployment.
 
 ```
 
