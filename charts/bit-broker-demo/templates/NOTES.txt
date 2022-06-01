@@ -1,0 +1,17 @@
+Thank you for installing {{ .Chart.Name | upper }}.
+
+Your release is named {{ .Release.Name }}.
+
+To make the demo app services available, please run:
+
+    $ kubectl apply -f ../bbk-demo-ingress.yaml -n {{ .Release.Namespace }}
+
+NB - this file assumes the BitBroker cluster has been deployed into namespace bbk-demo, and this chart has been deployed into namespace bbk-demo-apps; you will need to update it if this is not the case. 
+
+This will map the following routes:
+
+    /apps/map/
+    /app/explorer/
+    /connector/country/
+    /connector/heritagenatural/
+    /connector/heritagecultural/

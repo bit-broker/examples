@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}
+{{- if or (.Values.global.metrics.enabled) (.Values.metrics.enabled) }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8004"
+{{- end }}
+    spec:
+      securityContext:
+        fsGroup: 101
+      imagePullSecrets:
+      - name: {{ .Values.docker.imagePullSecret }}
+      containers:
+        - name: app-explorer
+          image: "{{ .Values.docker.registry | default .Values.global.docker.registry }}/bbkr/bbk-demo-explorer-app:{{ .Values.docker.imageTag }}"
+          imagePullPolicy: {{ .Values.docker.imagePullPolicy }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 101
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8080
+          env:
+            - name: BASE_URL
+              value: "{{ .Values.global.bbkBaseUrl }}/consumer/v1/"
+            - name: POLICY_0
+              value: {{ index .Values.policy0 }}
+            - name: TOKEN_0
+              value: {{ index .Values.token0 }}
+            - name: DESC_0
+              value: "{{ index .Values.desc0 }}"
+            - name: NAME_0
+              value: "{{ index .Values.name0 }}"
+            - name: POLICY_1
+              value: {{ index .Values.policy1 }}
+            - name: TOKEN_1
+              value: {{ index .Values.token1 }}
+            - name: DESC_1
+              value: "{{ index .Values.desc1 }}"
+            - name: NAME_1
+              value: "{{ index .Values.name1 }}"
+            - name: POLICY_2
+              value: {{ index .Values.policy2 }}
+            - name: TOKEN_2
+              value: {{ index .Values.token2 }}
+            - name: DESC_2
+              value: "{{ index .Values.desc2 }}"
+            - name: NAME_2
+              value: "{{ index .Values.name2 }}"

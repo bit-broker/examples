@@ -1,0 +1,21 @@
+dependencies:
+- name: postgresql
+  repository: https://charts.bitnami.com/bitnami
+  version: 10.4.6
+- name: connector-country
+  repository: file://../connector-country
+  version: "1.0"
+- name: connector-heritage-natural
+  repository: file://../connector-heritage-natural
+  version: "1.0"
+- name: connector-heritage-cultural
+  repository: file://../connector-heritage-cultural
+  version: "1.0"
+- name: app-map
+  repository: file://../app-map
+  version: "1.0"
+- name: app-explorer
+  repository: file://../app-explorer
+  version: "1.0"
+digest: sha256:ba847c662a135be625fafc4743fb98c082ad1afab70f9b944457394ff29e9303
+generated: "2022-05-31T11:15:08.733727+01:00"

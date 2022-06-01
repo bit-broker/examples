@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  namespace: '{{ .Release.Namespace }}'
+  labels:
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}
+{{- if or (.Values.global.metrics.enabled) (.Values.metrics.enabled) }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8004"
+{{- end }}
+    spec:
+      securityContext:
+        fsGroup: 1999
+      imagePullSecrets:
+      - name: {{ .Values.docker.imagePullSecret }}
+      initContainers:
+        - name: '{{ .Release.Name }}-{{ .Chart.Name }}-wait-for-db'
+          image: postgres:latest
+          command: ['sh', '-c', 'until pg_isready -h {{ .Release.Name }}-bbk-demo-postgresql -p 5432 -U {{ .Chart.Name }};
+            do echo waiting for database; sleep 2; done;']
+        - name: '{{ .Release.Name }}-{{ .Chart.Name }}-flyway-migrate'
+          image: "{{ .Values.docker.registry | default .Values.global.docker.registry }}/bbkr/bbk-demo-flyway-migrate:{{ .Values.docker.imageTag }}"
+          command: ['flyway', 'migrate', '-url=jdbc:postgresql://{{ .Release.Name }}-bbk-demo-postgresql:5432/bbk_connector_data', '-schemas=public', '-user=bbk_connector', '-password={{ .Values.global.passwords.bbk_connector }}', '-connectRetries=3', '-mixed=true']
+      containers:
+        - name: connector-country
+          image: "{{ .Values.docker.registry | default .Values.global.docker.registry }}/bbkr/bbk-connector-nodejs-rdbms:{{ .Values.docker.imageTag }}"
+          imagePullPolicy: {{ .Values.docker.imagePullPolicy }}
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1999
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8004
+          env:
+            - name: NODE_ENV
+              value: "production"
+            - name: ENTITY_TYPE
+              value: {{ .Values.entity }}
+            - name: CATALOG_HOST
+              value: "{{ .Values.global.bbkBaseUrl }}/contributor/v1/"
+            - name: CONNECTOR_ID
+              value: {{ .Values.connectorId }}
+            - name: AUTHORIZE_KEY
+              value: {{ .Values.token }}
+            - name: CONNECTOR_DATABASE
+              value: "postgresql://bbk_connector:{{ .Values.global.passwords.bbk_connector }}@{{ .Release.Name }}-bbk-demo-postgresql/bbk_connector_data"
+            - name: WEBHOOK_PORT
+              value: "8004"
+            - name: APP_SERVER_METRICS
+              value: "{{ .Values.metrics.enabled | default .Values.global.metrics.enabled }}"
