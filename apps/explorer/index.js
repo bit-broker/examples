@@ -25,272 +25,257 @@ let myPolicy = null;
 const default_limit = 10;
 let baseURL = "";
 
-const queries = [{
-        name: "type country",
-        query: '{"type":"country"}',
-    },
-    {
-        name: "type heritage",
-        query: '{"type":"heritage"}',
-    },
-    {
-        name: "country named 'United Kingdom",
-        query: '{"type":"country","name":"United Kingdom"}',
-    },
-    {
-        name: "The world except 'United Kingdom', 'Atlantis', 'India', 'France'",
-        query: '{"type":"country","name":{"$nin":["United Kingdom","Atlantis","India","France"]}}',
-    },
-    {
-        name: "Within 250km of New York",
-        query: '{ "entity.location": { "$near": { "$geometry": {"type": "Point","coordinates": [74.0060, 40.71281] },"$minDistance": 0, "$maxDistance": 250000 }}}'
-    }
+const queries = [
+  {
+    name: "type country",
+    query: '{"type":"country"}',
+  },
+  {
+    name: "type heritage",
+    query: '{"type":"heritage"}',
+  },
+  {
+    name: "country named 'United Kingdom",
+    query: '{"type":"country","name":"United Kingdom"}',
+  },
+  {
+    name: "The world except 'United Kingdom', 'Atlantis', 'India', 'France'",
+    query:
+      '{"type":"country","name":{"$nin":["United Kingdom","Atlantis","India","France"]}}',
+  },
+  {
+    name: "Within 250km of New York",
+    query:
+      '{ "entity.location": { "$near": { "$geometry": {"type": "Point","coordinates": [74.0060, 40.71281] },"$minDistance": 0, "$maxDistance": 250000 }}}',
+  },
 ];
 
 /* Convert http(s) urls to clickable links inline
  */
 
 const clickLink = (jsonString) => {
-    const urlRegex = /(\"https?:\/\/[^\s]+\")/g;
+  const urlRegex = /(\"https?:\/\/[^\s]+\")/g;
 
-    return jsonString.replace(urlRegex, function(url) {
-        let unQuotedUrl = url.substring(1, url.length - 1);
-        return `<a href="${unQuotedUrl}">${unQuotedUrl}</a>`;
-    });
+  return jsonString.replace(urlRegex, function (url) {
+    let unQuotedUrl = url.substring(1, url.length - 1);
+    return `<a href="${unQuotedUrl}">${unQuotedUrl}</a>`;
+  });
 };
 
 /* create Clickable links for bit-broker urls
  */
 
 const bbkUrl = (url) => {
-    const link = document.createElement("a");
-    link.textContent = url;
-    link.setAttribute("href", "#");
-    link.addEventListener("click", function(e) {
-        consumerAPIFetch(e.target.innerHTML);
-    });
-    return link;
+  const link = document.createElement("a");
+  link.textContent = url;
+  link.setAttribute("href", "#");
+  link.addEventListener("click", function (e) {
+    consumerAPIFetch(e.target.innerHTML);
+  });
+  return link;
 };
 
 /* Render Copy to Curl button
  */
 
 const RenderCopyCurlButton = (url) => {
-    const curlButton = document.createElement("button");
-    curlButton.innerText = "copy Curl";
-    curlButton.type = "button";
-    curlButton.setAttribute("data-link", url)
-    curlButton.classList.add("btn", "btn-primary");
-    curlButton.addEventListener("click", function(e) {
-        copyCurlToClipBoard(e.target.getAttribute("data-link"));
-    });
-    return curlButton;
-}
+  const curlButton = document.createElement("button");
+  curlButton.innerText = "copy Curl";
+  curlButton.type = "button";
+  curlButton.setAttribute("data-link", url);
+  curlButton.classList.add("btn", "btn-primary");
+  curlButton.addEventListener("click", function (e) {
+    copyCurlToClipBoard(e.target.getAttribute("data-link"));
+  });
+  return curlButton;
+};
 
 /* Render bit-broker Timeseries
  */
 
 const renderTS = (ts) => {
-    const row = document.createElement("div");
-    row.classList.add("row");
-    const propName = document.createElement("div");
-    propName.classList.add("col-md-2", "fw-bold");
-    const propValue = document.createElement("div");
-    propValue.classList.add("col-md-10");
+  const row = document.createElement("div");
+  row.classList.add("row");
+  const propName = document.createElement("div");
+  propName.classList.add("col-md-2", "fw-bold");
+  const propValue = document.createElement("div");
+  propValue.classList.add("col-md-10");
 
-    propName.textContent = "timeseries";
-    row.appendChild(propName);
-    Object.entries(ts).forEach(([key, value]) => {
-        propValue.innerHTML += `${key}`;
-        propValue.appendChild(bbkUrl(value.url));
-        propValue.appendChild(RenderCopyCurlButton(value.url));
-    });
-    row.appendChild(propValue);
+  propName.textContent = "timeseries";
+  row.appendChild(propName);
+  Object.entries(ts).forEach(([key, value]) => {
+    propValue.innerHTML += `${key}`;
+    propValue.appendChild(bbkUrl(value.url));
+    propValue.appendChild(RenderCopyCurlButton(value.url));
+  });
+  row.appendChild(propValue);
 
-    return row;
-
-
-
-
-
-
-
+  return row;
 };
 
 /* Render Json
  */
 
 const renderJson = (prop, jsonString) => {
-    const row = document.createElement("div");
-    row.classList.add("row");
-    const propName = document.createElement("div");
-    propName.classList.add("col-md-2", "fw-bold");
-    const propValue = document.createElement("div");
-    propValue.classList.add("col-md-10");
+  const row = document.createElement("div");
+  row.classList.add("row");
+  const propName = document.createElement("div");
+  propName.classList.add("col-md-2", "fw-bold");
+  const propValue = document.createElement("div");
+  propValue.classList.add("col-md-10");
 
-    const json_pre = document.createElement("pre");
-    const code = document.createElement("code");
-    code.classList.add("language-json");
+  const json_pre = document.createElement("pre");
+  const code = document.createElement("code");
+  code.classList.add("language-json");
 
-
-    propName.textContent = prop;
-    row.appendChild(propName);
-    if (prop == "url") {
-        propValue.appendChild(bbkUrl(jsonString));
-        propValue.appendChild(RenderCopyCurlButton(jsonString));
-
-    } else {
-        code.innerHTML = jsonString;
-        json_pre.appendChild(code);
-        propValue.appendChild(json_pre);
-    }
-    row.appendChild(propValue);
-    return row;
+  propName.textContent = prop;
+  row.appendChild(propName);
+  if (prop == "url") {
+    propValue.appendChild(bbkUrl(jsonString));
+    propValue.appendChild(RenderCopyCurlButton(jsonString));
+  } else {
+    code.innerHTML = jsonString;
+    json_pre.appendChild(code);
+    propValue.appendChild(json_pre);
+  }
+  row.appendChild(propValue);
+  return row;
 };
 
 /* Render TimeSeries Value
  */
 
 const formatTimeSeriesChart = (result) => {
-    const dl = document.createElement("div");
-    const canva = document.createElement('canvas');
-    canva.id = 'canvas';
+  const dl = document.createElement("div");
+  const canva = document.createElement("canvas");
+  canva.id = "canvas";
 
-    const labels = result.map(function(e) {
-        return e.from;    
-    })
-    console.log('label here', labels)
+  const labels = result.map(function (e) {
+    return e.from;
+  });
+  console.log("label here", labels);
 
-    const data = result.map(function(e) {
-        return e.value;    
-    })
+  const data = result.map(function (e) {
+    return e.value;
+  });
 
-    console.log('label here', data)
+  console.log("label here", data);
 
-   const ctx = canva.getContext("2d");
+  const ctx = canva.getContext("2d");
   const myChart = new Chart(ctx, {
     type: "line",
-    data: { 
+    data: {
       labels: labels,
       datasets: [
         {
           label: "TimeSeries Data",
           fill: true,
           lineTension: 0.1,
-          backgroundColor: 'rgba(0, 119, 204, 0.3)',
+          backgroundColor: "rgba(0, 119, 204, 0.3)",
           borderColor: "#CC1034",
           data: data,
         },
       ],
     },
     options: {
-        responsive: 'true',
-     }
+      responsive: "true",
+    },
   });
 
+  dl.appendChild(canva);
 
-   dl.appendChild(canva)
-
-
-    return dl;
-
-}
-
-
+  return dl;
+};
 
 /* format bit-broker API response data
  */
 
 const formatResponse = (response) => {
-    const dl = document.createElement("div");
-    dl.classList.add(
-        "container",
-        "border",
-        "py-2",
-        "my-2",
-        "bg-white",
-        "rounded"
-    );
+  const dl = document.createElement("div");
+  dl.classList.add(
+    "container",
+    "border",
+    "py-2",
+    "my-2",
+    "bg-white",
+    "rounded"
+  );
 
-    for (let prop in response) {
-        let str = response[prop];
-        if (typeof response[prop] === "object") {
-            str = JSON.stringify(response[prop], null, 2);
-            str = clickLink(str);
-        }
-        switch (prop) {
-            case "timeseries":
-                dl.appendChild(renderTS(response[prop]));
-
-
-                break;
-                
-            default:
-                dl.appendChild(renderJson(prop, str));
-                break;
-        }
+  for (let prop in response) {
+    let str = response[prop];
+    if (typeof response[prop] === "object") {
+      str = JSON.stringify(response[prop], null, 2);
+      str = clickLink(str);
     }
-    return dl;
+    switch (prop) {
+      case "timeseries":
+        dl.appendChild(renderTS(response[prop]));
+
+        break;
+
+      default:
+        dl.appendChild(renderJson(prop, str));
+        break;
+    }
+  }
+  return dl;
 };
 
 /* fetch bit-broker consumer API
  */
 
 function consumerAPIFetch(url) {
-    urlHistory.push(url);
-    const results = document.getElementById("results");
-    results.innerHTML = "";
+  urlHistory.push(url);
+  const results = document.getElementById("results");
+  results.innerHTML = "";
 
-    const requestOptions = {
-        method: "GET",
-        headers: {
-            "x-bbk-auth-token": myToken,
-            "x-bbk-audience": myPolicy
-        },
-    };
-    let searchParam = new URLSearchParams(url.split("?")[1]);
-    if (searchParam.has("limit") == false) {
-        searchParam.set("limit", default_limit);
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "x-bbk-auth-token": myToken,
+      "x-bbk-audience": myPolicy,
+    },
+  };
+  let searchParam = new URLSearchParams(url.split("?")[1]);
+  if (searchParam.has("limit") == false) {
+    searchParam.set("limit", default_limit);
+  }
+
+  if (searchParam.has("offset") == false) {
+    searchParam.set("offset", 0);
+  }
+
+  url = url.split("?")[0] + "?";
+  searchParam.forEach((value, key) => {
+    url += key + "=" + value + "&";
+  });
+
+  if (searchParam.has("offset")) {
+    let newOffset = parseInt(searchParam.get("offset"));
+    if (newOffset == 0) {
+      // diable previous button
+      document.getElementById("previous").disabled = true;
+    } else {
+      // enable previous button
+      document.getElementById("previous").disabled = false;
     }
-
-    if (searchParam.has("offset") == false) {
-        searchParam.set("offset", 0);
-    }
-
-    url = url.split("?")[0] + "?";
-    searchParam.forEach((value, key) => {
-        url += key + "=" + value + "&";
-    });
-
-    if (searchParam.has("offset")) {
-       let newOffset = parseInt(searchParam.get("offset"));
-        if (newOffset == 0) {
-            // diable previous button
-            document.getElementById("previous").disabled = true;
-        }
-        else{
-            // enable previous button 
-            document.getElementById("previous").disabled = false;
-        }
-    }
-    fetch(url, requestOptions)
+  }
+  fetch(url, requestOptions)
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((data) => {
-        results.innerHTML = "";
+      results.innerHTML = "";
 
-        if (Array.isArray(data)) {
-            if (url.indexOf("timeseries") >= 0 ) {
-                results.append(formatTimeSeriesChart(data));
-            }
-            else {
-                data.forEach((item) => {
-                    results.append(formatResponse(item));
-                });
-            }
-           
+      if (Array.isArray(data)) {
+        if (url.indexOf("timeseries") >= 0) {
+          results.append(formatTimeSeriesChart(data));
         } else {
-            results.append(formatResponse(data));
+          data.forEach((item) => {
+            results.append(formatResponse(item));
+          });
         }
+      } else {
+        results.append(formatResponse(data));
+      }
     })
 
     .catch(console.error);
@@ -300,192 +285,213 @@ function consumerAPIFetch(url) {
  */
 
 const nextPage = () => {
-    if (urlHistory.length > 0) {
-        url = urlHistory[urlHistory.length - 1];
+  if (urlHistory.length > 0) {
+    url = urlHistory[urlHistory.length - 1];
 
-        let searchParam = new URLSearchParams(url.split("?")[1]);
-        let newOffset = 0;
-        let newLimit = default_limit;
-        if (searchParam.has("offset")) {
-            newOffset = parseInt(searchParam.get("offset"));
-        }
-        if (searchParam.has("limit")) {
-            newLimit = parseInt(searchParam.get("limit"));
-        }
-
-        newOffset += newLimit;
-        searchParam.set("offset", newOffset);
-        searchParam.set("limit", newLimit);
-        let newURL = url.split("?")[0] + "?";
-        searchParam.forEach((value, key) => {
-            newURL += key + "=" + value + "&";
-        });
-
-        consumerAPIFetch(newURL);
+    let searchParam = new URLSearchParams(url.split("?")[1]);
+    let newOffset = 0;
+    let newLimit = default_limit;
+    if (searchParam.has("offset")) {
+      newOffset = parseInt(searchParam.get("offset"));
     }
+    if (searchParam.has("limit")) {
+      newLimit = parseInt(searchParam.get("limit"));
+    }
+
+    newOffset += newLimit;
+    searchParam.set("offset", newOffset);
+    searchParam.set("limit", newLimit);
+    let newURL = url.split("?")[0] + "?";
+    searchParam.forEach((value, key) => {
+      newURL += key + "=" + value + "&";
+    });
+
+    consumerAPIFetch(newURL);
+  }
 };
 
 const previousPage = () => {
+  if (urlHistory.length > 0) {
+    url = urlHistory[urlHistory.length - 1];
 
-    if (urlHistory.length > 0) {
-     url = urlHistory[urlHistory.length - 1];
- 
-     let searchParam = new URLSearchParams(url.split("?")[1]);
-     let newOffset = 10;
-     let newLimit = default_limit;
-     if (searchParam.has("offset")) {
-       newOffset = parseInt(searchParam.get("offset"));
-     }
-     if (searchParam.has("limit")) {
-       newLimit = parseInt(searchParam.get("limit"));
-     }
- 
-     newOffset -= newLimit;
-     searchParam.set("offset", newOffset);
-     searchParam.set("limit", newLimit);
-     let newURL = url.split("?")[0] + "?";
-     searchParam.forEach((value, key) => {
-       newURL += key + "=" + value + "&";
-     });
- 
-   
- 
-     consumerAPIFetch(newURL);
-   }
-   
- };
+    let searchParam = new URLSearchParams(url.split("?")[1]);
+    let newOffset = 10;
+    let newLimit = default_limit;
+    if (searchParam.has("offset")) {
+      newOffset = parseInt(searchParam.get("offset"));
+    }
+    if (searchParam.has("limit")) {
+      newLimit = parseInt(searchParam.get("limit"));
+    }
+
+    newOffset -= newLimit;
+    searchParam.set("offset", newOffset);
+    searchParam.set("limit", newLimit);
+    let newURL = url.split("?")[0] + "?";
+    searchParam.forEach((value, key) => {
+      newURL += key + "=" + value + "&";
+    });
+
+    consumerAPIFetch(newURL);
+  }
+};
 
 /* populate Policy Dropdown
  */
 
 const policyDropdownValue = (policies) => {
-    const ul = document.getElementById("policyDropDown");
-    policies.forEach((policy) => {
-        const item = document.createElement("a");
-        item.setAttribute("class", "dropdown-item");
-        item.href = "#";
-        item.innerHTML = policy.name;
-        const li = document.createElement("li");
-        li.appendChild(item);
-        ul.appendChild(li);
-    });
+  const ul = document.getElementById("policyDropDown");
+  policies.forEach((policy) => {
+    const item = document.createElement("a");
+    item.setAttribute("class", "dropdown-item");
+    item.href = "#";
+    item.innerHTML = policy.name;
+    const li = document.createElement("li");
+    li.appendChild(item);
+    ul.appendChild(li);
+  });
 };
 
 /* populate Queries Dropdown
  */
 
 const queryDropdownValue = (queries) => {
-    const ul = document.getElementById("queryDropDown");
-    queries.forEach((query) => {
-        const item = document.createElement("a");
-        item.setAttribute("class", "dropdown-item");
-        item.href = "#";
-        item.innerHTML = query.name;
-        const li = document.createElement("li");
-        li.appendChild(item);
-        ul.appendChild(li);
-    });
+  const ul = document.getElementById("queryDropDown");
+  queries.forEach((query) => {
+    const item = document.createElement("a");
+    item.setAttribute("class", "dropdown-item");
+    item.href = "#";
+    item.innerHTML = query.name;
+    const li = document.createElement("li");
+    li.appendChild(item);
+    ul.appendChild(li);
+  });
 };
 
 /* copy baseurl as curl
  */
 
 const copyCurlToClipBoard = (url) => {
-    const curlUrl = "curl" + ' ' + "--location" + ' ' + "--request" + ' ' + "GET" + ' ' + url + ' ' + "-H" + ' ' + "x-bbk-auth-token:" + myToken + ' ' + "-H" + ' ' + "x-bbk-audience:" + myPolicy;
-    navigator.clipboard.writeText(curlUrl)
-    .catch(err => {
-        console.error('Something went wrong', err);
-    });
-}
+  const curlUrl =
+    "curl" +
+    " " +
+    "--location" +
+    " " +
+    "--request" +
+    " " +
+    "GET" +
+    " " +
+    url +
+    " " +
+    "-H" +
+    " " +
+    "x-bbk-auth-token:" +
+    myToken +
+    " " +
+    "-H" +
+    " " +
+    "x-bbk-audience:" +
+    myPolicy;
+  navigator.clipboard.writeText(curlUrl).catch((err) => {
+    console.error("Something went wrong", err);
+  });
+};
 
 /* event handlers
  */
 
-const next = document.getElementById("next");
-next.addEventListener("click", (event) => nextPage());
+const next = document.querySelectorAll("#next");
+next.forEach((element) =>
+  element.addEventListener("click", (event) => nextPage())
+);
 
-const previous = document.getElementById("previous");
-previous.addEventListener("click", (event) => previousPage());
-
+const previous = document.querySelectorAll("#previous");
+previous.forEach((element) =>
+  element.addEventListener("click", (event) => previousPage())
+);
 
 const go = document.getElementById("go");
 
 go.addEventListener("click", (event) => {
-    const queryCatalog = document.getElementById("queryCatalog");
-    let query = encodeURIComponent(queryCatalog.value);
-    consumerAPIFetch(`${baseURL}/catalog?q=${query}`);
+  const queryCatalog = document.getElementById("queryCatalog");
+  let query = encodeURIComponent(queryCatalog.value);
+  consumerAPIFetch(`${baseURL}/catalog?q=${query}`);
 });
 
 const token = document.getElementById("token");
 
-token.addEventListener("change", (event) => myToken = event.target.value);
+token.addEventListener("change", (event) => (myToken = event.target.value));
 
 const back = document.getElementById("go-back");
 
 back.addEventListener("click", (event) => {
-    if (urlHistory == 0) {
-        document.getElementById("go-back").disabled = true;
-    } else {
-        fowardHistory.push(urlHistory.pop());
-        let url = urlHistory.pop();
-        consumerAPIFetch(url);
-    }
+  if (urlHistory == 0) {
+    document.getElementById("go-back").disabled = true;
+  } else {
+    fowardHistory.push(urlHistory.pop());
+    let url = urlHistory.pop();
+    consumerAPIFetch(url);
+  }
 });
 
 const forward = document.getElementById("go-forward");
 
 forward.addEventListener("click", (event) => {
-    if (fowardHistory == 0) {
-        document.getElementById("go-forward").disabled = true;
-    } else {
-        let url = fowardHistory[fowardHistory.length - 1];
-        urlHistory.push(url);
-        fowardHistory.pop();
-        consumerAPIFetch(url);
-    }
+  if (fowardHistory == 0) {
+    document.getElementById("go-forward").disabled = true;
+  } else {
+    let url = fowardHistory[fowardHistory.length - 1];
+    urlHistory.push(url);
+    fowardHistory.pop();
+    consumerAPIFetch(url);
+  }
 });
 
 /* on DOM fully loaded and parsed...
  */
 
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener("DOMContentLoaded", (event) => {
+  // ToDo: fetch policy & query defaults from separate json file...
 
-    // ToDo: fetch policy & query defaults from separate json file...
-
-    fetch("./config/config.json")
+  fetch("./config/config.json")
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((config) => {
+      baseURL = config.baseUrl;
+      document.getElementById("baseurl").value = baseURL;
 
-        baseURL = config.baseUrl;
-        document.getElementById("baseurl").value = baseURL;
+      policyDropdownValue(config.policies);
 
-        policyDropdownValue(config.policies);
-
-        let policyOpts = document.querySelectorAll('#policyDropDown .dropdown-item')
-        policyOpts.forEach(element => element.addEventListener("click", function() {
-            let text = element.innerText;
-            let policy = config.policies.find(e => e.name === text);
-            const token = document.getElementById("token");
-            token.value = policy.token;
-            const policyId = document.getElementById("policyId");
-            policyId.value = policy.id;
-            const policydescription = document.getElementById("policydescription");
-            policydescription.value = policy.description;
-            policydescription.readOnly = true;
-            myToken = policy.token;
-            myPolicy = policy.id;
-
-        }))
+      let policyOpts = document.querySelectorAll(
+        "#policyDropDown .dropdown-item"
+      );
+      policyOpts.forEach((element) =>
+        element.addEventListener("click", function () {
+          let text = element.innerText;
+          let policy = config.policies.find((e) => e.name === text);
+          const token = document.getElementById("token");
+          token.value = policy.token;
+          const policyId = document.getElementById("policyId");
+          policyId.value = policy.id;
+          const policydescription =
+            document.getElementById("policydescription");
+          policydescription.value = policy.description;
+          policydescription.readOnly = true;
+          myToken = policy.token;
+          myPolicy = policy.id;
+        })
+      );
     })
     .catch(console.error);
 
-    queryDropdownValue(queries);
+  queryDropdownValue(queries);
 
-    let queryOpts = document.querySelectorAll('#queryDropDown .dropdown-item')
-    queryOpts.forEach(element => element.addEventListener("click", function() {
-        let text = element.innerText;
-        let query = queries.find(e => e.name === text);
-        const queryCatalog = document.getElementById("queryCatalog");
-        queryCatalog.value = query.query;
-    }));
-})
+  let queryOpts = document.querySelectorAll("#queryDropDown .dropdown-item");
+  queryOpts.forEach((element) =>
+    element.addEventListener("click", function () {
+      let text = element.innerText;
+      let query = queries.find((e) => e.name === text);
+      const queryCatalog = document.getElementById("queryCatalog");
+      queryCatalog.value = query.query;
+    })
+  );
+});
