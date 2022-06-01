@@ -31,8 +31,8 @@ services:
       - NODE_ENV=production
       - ENTITY_TYPE=country
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
-      - CONNECTOR_ID=${ID_country}
-      - AUTHORIZE_KEY=${TOKEN_country}
+      - CONNECTOR_ID=${BBK_ID_country}
+      - AUTHORIZE_KEY=${BBK_TOKEN_country}
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/country.json
       - DATA_FORMAT=json
@@ -50,8 +50,8 @@ services:
       - NODE_ENV=production
       - ENTITY_TYPE=heritagesites
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
-      - CONNECTOR_ID=${ID_heritagenatural}
-      - AUTHORIZE_KEY=${TOKEN_heritagenatural}
+      - CONNECTOR_ID=${BBK_ID_heritagenatural}
+      - AUTHORIZE_KEY=${BBK_TOKEN_heritagenatural}
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-natural.json
       - DATA_FORMAT=json
@@ -69,8 +69,8 @@ services:
       - NODE_ENV=production
       - ENTITY_TYPE=heritagesites
       - CATALOG_HOST=http://bbk-contributor:8002/v1/
-      - CONNECTOR_ID=${ID_heritagecultural}
-      - AUTHORIZE_KEY=${TOKEN_heritagecultural}
+      - CONNECTOR_ID=${BBK_ID_heritagecultural}
+      - AUTHORIZE_KEY=${BBK_TOKEN_heritagecultural}
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-cultural.json
       - DATA_FORMAT=json
@@ -86,3 +86,41 @@ services:
       - 8007:80
     volumes:
     - ../../data:/usr/share/nginx/html:ro
+
+  bbk-app-explorer:
+    build:
+      context: ../..
+      dockerfile: ./build/app-explorer/Dockerfile
+    container_name: bbk-app-explorer
+    environment:
+      BASE_URL: http://bbk-consumer:8003/v1
+      TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
+      TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
+      TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
+      POLICY_0: "access-all-areas"
+      POLICY_1: "geo-british-isles"
+      POLICY_2: "heritage-natural"
+      DESC_0: "Global access to every record"
+      DESC_1: "Everything within the geography of the British Isles"
+      DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+    ports:
+      - 8008:80
+
+  bbk-app-map:
+    build:
+      context: ../..
+      dockerfile: ./build/app-map/Dockerfile
+    container_name: bbk-app-map
+    environment:
+      BASE_URL: http://bbk-consumer:8003
+      TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
+      TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
+      TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
+      POLICY_0: "access-all-areas"
+      POLICY_1: "geo-british-isles"
+      POLICY_2: "heritage-natural"
+      DESC_0: "Global access to every record"
+      DESC_1: "Everything within the geography of the British Isles"
+      DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+    ports:
+      - 8009:80

@@ -46,6 +46,42 @@ else
   jq --arg token "$TOKEN_2" '.policies[2].token = $token' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
+if [[ -z "${DESC_0}" ]]; then
+  :
+else
+  jq --arg description "$DESC_0" '.policies[0].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${DESC_1}" ]]; then
+  :
+else
+  jq --arg description "$DESC_1" '.policies[1].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${DESC_2}" ]]; then
+  :
+else
+  jq --arg description "$DESC_2" '.policies[2].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${NAME_0}" ]]; then
+  :
+else
+  jq --arg name "$NAME_0" '.policies[0].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${NAME_1}" ]]; then
+  :
+else
+  jq --arg name "$NAME_1" '.policies[1].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${NAME_2}" ]]; then
+  :
+else
+  jq --arg name "$NAME_2" '.policies[2].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
 chmod a+r $configfile
 
 # Run cmd

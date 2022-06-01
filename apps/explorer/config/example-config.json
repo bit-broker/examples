@@ -1,19 +1,22 @@
 {
     "policies": [
         {
-            "name": "access-all-areas",
-            "token": "",
-            "description": "Global access to every record"
+            "id": "access-all-areas",
+            "name": "Access All Areas",
+            "description": "Global access to every record",
+            "token": "<TOKEN GOES HERE>"
         },
         {
-            "name": "geo-british-isles",
-            "token": "",
-            "description": "Everything within the geography of the British Isles"
+            "id": "geo-british-isles",
+            "name": "The British Isles",
+            "description": "Everything within the geography of the British Isles.",
+            "token": "<TOKEN GOES HERE>"
         },
         {
-            "name": "heritage-natural",
-            "token": "",
-            "description": "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+            "id": "heritage-natural",
+            "name": "Natural World Heritage Sites",
+            "description": "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO",
+            "token": "<TOKEN GOES HERE>"
         }
     ],
     "baseUrl": "http://bbk-consumer:8003/v1"

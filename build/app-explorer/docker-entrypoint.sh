@@ -13,19 +13,19 @@ fi
 if [[ -z "${POLICY_0}" ]]; then
   :
 else
-  jq --arg name "$POLICY_0" '.policies[0].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+  jq --arg id "$POLICY_0" '.policies[0].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
 if [[ -z "${POLICY_1}" ]]; then
   :
 else
-  jq --arg name "$POLICY_1" '.policies[1].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+  jq --arg id "$POLICY_1" '.policies[1].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
 if [[ -z "${POLICY_2}" ]]; then
   :
 else
-  jq --arg name "$POLICY_2" '.policies[2].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+  jq --arg id "$POLICY_2" '.policies[2].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
 if [[ -z "${TOKEN_0}" ]]; then
@@ -64,6 +64,23 @@ else
   jq --arg description "$DESC_2" '.policies[2].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
+if [[ -z "${NAME_0}" ]]; then
+  :
+else
+  jq --arg name "$NAME_0" '.policies[0].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${NAME_1}" ]]; then
+  :
+else
+  jq --arg name "$NAME_1" '.policies[1].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
+if [[ -z "${NAME_2}" ]]; then
+  :
+else
+  jq --arg name "$NAME_2" '.policies[2].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
 
 chmod a+r $configfile
 
