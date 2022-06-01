@@ -106,7 +106,15 @@ const renderTS = (ts) => {
         propValue.appendChild(RenderCopyCurlButton(value.url));
     });
     row.appendChild(propValue);
+
     return row;
+
+
+
+
+
+
+
 };
 
 /* Render Json
@@ -121,6 +129,9 @@ const renderJson = (prop, jsonString) => {
     propValue.classList.add("col-md-10");
 
     const json_pre = document.createElement("pre");
+    const code = document.createElement("code");
+    code.classList.add("language-json");
+
 
     propName.textContent = prop;
     row.appendChild(propName);
@@ -129,12 +140,63 @@ const renderJson = (prop, jsonString) => {
         propValue.appendChild(RenderCopyCurlButton(jsonString));
 
     } else {
-        json_pre.innerHTML = jsonString;
+        code.innerHTML = jsonString;
+        json_pre.appendChild(code);
         propValue.appendChild(json_pre);
     }
     row.appendChild(propValue);
     return row;
 };
+
+/* Render TimeSeries Value
+ */
+
+const formatTimeSeriesChart = (result) => {
+    const dl = document.createElement("div");
+    const canva = document.createElement('canvas');
+    canva.id = 'canvas';
+
+    const labels = result.map(function(e) {
+        return e.from;    
+    })
+    console.log('label here', labels)
+
+    const data = result.map(function(e) {
+        return e.value;    
+    })
+
+    console.log('label here', data)
+
+   const ctx = canva.getContext("2d");
+  const myChart = new Chart(ctx, {
+    type: "line",
+    data: { 
+      labels: labels,
+      datasets: [
+        {
+          label: "TimeSeries Data",
+          fill: true,
+          lineTension: 0.1,
+          backgroundColor: 'rgba(0, 119, 204, 0.3)',
+          borderColor: "#CC1034",
+          data: data,
+        },
+      ],
+    },
+    options: {
+        responsive: 'true',
+     }
+  });
+
+
+   dl.appendChild(canva)
+
+
+    return dl;
+
+}
+
+
 
 /* format bit-broker API response data
  */
@@ -162,6 +224,7 @@ const formatResponse = (response) => {
 
 
                 break;
+                
             default:
                 dl.appendChild(renderJson(prop, str));
                 break;
@@ -188,10 +251,27 @@ function consumerAPIFetch(url) {
     let searchParam = new URLSearchParams(url.split("?")[1]);
     if (searchParam.has("limit") == false) {
         searchParam.set("limit", default_limit);
-        url = url.split("?")[0] + "?";
-        searchParam.forEach((value, key) => {
-            url += key + "=" + value + "&";
-        });
+    }
+
+    if (searchParam.has("offset") == false) {
+        searchParam.set("offset", 0);
+    }
+
+    url = url.split("?")[0] + "?";
+    searchParam.forEach((value, key) => {
+        url += key + "=" + value + "&";
+    });
+
+    if (searchParam.has("offset")) {
+       let newOffset = parseInt(searchParam.get("offset"));
+        if (newOffset == 0) {
+            // diable previous button
+            document.getElementById("previous").disabled = true;
+        }
+        else{
+            // enable previous button 
+            document.getElementById("previous").disabled = false;
+        }
     }
     fetch(url, requestOptions)
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
@@ -199,9 +279,15 @@ function consumerAPIFetch(url) {
         results.innerHTML = "";
 
         if (Array.isArray(data)) {
-            data.forEach((item) => {
-                results.append(formatResponse(item));
-            });
+            if (url.indexOf("timeseries") >= 0 ) {
+                results.append(formatTimeSeriesChart(data));
+            }
+            else {
+                data.forEach((item) => {
+                    results.append(formatResponse(item));
+                });
+            }
+           
         } else {
             results.append(formatResponse(data));
         }
@@ -238,6 +324,36 @@ const nextPage = () => {
         consumerAPIFetch(newURL);
     }
 };
+
+const previousPage = () => {
+
+    if (urlHistory.length > 0) {
+     url = urlHistory[urlHistory.length - 1];
+ 
+     let searchParam = new URLSearchParams(url.split("?")[1]);
+     let newOffset = 10;
+     let newLimit = default_limit;
+     if (searchParam.has("offset")) {
+       newOffset = parseInt(searchParam.get("offset"));
+     }
+     if (searchParam.has("limit")) {
+       newLimit = parseInt(searchParam.get("limit"));
+     }
+ 
+     newOffset -= newLimit;
+     searchParam.set("offset", newOffset);
+     searchParam.set("limit", newLimit);
+     let newURL = url.split("?")[0] + "?";
+     searchParam.forEach((value, key) => {
+       newURL += key + "=" + value + "&";
+     });
+ 
+   
+ 
+     consumerAPIFetch(newURL);
+   }
+   
+ };
 
 /* populate Policy Dropdown
  */
@@ -287,6 +403,9 @@ const copyCurlToClipBoard = (url) => {
 
 const next = document.getElementById("next");
 next.addEventListener("click", (event) => nextPage());
+
+const previous = document.getElementById("previous");
+previous.addEventListener("click", (event) => previousPage());
 
 
 const go = document.getElementById("go");
