@@ -1,0 +1,64 @@
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: con-country
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix: /connector/country/
+  service: bbk-demo-apps-bbk-demo-con-country:8004
+  bypass_auth: true 
+---
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: con-heritage-nat
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix:  /connector/heritagenatural/
+  service: bbk-demo-apps-bbk-demo-con-heritage-nat:8005
+  bypass_auth: true
+---
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: con-heritage-cult
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix:  /connector/heritagecultural/
+  service: bbk-demo-apps-bbk-demo-con-heritage-cult:8006
+  bypass_auth: true 
+---
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: app-explorer
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix:  /apps/explorer/
+  service: bbk-demo-apps-bbk-demo-app-explorer:8080
+  bypass_auth: true 
+---
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: app-map
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix:  /apps/map/
+  service: bbk-demo-apps-bbk-demo-app-map:8081
+  bypass_auth: true 

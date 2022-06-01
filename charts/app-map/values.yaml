@@ -1,0 +1,34 @@
+## Docker image
+##
+docker:
+  imageTag: "latest"
+  imagePullPolicy: "Always"
+  imagePullSecret: "regcred"
+
+  ## If private registry
+  ##
+  #registry: ""
+
+## Number of replicas
+##
+replicaCount: 1
+
+policy0: "access-all-areas"
+token0: ""
+desc0: "Global access to every record"
+name0: "Access All Areas"
+
+policy1: "geo-british-isles"
+token1: ""
+desc1: "Everything within the geography of the British Isles"
+name1:  "The British Isles"
+
+policy2: "heritage-natural"
+token2: ""
+desc2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+name2: "Natural World Heritage Sites"
+
+## Enable or disable metrics for Prometheus
+##
+metrics:
+  enabled: false

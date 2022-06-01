@@ -1,0 +1,150 @@
+#######################################################################################
+## Global Values
+
+global:
+  ## Database access
+  ##
+  passwords:
+    bbk_connector: bbk_connector_pwd
+
+  ## Docker image
+  ##
+  docker:
+    ## If private registry
+    ##
+    registry: "registry.hub.docker.com"
+
+  bbkBaseUrl: ""
+
+  ## Enable or disable metrics for Prometheus
+  ## Prometheus Service Monitors will be deployed for each subchart
+  ##
+  metrics:
+    enabled: false
+
+
+## End of Global Values
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo Connector Country Values
+
+bbk-demo-con-country:
+  enabled: true
+
+  ## Coordinator instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+  ## Connector config
+  entity: "country"
+  connectorId: ""
+  token: ""
+
+## End of Bit-Broker Demo Connector Country Values
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo Connector Heritage Natural Values
+
+bbk-demo-con-heritage-nat:
+  enabled: true
+
+  ## Consumer instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+  ## Connector config
+  entity: "heritagesites"
+  connectorId: ""
+  token: ""
+
+## Bit-Broker Demo Connector Heritage Natural Values
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo Connector Heritage Cultural Values
+
+bbk-demo-con-heritage-cult:
+  enabled: true
+
+  ## Consumer instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+  ## Connector config
+  entity: "heritagesites"
+  connectorId: ""
+  token: ""
+  
+## End of Bit-Broker Demo Connector Heritage Cultural Values
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo App Map
+
+bbk-demo-app-map:
+  enabled: true
+
+  ## Consumer instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+## End of Bit-Broker Demo App Map
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo App Explorer
+
+bbk-demo-app-explorer:
+  enabled: true
+
+  ## Consumer instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+## Bit-Broker Demo App Explorer
+#######################################################################################
+
+#######################################################################################
+## Bit-Broker Demo Postgres Values
+
+bbk-demo-postgresql:
+  enabled: true
+
+  ## Enable security context
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
+
+  ## ConfigMap with scripts to be run at first boot
+  initdbScriptsConfigMap: bbk-demo-postgres-init
+
+# End of Bit-Broker Demo Postgres Values
+#######################################################################################

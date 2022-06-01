@@ -1,0 +1,5 @@
+apiVersion: v2
+description: Bitbroker Connector Country Helm Chart
+name: connector-country
+appVersion: "1.0"
+version: "1.0"

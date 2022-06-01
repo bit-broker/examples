@@ -8,11 +8,11 @@ We have the following example apps, both of which allow users to explore policy-
 
 ## Policy-Based data Explorer
 
-This app allows users to choose from a set of pre-defined policies, and to try using different catalog queries in the context of those polices to explore the data that can be accessed.
+This app allows users to choose from a set of pre-defined policies, and to try using different catalog queries in the context of those polices to explore the data that can be accessed using the consumer API hierarchy (catalog > entity > timeseries)
 
 ## Maps
 
-This app allows users to access countries & heritage site data presented in a map context, again according to teh policy selected from a set of pre-defined policies.
+This app allows users to access countries & heritage site entity data presented in a map context, again according to the policy selected from a set of pre-defined policies.
 
 ## Connectors
 
@@ -44,6 +44,6 @@ PostGreSQL backed data connector.
 
 ## Build & Deployment
 
-This repository includes support for deploying the demo connectirs and apps against a BitBroker deployment, either using Helm or Docker-Compose, with a set of supporting scripts. The Connectos are deplyed supporting two data sets, countries & heritage sites.
+This repository includes support for deploying the example connectors and apps against a BitBroker deployment, either using Helm or Docker-Compose, with a set of supporting scripts. The Connectors are deplyed supporting two data sets, countries & heritage sites.
 
 see [README.MD](./development/scripts/README.MD)

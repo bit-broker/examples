@@ -1,0 +1,24 @@
+## Docker image
+##
+docker:
+  imageTag: "latest"
+  imagePullPolicy: "Always"
+  imagePullSecret: "regcred"
+
+  ## If private registry
+  ##
+  #registry: ""
+
+## Number of replicas
+##
+replicaCount: 1
+
+entity: "heritagesites"
+connectorId: ""
+filter: "CATEGORY_EQ_CULTURAL"
+token: ""
+
+## Enable or disable metrics for Prometheus
+##
+metrics:
+  enabled: false

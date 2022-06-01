@@ -1,0 +1,42 @@
+apiVersion: v2
+name: bit-broker-demo
+appVersion: "0.1"
+description: Charts for bitbroker demo deployment. bitbroker is a data brokering platform
+version: 1.0.0
+home: https://www.bit-broker.io/
+icon: https://www.bit-broker.io/images/logo.png
+sources:
+maintainers:
+engine: gotpl
+type: application
+dependencies:
+  - name: postgresql
+    version: "10.4.6"
+    repository: https://charts.bitnami.com/bitnami
+    condition: bbk-demo-postgresql.enabled
+    alias: bbk-demo-postgresql
+  - name: connector-country
+    version: "1.0"
+    repository: file://../connector-country
+    condition: bbk-demo-con-country.enabled
+    alias: bbk-demo-con-country
+  - name: connector-heritage-natural
+    version: "1.0"
+    repository: file://../connector-heritage-natural
+    condition: bbk-demo-con-heritage-nat.enabled
+    alias: bbk-demo-con-heritage-nat
+  - name: connector-heritage-cultural
+    version: "1.0"
+    repository: file://../connector-heritage-cultural
+    condition: bbk-demo-con-heritage-cult.enabled
+    alias: bbk-demo-con-heritage-cult
+  - name: app-map
+    version: "1.0"
+    repository: file://../app-map
+    condition: bbk-demo-app-map.enabled
+    alias: bbk-demo-app-map
+  - name: app-explorer
+    version: "1.0"
+    repository: file://../app-explorer
+    condition: bbk-demo-app.explorer.enabled
+    alias: bbk-demo-app-explorer
