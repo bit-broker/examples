@@ -348,13 +348,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
             let policy = config.policies.find(e => e.name === text);
             const token = document.getElementById("token");
             token.value = policy.token;
-            const policyName = document.getElementById("policyName");
-            policyName.value = policy.name;
+            const policyId = document.getElementById("policyId");
+            policyId.value = policy.id;
             const policydescription = document.getElementById("policydescription");
             policydescription.value = policy.description;
             policydescription.readOnly = true;
             myToken = policy.token;
-            myPolicy = policy.name;
+            myPolicy = policy.id;
 
         }))
     })
