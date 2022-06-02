@@ -172,13 +172,42 @@ const formatTimeSeriesChart = (result) => {
           fill: true,
           lineTension: 0.1,
           backgroundColor: "rgba(0, 119, 204, 0.3)",
-          borderColor: "#CC1034",
+          borderColor: "#00008b",
           data: data,
         },
       ],
     },
     options: {
       responsive: "true",
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: "Year",
+            color: "#00008b",
+            font: {
+              size: 15,
+              style: "bold",
+              padding: 5,
+              family: "Arial",
+            },
+          },
+        },
+
+        y: {
+          title: {
+            display: true,
+            text: "Population",
+            color: "#00008b",
+            font: {
+              style: "bold",
+              family: "Arial",
+              padding: 5,
+              size: 15,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -400,15 +429,11 @@ const copyCurlToClipBoard = (url) => {
 /* event handlers
  */
 
-const next = document.querySelectorAll("#next");
-next.forEach((element) =>
-  element.addEventListener("click", (event) => nextPage())
-);
+const next = document.getElementById("next");
+next.addEventListener("click", (event) => nextPage());
 
-const previous = document.querySelectorAll("#previous");
-previous.forEach((element) =>
-  element.addEventListener("click", (event) => previousPage())
-);
+const previous = document.getElementById("previous");
+previous.addEventListener("click", (event) => previousPage());
 
 const go = document.getElementById("go");
 
