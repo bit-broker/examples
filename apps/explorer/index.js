@@ -168,11 +168,12 @@ const formatTimeSeriesChart = (result) => {
       labels: labels,
       datasets: [
         {
-          label: "TimeSeries Data",
+          label: "Yearly Population",
           fill: true,
           lineTension: 0.1,
           backgroundColor: "rgba(0, 119, 204, 0.3)",
           borderColor: "#00008b",
+          fontColor: '#00008b',
           data: data,
         },
       ],
@@ -184,12 +185,13 @@ const formatTimeSeriesChart = (result) => {
           title: {
             display: true,
             text: "Year",
-            color: "#00008b",
+            color: '#00008b',
             font: {
+              fontFamily: "Arial",
+              margin: 25,
+              padding: 4,
+              borderThickness: 2,
               size: 15,
-              style: "bold",
-              padding: 5,
-              family: "Arial",
             },
           },
         },
@@ -198,11 +200,12 @@ const formatTimeSeriesChart = (result) => {
           title: {
             display: true,
             text: "Population",
-            color: "#00008b",
+            color: '#00008b',
             font: {
-              style: "bold",
-              family: "Arial",
-              padding: 5,
+              fontFamily: "Arial",
+              margin: 25,
+              padding: 4,
+              borderThickness: 2,
               size: 15,
             },
           },
@@ -252,11 +255,12 @@ const formatResponse = (response) => {
 
 /* fetch bit-broker consumer API
  */
-
+const spinner = document.getElementById("spinner");
 function consumerAPIFetch(url) {
   urlHistory.push(url);
   const results = document.getElementById("results");
   results.innerHTML = "";
+  spinner.removeAttribute('hidden');
 
   const requestOptions = {
     method: "GET",
@@ -293,6 +297,7 @@ function consumerAPIFetch(url) {
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((data) => {
       results.innerHTML = "";
+      spinner.setAttribute('hidden', '');
 
       if (Array.isArray(data)) {
         if (url.indexOf("timeseries") >= 0) {
@@ -429,11 +434,15 @@ const copyCurlToClipBoard = (url) => {
 /* event handlers
  */
 
-const next = document.getElementById("next");
-next.addEventListener("click", (event) => nextPage());
+const next = document.querySelectorAll("#next");
+next.forEach((element) =>
+  element.addEventListener("click", (event) => nextPage())
+);
 
-const previous = document.getElementById("previous");
-previous.addEventListener("click", (event) => previousPage());
+const previous = document.querySelectorAll("#previous");
+previous.forEach((element) =>
+  element.addEventListener("click", (event) => previousPage())
+);
 
 const go = document.getElementById("go");
 
