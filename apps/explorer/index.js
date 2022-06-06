@@ -173,7 +173,7 @@ const formatTimeSeriesChart = (result) => {
           lineTension: 0.1,
           backgroundColor: "rgba(0, 119, 204, 0.3)",
           borderColor: "#00008b",
-          fontColor: '#00008b',
+          fontColor: "#00008b",
           data: data,
         },
       ],
@@ -185,7 +185,7 @@ const formatTimeSeriesChart = (result) => {
           title: {
             display: true,
             text: "Year",
-            color: '#00008b',
+            color: "#00008b",
             font: {
               fontFamily: "Arial",
               margin: 25,
@@ -200,7 +200,7 @@ const formatTimeSeriesChart = (result) => {
           title: {
             display: true,
             text: "Population",
-            color: '#00008b',
+            color: "#00008b",
             font: {
               fontFamily: "Arial",
               margin: 25,
@@ -255,12 +255,13 @@ const formatResponse = (response) => {
 
 /* fetch bit-broker consumer API
  */
-const spinner = document.getElementById("spinner");
+
 function consumerAPIFetch(url) {
   urlHistory.push(url);
   const results = document.getElementById("results");
   results.innerHTML = "";
-  spinner.removeAttribute('hidden');
+  spinner.removeAttribute("hidden");
+  paginationVisibility(false);
 
   const requestOptions = {
     method: "GET",
@@ -287,17 +288,18 @@ function consumerAPIFetch(url) {
     let newOffset = parseInt(searchParam.get("offset"));
     if (newOffset == 0) {
       // diable previous button
-      document.getElementById("previous").disabled = true;
+      previous.forEach((element) => (element.disabled = true));
     } else {
       // enable previous button
-      document.getElementById("previous").disabled = false;
+      previous.forEach((element) => (element.disabled = false));
     }
   }
   fetch(url, requestOptions)
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((data) => {
       results.innerHTML = "";
-      spinner.setAttribute('hidden', '');
+      spinner.setAttribute("hidden", "");
+      paginationVisibility(true);
 
       if (Array.isArray(data)) {
         if (url.indexOf("timeseries") >= 0) {
@@ -314,6 +316,19 @@ function consumerAPIFetch(url) {
 
     .catch(console.error);
 }
+
+/* hide and show pagination
+ */
+
+const paginationVisibility = (visible) => {
+  if (visible == true) {
+    next.forEach((element) => element.removeAttribute("hidden"));
+    previous.forEach((element) => element.removeAttribute("hidden"));
+  } else {
+    next.forEach((element) => element.setAttribute("hidden", ""));
+    previous.forEach((element) => element.setAttribute("hidden", ""));
+  }
+};
 
 /* support bit-broker response pagination
  */
@@ -434,12 +449,14 @@ const copyCurlToClipBoard = (url) => {
 /* event handlers
  */
 
-const next = document.querySelectorAll("#next");
+const spinner = document.getElementById("spinner");
+
+const next = document.querySelectorAll("button.next");
 next.forEach((element) =>
   element.addEventListener("click", (event) => nextPage())
 );
 
-const previous = document.querySelectorAll("#previous");
+const previous = document.querySelectorAll("button.previous");
 previous.forEach((element) =>
   element.addEventListener("click", (event) => previousPage())
 );
