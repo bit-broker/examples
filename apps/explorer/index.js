@@ -153,13 +153,10 @@ const formatTimeSeriesChart = (result) => {
   const labels = result.map(function (e) {
     return e.from;
   });
-  console.log("label here", labels);
 
   const data = result.map(function (e) {
     return e.value;
   });
-
-  console.log("label here", data);
 
   const ctx = canva.getContext("2d");
   const myChart = new Chart(ctx, {
@@ -270,46 +267,52 @@ function consumerAPIFetch(url) {
       "x-bbk-audience": myPolicy,
     },
   };
-  let searchParam = new URLSearchParams(url.split("?")[1]);
-  if (searchParam.has("limit") == false) {
-    searchParam.set("limit", default_limit);
-  }
+  if (url.indexOf("timeseries") >= 0) {
+  } else {
+    let searchParam = new URLSearchParams(url.split("?")[1]);
+    if (searchParam.has("limit") == false) {
+      searchParam.set("limit", default_limit);
+    }
 
-  if (searchParam.has("offset") == false) {
-    searchParam.set("offset", 0);
-  }
+    if (searchParam.has("offset") == false) {
+      searchParam.set("offset", 0);
+    }
 
-  url = url.split("?")[0] + "?";
-  searchParam.forEach((value, key) => {
-    url += key + "=" + value + "&";
-  });
+    url = url.split("?")[0] + "?";
+    searchParam.forEach((value, key) => {
+      url += key + "=" + value + "&";
+    });
 
-  if (searchParam.has("offset")) {
-    let newOffset = parseInt(searchParam.get("offset"));
-    if (newOffset == 0) {
-      // diable previous button
-      previous.forEach((element) => (element.disabled = true));
-    } else {
-      // enable previous button
-      previous.forEach((element) => (element.disabled = false));
+    if (searchParam.has("offset")) {
+      let newOffset = parseInt(searchParam.get("offset"));
+      if (newOffset == 0) {
+        // diable previous button
+        previous.forEach((element) => (element.disabled = true));
+      } else {
+        // enable previous button
+        previous.forEach((element) => (element.disabled = false));
+      }
     }
   }
+
   fetch(url, requestOptions)
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((data) => {
       results.innerHTML = "";
       spinner.setAttribute("hidden", "");
-      paginationVisibility(true);
 
       if (Array.isArray(data)) {
         if (url.indexOf("timeseries") >= 0) {
+          paginationVisibility(false);
           results.append(formatTimeSeriesChart(data));
         } else {
+          paginationVisibility(true);
           data.forEach((item) => {
             results.append(formatResponse(item));
           });
         }
       } else {
+        paginationVisibility(false);
         results.append(formatResponse(data));
       }
     })
