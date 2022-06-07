@@ -46,7 +46,7 @@ const queries = [
   {
     name: "Within 250km of New York",
     query:
-      '{ "entity.location": { "$near": { "$geometry": {"type": "Point","coordinates": [74.0060, 40.71281] },"$minDistance": 0, "$maxDistance": 250000 }}}',
+      '{ "entity.location": { "$near": { "$geometry": {"type": "Point","coordinates": [-74.0060, 40.71281] },"$min": 0, "$max": 250000 }}}',    
   },
 ];
 
@@ -90,7 +90,7 @@ const RenderCopyCurlButton = (url) => {
   return curlButton;
 };
 
-/* Render bit-broker Timeseries
+/* Render bit-broker Timeseries in entity view
  */
 
 const renderTS = (ts) => {
@@ -142,13 +142,13 @@ const renderJson = (prop, jsonString) => {
   return row;
 };
 
-/* Render TimeSeries Value
+/* Render TimeSeries Data as Chart
  */
 
 const formatTimeSeriesChart = (result) => {
   const dl = document.createElement("div");
-  const canva = document.createElement("canvas");
-  canva.id = "canvas";
+  const canvas = document.createElement("canvas");
+  canvas.id = "canvas";
 
   const labels = result.map(function (e) {
     return e.from;
@@ -158,7 +158,7 @@ const formatTimeSeriesChart = (result) => {
     return e.value;
   });
 
-  const ctx = canva.getContext("2d");
+  const ctx = canvas.getContext("2d");
   const myChart = new Chart(ctx, {
     type: "line",
     data: {
@@ -211,7 +211,7 @@ const formatTimeSeriesChart = (result) => {
     },
   });
 
-  dl.appendChild(canva);
+  dl.appendChild(canvas);
 
   return dl;
 };
@@ -250,7 +250,7 @@ const formatResponse = (response) => {
   return dl;
 };
 
-/* fetch bit-broker consumer API
+/* fetch bit-broker consumer API 
  */
 
 function consumerAPIFetch(url) {
@@ -267,6 +267,10 @@ function consumerAPIFetch(url) {
       "x-bbk-audience": myPolicy,
     },
   };
+
+  /* handle timeseries display differently
+   */  
+
   if (url.indexOf("timeseries") >= 0) {
   } else {
     let searchParam = new URLSearchParams(url.split("?")[1]);
@@ -505,8 +509,6 @@ forward.addEventListener("click", (event) => {
  */
 
 window.addEventListener("DOMContentLoaded", (event) => {
-  // ToDo: fetch policy & query defaults from separate json file...
-
   fetch("./config/config.json")
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((config) => {
