@@ -14,7 +14,7 @@
 
   <div class="px-3 py-3 my-2 bg-light rounded text-center">
     <img class="d-block mx-auto mb-4" src="./assets/logo.svg" alt="" width="80" height="60">
-    <h1 class="display-5 fw-bold">BitBroker: Policy Based data Explorer</h1>
+    <h1 class="display-5 fw-bold">BitBroker: Policy Based Data Explorer</h1>
     <div class="col-lg-6 mx-auto">
       <p class="lead mb-4">Select a policy, and explore the example queries against the sample data set of world countries and Unesco heritage sites.</p>
     </div>
@@ -86,6 +86,7 @@
 
   <div class="px-3 py-3 my-2 bg-light rounded">
     <h2 class="fw-bold">Catalog Query</h2>
+    <p><a href="https://www.bit-broker.io/docs/consumer/catalog/">Query Syntax</a></p>
     <div class="row">
       <div class="col-md-2">
         <div class="dropdown">
@@ -97,14 +98,12 @@
         </div>
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-9">
         <input type="search"  id="queryCatalog" class="form-control mr-3" placeholder="Search Catalog" />
       </div>
 
-      <div class="col-md-4">
-        <button id ="go" class="btn btn-dark mr-2" style='font-size:15px'>Go!</button>
-        <button id ="go-back" class="btn btn-dark mr-2" style='font-size:15px'>Previous</button>
-        <button id ="go-forward" class="btn btn-dark mr-2" style='font-size:15px'>Next</button>
+      <div class="col-md-1">
+        <button id ="go" class="btn btn-primary mr-2" style='font-size:15px'>Go!</button>
       </div>
 
     </div>
@@ -113,17 +112,33 @@
   <div class="b-example-divider"></div>
 
   <div class="px-3 py-3 my-2 bg-light rounded">
-    <h2 class="fw-bold">Results</h2>
+    <div class="row">
+      <div class="col-md-2">
+        <h2 class="fw-bold">API Call</h2>
+      </div>
+      <div class="col-md-9 my-2">
+        <input type="text"  id="idApiUrl"  class="form-control" readonly/>
+      </div>
+      <div class="col-md-1 my-2" id="idCopyCurl">
+        
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <h2 class="fw-bold">Results</h2>
+      </div>
+    </div>
+    
     <nav aria-label="Page navigation example">
       <ul class="pagination">
        
        
         <li class="page-item">
-          <button hidden class="page-link previous" id="previous-top">Previous</button>
+          <button hidden class="page-link previous" id="previous-top">Previous Page</button>
           
         </li>
         <li class="page-item">
-          <button hidden class="page-link next" id="next-top">Next</button>
+          <button hidden class="page-link next" id="next-top">Next Page</button>
           
         </li>
         
