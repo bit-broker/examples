@@ -92,19 +92,13 @@ const bbkUrl = (url) => {
     return link;
 };
 
-/* Render Copy to Curl button
+/* Update Copy to Curl button
  */
 
-const RenderCopyCurlButton = (url) => {
-    const curlButton = document.createElement("button");
-    curlButton.innerText = "copy Curl";
-    curlButton.type = "button";
-    curlButton.setAttribute("data-link", url);
-    curlButton.classList.add("btn", "btn-primary");
-    curlButton.addEventListener("click", function(e) {
-        copyCurlToClipBoard(e.target.getAttribute("data-link"));
-    });
-    return curlButton;
+const updateCopyCurlButton = (url) => {
+    const copyCurl = document.getElementById("idCopyCurlButton");
+    copyCurl.removeAttribute('hidden');
+    copyCurl.setAttribute("data-link", url);
 };
 
 /* Render bit-broker Timeseries info in entity view
@@ -319,10 +313,8 @@ function consumerAPIFetch(url) {
         spinner.setAttribute("hidden", "");
         const apiUrl = document.getElementById("idApiUrl");
         apiUrl.value = previousUrl;
-        const copyCurl = document.getElementById("idCopyCurl");
-        copyCurl.replaceChildren();
-        copyCurl.appendChild(RenderCopyCurlButton(previousUrl));
-
+        updateCopyCurlButton(previousUrl);
+        
         paginationVisibility(((urlType == BBK_CATALOG) || (urlType == BBK_ENTITY_TYPE)) ? true : false);
 
         if (Array.isArray(data)) {
@@ -665,4 +657,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     const token = document.getElementById("token");
     token.addEventListener("change", (event) => (myToken = event.target.value));
+
+    const copyCurl = document.getElementById("idCopyCurlButton");
+    copyCurl.addEventListener("click", function(e) {
+        copyCurlToClipBoard(e.target.getAttribute("data-link"));
+    });
 });
