@@ -335,6 +335,11 @@ function consumerAPIFetch(url) {
         
         paginationVisibility(((urlType == BBK_CATALOG) || (urlType == BBK_ENTITY_TYPE)) ? true : false);
 
+        if (data.length === 0){
+            paginationVisibility(false);
+            return results.innerHTML = "No Results Found"
+        }
+        
         if (data.length < default_limit){
             next.forEach((element) => (element.disabled = true));
         }
