@@ -132,6 +132,24 @@ bbk-demo-app-explorer:
 #######################################################################################
 
 #######################################################################################
+## Bit-Broker Demo App Demo
+
+bbk-demo-app-demo:
+  enabled: true
+
+  ## Consumer instance count.
+  replicaCount: 1
+
+  ## Docker Image values.
+  docker:
+    imageTag: "latest"
+    imagePullPolicy: Always
+    imagePullSecret: regcred
+
+## Bit-Broker Demo App Demo
+#######################################################################################
+
+#######################################################################################
 ## Bit-Broker Demo Postgres Values
 
 bbk-demo-postgresql:

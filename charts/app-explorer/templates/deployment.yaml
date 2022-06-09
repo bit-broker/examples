@@ -19,7 +19,7 @@ spec:
 {{- if or (.Values.global.metrics.enabled) (.Values.metrics.enabled) }}
       annotations:
         prometheus.io/scrape: "true"
-        prometheus.io/port: "8004"
+        prometheus.io/port: "8080"
 {{- end }}
     spec:
       securityContext:
