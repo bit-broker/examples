@@ -329,10 +329,15 @@ function consumerAPIFetch(url) {
         results.innerHTML = "";
         spinner.setAttribute("hidden", "");
         const apiUrl = document.getElementById("idApiUrl");
+        const next = document.querySelectorAll("button.next");
         apiUrl.value = previousUrl;
         updateCopyCurlButton(previousUrl);
         
         paginationVisibility(((urlType == BBK_CATALOG) || (urlType == BBK_ENTITY_TYPE)) ? true : false);
+
+        if (data.length < default_limit){
+            next.forEach((element) => (element.disabled = true));
+        }
 
         if (Array.isArray(data)) {
             if (url.indexOf("timeseries") >= 0) {
