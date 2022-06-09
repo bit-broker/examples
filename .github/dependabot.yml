@@ -27,3 +27,15 @@ updates:
     directory: "/build/flyway"
     schedule:
       interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/build/app-explorer"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/build/app-map"
+    schedule:
+      interval: "daily"
+  - package-ecosystem: "docker"
+    directory: "/build/app-demo"
+    schedule:
+      interval: "daily"
