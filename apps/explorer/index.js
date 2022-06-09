@@ -133,19 +133,21 @@ const renderJson = (prop, jsonString) => {
     propName.classList.add("col-md-2", "fw-bold");
     const propValue = document.createElement("div");
     propValue.classList.add("col-md-10");
-
-    const json_pre = document.createElement("pre");
-    const code = document.createElement("code");
-    code.classList.add("language-json");
-
     propName.textContent = prop;
     row.appendChild(propName);
     if (prop == "url") {
-        propValue.appendChild(bbkUrl(jsonString));
+        const json_pre = document.createElement("pre");
+        json_pre.classList.add("bbkurl");
+        json_pre.appendChild(bbkUrl(jsonString));
+        propValue.appendChild(json_pre);
     } else {
+        const json_pre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.classList.add("language-json");
         code.innerHTML = jsonString;
         json_pre.appendChild(code);
         propValue.appendChild(json_pre);
+        Prism.highlightElement(code);
     }
     row.appendChild(propValue);
     return row;
@@ -241,7 +243,6 @@ const formatResponse = (response) => {
         let str = response[prop];
         if (typeof response[prop] === "object") {
             str = JSON.stringify(response[prop], null, 2);
-            str = clickLink(str);
         }
         switch (prop) {
             case "timeseries":
