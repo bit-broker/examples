@@ -241,6 +241,53 @@ const formatTimeSeriesChart = (result) => {
     return dl;
 };
 
+/* Render TimeSeries Data as Table
+ */
+
+const formatTimeSeriesTable = (result) => {
+    const table = document.createElement('table');
+    table.setAttribute("class", "table");
+    table.classList.add("table-bordered");
+    table.style.width = '60%';
+    table.setAttribute('border', '1');
+    const tbody = document.createElement('tbody');
+    const thead = document.createElement('thead');
+    thead.setAttribute("class", "thead-dark");
+
+    table.appendChild(thead);
+    
+    const tr = document.createElement('tr');
+    
+    const th = document.createElement('th');
+    th.appendChild(document.createTextNode('Year'))
+    tr.appendChild(th)
+    const th2 = document.createElement('th');
+    th2.appendChild(document.createTextNode('Population'))
+    tr.appendChild(th2)
+    thead.appendChild(tr);
+    const year = result.map(function(e) {
+    return e.from;
+    });
+    const population = result.map(function(e) {
+    return e.value;
+    });
+    for (let i = 0; i < result.length; i++) {
+     const tr2 = document.createElement('tr');
+      const td = document.createElement('td');
+      td.appendChild(document.createTextNode(year[i]))
+      tr2.appendChild(td)
+          
+      const td2 = document.createElement('td');
+      td2.appendChild(document.createTextNode(population[i]))
+      tr2.appendChild(td2)
+          
+      tbody.appendChild(tr2);
+    }
+    
+    table.appendChild(tbody);  
+    return table;
+    }
+
 /* format bit-broker API JSON response data
  */
 
@@ -346,7 +393,7 @@ function consumerAPIFetch(url) {
 
         if (Array.isArray(data)) {
             if (url.indexOf("timeseries") >= 0) {
-                results.append(formatTimeSeriesChart(data));
+                results.append(formatTimeSeriesTable(data));
             } else {
                 data.forEach((item) => {
                     results.append(formatResponse(item));
@@ -357,7 +404,12 @@ function consumerAPIFetch(url) {
         }
     })
 
-    .catch(console.error);
+    .catch((error)=> {
+        console.error;
+        spinner.setAttribute("hidden", "");
+    })
+   
+
 }
 
 /* hide and show pagination
