@@ -1,7 +1,7 @@
 dependencies:
 - name: postgresql
   repository: https://charts.bitnami.com/bitnami
-  version: 10.4.6
+  version: 10.16.2
 - name: connector-country
   repository: file://../connector-country
   version: "1.0"
@@ -17,5 +17,8 @@ dependencies:
 - name: app-explorer
   repository: file://../app-explorer
   version: "1.0"
-digest: sha256:ba847c662a135be625fafc4743fb98c082ad1afab70f9b944457394ff29e9303
-generated: "2022-05-31T11:15:08.733727+01:00"
+- name: app-demo
+  repository: file://../app-demo
+  version: "1.0"
+digest: sha256:0adad20ba39b220fafd95177a63cb1a841bc766c2a5706d38a2445f57fa2fec3
+generated: "2022-06-09T17:55:29.443769+02:00"
