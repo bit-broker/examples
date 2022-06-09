@@ -62,3 +62,16 @@ spec:
   prefix:  /apps/map/
   service: bbk-demo-apps-bbk-demo-app-map:8081
   bypass_auth: true 
+---
+apiVersion: getambassador.io/v3alpha1
+kind:  Mapping
+metadata:
+  name: app-demo
+  namespace: bbk-demo-apps
+spec:
+  ambassador_id:
+    - ambassador-bbk-demo
+  hostname: demo.bit-broker.io
+  prefix:  /apps/demo/
+  service: bbk-demo-apps-bbk-demo-app-demo:8082
+  bypass_auth: true 

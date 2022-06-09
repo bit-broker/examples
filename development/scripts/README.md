@@ -10,7 +10,9 @@ All the deployments have a single connector hosting 'country' data, and two 'her
 
 ### docker-compose
 
-The docker-compose BitBroker / BitBroker demo deployment assumes a set of host names for the various BitBroker services (consistent with those in the BitBroker .env file), you should ensure that these resolve to the actual host, for example by adding them to your /etc/hosts as follows:
+First, clone the https://github.com/bit-broker/bit-broker repo.
+
+The docker-compose BitBroker / BitBroker demo deployment assumes a set of host names for the various BitBroker services (consistent with those in the BitBroker .env,example file), you should ensure that these resolve to the actual host, for example by adding them to your /etc/hosts as follows:
 
 ```
 # BBK hosts...
@@ -27,9 +29,17 @@ The docker-compose BitBroker / BitBroker demo deployment assumes a set of host n
 10.0.2.15	bbk-con-db
 ```
 
+Next, create a .env file from the .env.example file in the root of the repo.
+
 Then, deploy a BBK instance using the [BitBroker docker-compose file](https://github.com/bit-broker/bit-broker/blob/main/development/docker-compose/docker-compose.yml)
 
-Next, check the config vars at the top of the bbk-demo-config.sh script (they should be consistent with the BitBroker deployment .env file, and HELM_DEPLOY=0) - the defaults here should be OK)
+i.e. from the ./development/docker-compose directory, run:
+
+```
+docker-compose up --build -d
+```
+
+Next, from this directory, check the config vars at the top of the bbk-demo-config.sh (they should be consistent with the BitBroker deployment .env file, and HELM_DEPLOY=0) - the defaults here should be OK)
 
 Then, source the following script:
 
@@ -89,6 +99,8 @@ kubectl create namespace bbk-demo-apps
 ```
 
 and then deploy the demo app chart (charts/bit-broker-demo), making sure the global.bbkBaseUrl reflects the BBK deployment.
+
+Then from the ./charts/bit-broker-demo folder in this repo, run:
 
 ```
 

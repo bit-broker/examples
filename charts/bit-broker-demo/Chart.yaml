@@ -38,5 +38,10 @@ dependencies:
   - name: app-explorer
     version: "1.0"
     repository: file://../app-explorer
-    condition: bbk-demo-app.explorer.enabled
+    condition: bbk-demo-app-explorer.enabled
     alias: bbk-demo-app-explorer
+  - name: app-demo
+    version: "1.0"
+    repository: file://../app-demo
+    condition: bbk-demo-app-demo.enabled
+    alias: bbk-demo-app-demo
