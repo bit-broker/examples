@@ -75,5 +75,5 @@ jobs:
       with:
         push: true
         context: ./
-        file: ./build/app-map/Dockerfile
+        file: ./build/app-demo/Dockerfile
         tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:${{ env.TAG_NAME }}
