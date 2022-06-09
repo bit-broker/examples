@@ -85,9 +85,9 @@ const clickLink = (jsonString) => {
 /* Render Clickable links for bit-broker urls
  */
 
-const bbkUrl = (url) => {
+const bbkUrl = (url, linkText) => {
     const link = document.createElement("a");
-    link.textContent = url;
+    link.textContent = linkText ? linkText : url;
     link.setAttribute("href", bbkUrltoAppUrl(url).toString());
     return link;
 };
@@ -105,22 +105,38 @@ const updateCopyCurlButton = (url) => {
  */
 
 const renderTS = (ts) => {
-    const row = document.createElement("div");
-    row.classList.add("row");
-    const propName = document.createElement("div");
-    propName.classList.add("col-md-2", "fw-bold");
-    const propValue = document.createElement("div");
-    propValue.classList.add("col-md-10");
-
-    propName.textContent = "timeseries";
-    row.appendChild(propName);
+    const container = document.createElement("div");
+    container.classList.add("container");
+    container.style.padding = '0';
+    
     Object.entries(ts).forEach(([key, value]) => {
-        propValue.innerHTML += `${key}`;
-        propValue.appendChild(bbkUrl(value.url));
-    });
-    row.appendChild(propValue);
 
-    return row;
+        const row = document.createElement("div");
+        row.classList.add("row");
+        const propName = document.createElement("div");
+        propName.classList.add("col-md-2", "fw-bold");
+
+        propName.textContent = "timeseries";
+        propName.appendChild(bbkUrl(value.url, key));
+        row.appendChild(propName);
+
+        const propValue = document.createElement("div");
+        propValue.classList.add("col-md-10");
+
+        const jsonPre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.classList.add("language-json");
+        delete value.url;
+        code.innerHTML = JSON.stringify(value, null, 2);
+        jsonPre.appendChild(code);
+        propValue.appendChild(jsonPre);
+        Prism.highlightElement(code);
+        row.appendChild(propValue);
+       
+        container.appendChild(row)
+    });
+
+    return container;
 };
 
 /* Render Json
@@ -136,17 +152,17 @@ const renderJson = (prop, jsonString) => {
     propName.textContent = prop;
     row.appendChild(propName);
     if (prop == "url") {
-        const json_pre = document.createElement("pre");
-        json_pre.classList.add("bbkurl");
-        json_pre.appendChild(bbkUrl(jsonString));
-        propValue.appendChild(json_pre);
+        const jsonPre = document.createElement("pre");
+        jsonPre.classList.add("bbkurl");
+        jsonPre.appendChild(bbkUrl(jsonString));
+        propValue.appendChild(jsonPre);
     } else {
-        const json_pre = document.createElement("pre");
+        const jsonPre = document.createElement("pre");
         const code = document.createElement("code");
         code.classList.add("language-json");
         code.innerHTML = jsonString;
-        json_pre.appendChild(code);
-        propValue.appendChild(json_pre);
+        jsonPre.appendChild(code);
+        propValue.appendChild(jsonPre);
         Prism.highlightElement(code);
     }
     row.appendChild(propValue);
