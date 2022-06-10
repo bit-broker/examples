@@ -394,9 +394,11 @@ function consumerAPIFetch(url) {
         if (Array.isArray(data)) {
             if (url.indexOf("timeseries") >= 0) {
                 results.append(formatTimeSeriesTable(data));
+                timeSeriesButtonsVisibility(true);
             } else {
                 data.forEach((item) => {
                     results.append(formatResponse(item));
+                    timeSeriesButtonsVisibility(false);
                 });
             }
         } else {
@@ -424,6 +426,21 @@ const paginationVisibility = (visible) => {
     } else {
         next.forEach((element) => element.setAttribute("hidden", ""));
         previous.forEach((element) => element.setAttribute("hidden", ""));
+    }
+};
+
+/* hide and show timeseries chart or table selection buttons
+ */
+
+const timeSeriesButtonsVisibility = (visible) => {
+    const viewTable = document.getElementById("viewTable");
+    const viewChart = document.getElementById("viewChart");
+    if (visible == true) {
+        viewTable.removeAttribute("hidden");
+        viewChart.removeAttribute("hidden");
+    } else {
+        viewTable.setAttribute("hidden", "");
+        viewChart.setAttribute("hidden", "");
     }
 };
 
