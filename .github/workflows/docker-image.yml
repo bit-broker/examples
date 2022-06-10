@@ -32,48 +32,46 @@ jobs:
     - name: Parse tag name
       run: echo "TAG_NAME=$(echo $GITHUB_REF | cut -d / -f 3 | cut -c2-)" >> $GITHUB_ENV
 
-    # Login and push to AWS ECR
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v1
+    # Login to Docker Hub
+    - name: Log in to Docker Hub
+      uses: docker/login-action@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: eu-west-2
-    - name: Login to AWS ECR
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-    - name: Push rdbms connector image to AWS ECR
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    # Push to Docker Hub
+    - name: Push to Docker Hub
       uses: docker/build-push-action@v2
       with:
         push: true
         context: ./
         file: ./build/connector-nodejs-rdbms/Dockerfile
-        tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-connector-nodejs-rdbms:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-connector-nodejs-rdbms:${{ env.TAG_NAME }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/bbk-connector-nodejs-rdbms:latest,${{ secrets.DOCKER_USERNAME }}/bbk-connector-nodejs-rdbms:${{ env.TAG_NAME }}
     - name: Push flyway migrator image to AWS ECR
       uses: docker/build-push-action@v2
       with:
         push: true
         context: ./
         file: ./build/flyway/Dockerfile
-        tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-flyway-migrate:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-flyway-migrate:${{ env.TAG_NAME }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/bbk-demo-flyway-migrate:latest,${{ secrets.DOCKER_USERNAME }}/bbk-demo-flyway-migrate:${{ env.TAG_NAME }}
     - name: Push explorer app to AWS ECR
       uses: docker/build-push-action@v2
       with:
         push: true
         context: ./
         file: ./build/app-explorer/Dockerfile
-        tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-explorer-app:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-explorer-app:${{ env.TAG_NAME }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/bbk-demo-explorer-app:latest,${{ secrets.DOCKER_USERNAME }}/bbk-demo-explorer-app:${{ env.TAG_NAME }}
     - name: Push map app to AWS ECR
       uses: docker/build-push-action@v2
       with:
         push: true
         context: ./
         file: ./build/app-map/Dockerfile
-        tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-map-app:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-map-app:${{ env.TAG_NAME }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/bbk-demo-map-app:latest,${{ secrets.DOCKER_USERNAME }}/bbk-demo-map-app:${{ env.TAG_NAME }}
     - name: Push demo app to AWS ECR
       uses: docker/build-push-action@v2
       with:
         push: true
         context: ./
         file: ./build/app-demo/Dockerfile
-        tags: ${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:latest,${{ secrets.AWS_ECR_REGISTRY }}/${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:${{ env.TAG_NAME }}
+        tags: ${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:latest,${{ secrets.DOCKER_USERNAME }}/bbk-demo-demo-app:${{ env.TAG_NAME }}
