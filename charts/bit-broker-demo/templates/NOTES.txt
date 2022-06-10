@@ -10,7 +10,7 @@ NB - this file assumes the BitBroker cluster has been deployed into namespace bb
 
 This will map the following routes:
 
-    /apps/demo/
+    /
     /apps/map/
     /apps/explorer/
     /connector/country/

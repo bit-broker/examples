@@ -116,7 +116,7 @@ const renderTS = (ts) => {
         const propName = document.createElement("div");
         propName.classList.add("col-md-2", "fw-bold");
 
-        propName.textContent = "timeseries";
+        propName.textContent = "timeseries ";
         propName.appendChild(bbkUrl(value.url, key));
         row.appendChild(propName);
 
