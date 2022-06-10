@@ -72,6 +72,6 @@ spec:
   ambassador_id:
     - ambassador-bbk-demo
   hostname: demo.bit-broker.io
-  prefix:  /apps/demo/
+  prefix:  /
   service: bbk-demo-apps-bbk-demo-app-demo:8082
   bypass_auth: true 

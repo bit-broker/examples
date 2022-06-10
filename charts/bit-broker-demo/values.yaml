@@ -12,7 +12,7 @@ global:
   docker:
     ## If private registry
     ##
-    registry: "registry.hub.docker.com"
+    registry: "docker.io"
 
   bbkBaseUrl: ""
 
@@ -37,7 +37,7 @@ bbk-demo-con-country:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
@@ -60,7 +60,7 @@ bbk-demo-con-heritage-nat:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
@@ -83,7 +83,7 @@ bbk-demo-con-heritage-cult:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
@@ -106,7 +106,7 @@ bbk-demo-app-map:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
@@ -124,7 +124,7 @@ bbk-demo-app-explorer:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
@@ -142,7 +142,7 @@ bbk-demo-app-demo:
 
   ## Docker Image values.
   docker:
-    imageTag: "latest"
+    imageTag: "1.0.0"
     imagePullPolicy: Always
     imagePullSecret: regcred
 
