@@ -18,15 +18,15 @@
 
 /**
  * BitBroker example app: Policy Based Data Explorer
- * 
+ *
  * An example app to show how the BitBroker Consumer API supports policy-based data sharing.
- * 
- * This app allows the user to explore the BitBroker [Consumer API](https://www.bit-broker.io/docs/consumer/), 
- * using a set of policies provided via a config file, and loaded at startup. Users can explore data by 
- * searching using the [Catalog API](https://www.bit-broker.io/docs/consumer/catalog/), and inspect 
+ *
+ * This app allows the user to explore the BitBroker [Consumer API](https://www.bit-broker.io/docs/consumer/),
+ * using a set of policies provided via a config file, and loaded at startup. Users can explore data by
+ * searching using the [Catalog API](https://www.bit-broker.io/docs/consumer/catalog/), and inspect
  * returned entity instance data, including timeseries data where available, by clicking on bitbroker url links.
  * Users can also 'copy' curl commands for BitBroker URLs from the app so they can access the consumer APIs directly.
- * 
+ *
  * The app supports 'deep linking' by using a set of query params, which can be converted to / from the bitbroker APIs
  * used by app.
  */
@@ -97,7 +97,7 @@ const bbkUrl = (url, linkText) => {
 
 const updateCopyCurlButton = (url) => {
     const copyCurl = document.getElementById("idCopyCurlButton");
-    copyCurl.removeAttribute('hidden');
+    copyCurl.removeAttribute("hidden");
     copyCurl.setAttribute("data-link", url);
 };
 
@@ -107,10 +107,9 @@ const updateCopyCurlButton = (url) => {
 const renderTS = (ts) => {
     const container = document.createElement("div");
     container.classList.add("container");
-    container.style.padding = '0';
-    
-    Object.entries(ts).forEach(([key, value]) => {
+    container.style.padding = "0";
 
+    Object.entries(ts).forEach(([key, value]) => {
         const row = document.createElement("div");
         row.classList.add("row");
         const propName = document.createElement("div");
@@ -132,8 +131,8 @@ const renderTS = (ts) => {
         propValue.appendChild(jsonPre);
         Prism.highlightElement(code);
         row.appendChild(propValue);
-       
-        container.appendChild(row)
+
+        container.appendChild(row);
     });
 
     return container;
@@ -241,6 +240,71 @@ const formatTimeSeriesChart = (result) => {
     return dl;
 };
 
+/* Render TimeSeries Data as Table
+ */
+
+const formatTimeSeriesTable = (result) => {
+    const table = document.createElement("table");
+    table.setAttribute("class", "table");
+    table.classList.add("table-bordered");
+    table.style.width = "60%";
+    table.setAttribute("border", "1");
+    const tbody = document.createElement("tbody");
+    const thead = document.createElement("thead");
+    thead.setAttribute("class", "thead-dark");
+
+    table.appendChild(thead);
+
+    const tr = document.createElement("tr");
+
+    const th = document.createElement("th");
+    th.appendChild(document.createTextNode("Year"));
+    tr.appendChild(th);
+    const th2 = document.createElement("th");
+    th2.appendChild(document.createTextNode("Population"));
+    tr.appendChild(th2);
+    thead.appendChild(tr);
+    const year = result.map(function(e) {
+        return e.from;
+    });
+    const population = result.map(function(e) {
+        return e.value;
+    });
+    for (let i = 0; i < result.length; i++) {
+        const tr2 = document.createElement("tr");
+        const td = document.createElement("td");
+        td.appendChild(document.createTextNode(year[i]));
+        tr2.appendChild(td);
+
+        const td2 = document.createElement("td");
+        td2.appendChild(document.createTextNode(population[i]));
+        tr2.appendChild(td2);
+
+        tbody.appendChild(tr2);
+    }
+
+    table.appendChild(tbody);
+    return table;
+};
+
+/* format timeseries response data
+ */
+
+const formatTimeSeries = (response) => {
+    timeSeriesButtonsVisibility(true);
+    const dl = document.createElement("div");
+    const dl1 = document.createElement("div");
+    dl1.classList.add("timeseriesTable");
+    const dl2 = document.createElement("div");
+    dl2.classList.add("timeseriesChart");
+
+    dl1.appendChild(formatTimeSeriesTable(response));
+    dl.appendChild(dl1);
+    dl2.appendChild(formatTimeSeriesChart(response));
+    dl.appendChild(dl2);
+    return dl;
+};
+
 /* format bit-broker API JSON response data
  */
 
@@ -274,7 +338,7 @@ const formatResponse = (response) => {
     return dl;
 };
 
-/* fetch bit-broker consumer API 
+/* fetch bit-broker consumer API
  */
 
 function consumerAPIFetch(url) {
@@ -283,6 +347,7 @@ function consumerAPIFetch(url) {
     const spinner = document.getElementById("spinner");
     spinner.removeAttribute("hidden");
     paginationVisibility(false);
+    timeSeriesButtonsVisibility(false);
 
     const requestOptions = {
         method: "GET",
@@ -295,7 +360,7 @@ function consumerAPIFetch(url) {
     let urlType = bbkUrlType(url);
 
     // put in paging defaults for non timeseries API calls that return an array
-    if ((urlType == BBK_CATALOG) || (urlType == BBK_ENTITY_TYPE)) {
+    if (urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE) {
         let newUrl = new URL(url);
         if (newUrl.searchParams.has("limit") == false) {
             newUrl.searchParams.set("limit", default_limit);
@@ -329,14 +394,26 @@ function consumerAPIFetch(url) {
         results.innerHTML = "";
         spinner.setAttribute("hidden", "");
         const apiUrl = document.getElementById("idApiUrl");
+        const next = document.querySelectorAll("button.next");
         apiUrl.value = previousUrl;
         updateCopyCurlButton(previousUrl);
-        
-        paginationVisibility(((urlType == BBK_CATALOG) || (urlType == BBK_ENTITY_TYPE)) ? true : false);
+
+        paginationVisibility(
+            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE ? true : false
+        );
+
+        if (data.length === 0) {
+            paginationVisibility(false);
+            return (results.innerHTML = "No Results Found");
+        }
+
+        if (data.length < default_limit) {
+            next.forEach((element) => (element.disabled = true));
+        }
 
         if (Array.isArray(data)) {
             if (url.indexOf("timeseries") >= 0) {
-                results.append(formatTimeSeriesChart(data));
+                results.append(formatTimeSeries(data));
             } else {
                 data.forEach((item) => {
                     results.append(formatResponse(item));
@@ -347,7 +424,10 @@ function consumerAPIFetch(url) {
         }
     })
 
-    .catch(console.error);
+    .catch((error) => {
+        console.error;
+        spinner.setAttribute("hidden", "");
+    });
 }
 
 /* hide and show pagination
@@ -362,6 +442,18 @@ const paginationVisibility = (visible) => {
     } else {
         next.forEach((element) => element.setAttribute("hidden", ""));
         previous.forEach((element) => element.setAttribute("hidden", ""));
+    }
+};
+
+/* hide and show timeseries chart or table selection buttons
+ */
+
+const timeSeriesButtonsVisibility = (visible) => {
+    const timeseries = document.querySelectorAll("button.timeseries");
+    if (visible == true) {
+        timeseries.forEach((element) => element.removeAttribute("hidden"));
+    } else {
+        timeseries.forEach((element) => element.setAttribute("hidden", ""));
     }
 };
 
@@ -397,7 +489,6 @@ const page = (up) => {
 
     consumerAPIFetch(newUrl.toString());
 };
-
 
 /* populate Policy Dropdown
  */
@@ -459,12 +550,10 @@ const copyCurlToClipBoard = (url) => {
     });
 };
 
-
 /* update the browser url to reflect a BBK Url
  */
 
 const updateBrowserUrl = (bbkUrl) => {
-
     let newUrl = bbkUrltoAppUrl(bbkUrl);
     window.history.replaceState(null, null, newUrl.toString());
 };
@@ -481,85 +570,82 @@ function mergeQueryParam(url, name, value) {
  */
 
 const bbkUrltoAppUrl = (bbkUrl) => {
-
     let appUrl = new URL(window.location);
 
     appUrl.searchParams.forEach(function(value, key) {
         appUrl.searchParams.delete(key);
     });
     // seem to need to explicitly delete this query param?!
-    appUrl.searchParams.delete('q');
+    appUrl.searchParams.delete("q");
 
-    mergeQueryParam(appUrl, 'policy', myPolicy);
+    mergeQueryParam(appUrl, "policy", myPolicy);
 
     if (bbkUrl.indexOf(baseURL) == 0) {
         let nonBaseUrl = bbkUrl.substring(baseURL.length);
-        if (nonBaseUrl.indexOf('/') == 0) {
+        if (nonBaseUrl.indexOf("/") == 0) {
             nonBaseUrl = nonBaseUrl.substring(1);
         }
-        let splitUrl = nonBaseUrl.split('/');
-        if (splitUrl[0].indexOf('catalog') == 0) {
+        let splitUrl = nonBaseUrl.split("/");
+        if (splitUrl[0].indexOf("catalog") == 0) {
             let queryUrl = new URL(bbkUrl);
             if (queryUrl.searchParams.has("q")) {
                 let query = queryUrl.searchParams.get("q");
-                mergeQueryParam(appUrl, 'q', query);
+                mergeQueryParam(appUrl, "q", query);
             }
-        } else if (splitUrl[0].indexOf('entity') == 0) {
+        } else if (splitUrl[0].indexOf("entity") == 0) {
             // extract entity
             let entityType = splitUrl[1];
-            if (entityType.indexOf('?') >= 0) {
-                entityType = entityType.substring(0, entityType.indexOf('?'));
+            if (entityType.indexOf("?") >= 0) {
+                entityType = entityType.substring(0, entityType.indexOf("?"));
             }
-            mergeQueryParam(appUrl, 'entity', entityType);
+            mergeQueryParam(appUrl, "entity", entityType);
 
             if (splitUrl.length > 2) {
                 let entityId = splitUrl[2];
-                if (entityId.indexOf('?') >= 0) {
-                    entityId = entityId.substring(0, entityId.indexOf('?'));
+                if (entityId.indexOf("?") >= 0) {
+                    entityId = entityId.substring(0, entityId.indexOf("?"));
                 }
-                mergeQueryParam(appUrl, 'id', entityId);
+                mergeQueryParam(appUrl, "id", entityId);
 
-                if ((splitUrl.length > 4) && (splitUrl[3].indexOf('timeseries') == 0)) {
-
+                if (splitUrl.length > 4 && splitUrl[3].indexOf("timeseries") == 0) {
                     let timeseries = splitUrl[4];
-                    if (timeseries.indexOf('?') >= 0) {
-                        timeseries = timeseries.substring(0, timeseries.indexOf('?'));
+                    if (timeseries.indexOf("?") >= 0) {
+                        timeseries = timeseries.substring(0, timeseries.indexOf("?"));
                     }
-                    mergeQueryParam(appUrl, 'timeseries', timeseries);
+                    mergeQueryParam(appUrl, "timeseries", timeseries);
                 }
             }
         }
     }
     return appUrl;
-}
+};
 
 /* determine type of BBK Consumer API call from url
  */
 
 const bbkUrlType = (bbkUrl) => {
-
     let bbkUrlType = null;
 
     if (bbkUrl.indexOf(baseURL) == 0) {
         let nonBaseUrl = bbkUrl.substring(baseURL.length);
-        if (nonBaseUrl.indexOf('/') == 0) {
+        if (nonBaseUrl.indexOf("/") == 0) {
             nonBaseUrl = nonBaseUrl.substring(1);
         }
-        let splitUrl = nonBaseUrl.split('/');
-        if (splitUrl[0].indexOf('catalog') == 0) {
+        let splitUrl = nonBaseUrl.split("/");
+        if (splitUrl[0].indexOf("catalog") == 0) {
             bbkUrlType = BBK_CATALOG;
-        } else if (splitUrl[0].indexOf('entity') == 0) {
+        } else if (splitUrl[0].indexOf("entity") == 0) {
             bbkUrlType = BBK_ENTITY_TYPE;
             if (splitUrl.length > 2) {
                 bbkUrlType = BBK_ENTITY_INSTANCE;
-                if ((splitUrl.length > 4) && (splitUrl[3].indexOf('timeseries') == 0)) {
+                if (splitUrl.length > 4 && splitUrl[3].indexOf("timeseries") == 0) {
                     bbkUrlType = BBK_TIMESERIES;
                 }
             }
         }
     }
     return bbkUrlType;
-}
+};
 
 /* Handle url params...
  *
@@ -571,14 +657,13 @@ const bbkUrlType = (bbkUrl) => {
  */
 
 const handleUrlParams = () => {
-
     const params = new URLSearchParams(window.location.search);
 
-    const catalog = params.get('q');
-    const policy = params.get('policy');
-    const entityType = params.get('entity');
-    const entityId = params.get('id');
-    const timeseries = params.get('timeseries');
+    const catalog = params.get("q");
+    const policy = params.get("policy");
+    const entityType = params.get("entity");
+    const entityId = params.get("id");
+    const timeseries = params.get("timeseries");
 
     if (catalog) {
         queryCatalog.value = catalog;
@@ -604,6 +689,30 @@ const handleUrlParams = () => {
         }
         if (url) {
             consumerAPIFetch(url);
+        }
+    }
+};
+
+/* toggle timeseries button
+ */
+
+const toggleTimeseries = () => {
+    const timeseries = document.querySelectorAll("button.timeseries");
+    const timeseriesTable = document.querySelector(".timeseriesTable");
+    const timeseriesChart = document.querySelector(".timeseriesChart");
+    if (timeseriesTable && timeseriesChart) {
+        if (timeseriesTable.style.display === "block") {
+            timeseriesTable.style.display = "none";
+            timeseriesChart.style.display = "block";
+            timeseries.forEach(
+                (element) => (element.innerText = "View Timeseries Table")
+            );
+        } else {
+            timeseriesChart.style.display = "none";
+            timeseriesTable.style.display = "block";
+            timeseries.forEach(
+                (element) => (element.innerText = "View Timeseries Chart")
+            );
         }
     }
 };
@@ -663,6 +772,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
     const previous = document.querySelectorAll("button.previous");
     previous.forEach((element) =>
         element.addEventListener("click", (event) => previousPage())
+    );
+
+    const timeseries = document.querySelectorAll("button.timeseries");
+    timeseries.forEach((element) =>
+        element.addEventListener("click", (event) => toggleTimeseries())
     );
 
     const go = document.getElementById("go");
