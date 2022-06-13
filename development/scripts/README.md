@@ -115,9 +115,11 @@ helm install bbk-demo-apps . \
 --set bbk-demo-app-explorer.token0=$BBK_POLICY_TOKEN_access_all_areas \
 --set bbk-demo-app-explorer.token1=$BBK_POLICY_TOKEN_geo_british_isles \
 --set bbk-demo-app-explorer.token2=$BBK_POLICY_TOKEN_heritage_natural \
+--set bbk-demo-app-explorer.token3=$BBK_POLICY_TOKEN_pop_hundred_million \
 --set bbk-demo-app-map.token0=$BBK_POLICY_TOKEN_access_all_areas \
 --set bbk-demo-app-map.token1=$BBK_POLICY_TOKEN_geo_british_isles \
 --set bbk-demo-app-map.token2=$BBK_POLICY_TOKEN_heritage_natural \
+--set bbk-demo-app-map.token3=$BBK_POLICY_TOKEN_pop_hundred_million \
 -n bbk-demo-apps
 
 ```

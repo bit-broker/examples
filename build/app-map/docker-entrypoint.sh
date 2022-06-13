@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 tmp=$(mktemp)
@@ -10,77 +10,55 @@ else
   jq --arg baseUrl "$BASE_URL" '.services.consumer = $baseUrl' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
-if [[ -z "${POLICY_0}" ]]; then
-  :
-else
-  jq --arg id "$POLICY_0" '.policies[0].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+PREFIX_LIST=("POLICY_ TOKEN_ NAME_ DESC_")
 
-if [[ -z "${POLICY_1}" ]]; then
-  :
-else
-  jq --arg id "$POLICY_1" '.policies[1].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+for PREFIX in ${PREFIX_LIST[*]}; do
 
-if [[ -z "${POLICY_2}" ]]; then
-  :
-else
-  jq --arg id "$POLICY_2" '.policies[2].id = $id' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+  eval 'LIST=(${!'"$PREFIX"'@})'
 
-if [[ -z "${TOKEN_0}" ]]; then
-  :
-else
-  jq --arg token "$TOKEN_0" '.policies[0].token = $token' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+  if [[ -z "${LIST}" ]]; then
 
-if [[ -z "${TOKEN_1}" ]]; then
-  :
-else
-  jq --arg token "$TOKEN_1" '.policies[1].token = $token' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+    echo "no env vars found with prefix: $PREFIX ..."
 
-if [[ -z "${TOKEN_2}" ]]; then
-  :
-else
-  jq --arg token "$TOKEN_2" '.policies[2].token = $token' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+  else
 
-if [[ -z "${DESC_0}" ]]; then
-  :
-else
-  jq --arg description "$DESC_0" '.policies[0].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+    for ITEM in ${LIST[*]}; do
 
-if [[ -z "${DESC_1}" ]]; then
-  :
-else
-  jq --arg description "$DESC_1" '.policies[1].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+      PROP=""
 
-if [[ -z "${DESC_2}" ]]; then
-  :
-else
-  jq --arg description "$DESC_2" '.policies[2].description = $description' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+      case $PREFIX in
 
-if [[ -z "${NAME_0}" ]]; then
-  :
-else
-  jq --arg name "$NAME_0" '.policies[0].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+        POLICY_)
+          PROP=id
+          ;;
 
-if [[ -z "${NAME_1}" ]]; then
-  :
-else
-  jq --arg name "$NAME_1" '.policies[1].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+        TOKEN_)
+          PROP=token
+          ;;
 
-if [[ -z "${NAME_2}" ]]; then
-  :
-else
-  jq --arg name "$NAME_2" '.policies[2].name = $name' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
-fi
+        NAME_)
+          PROP=name
+          ;;
+
+        DESC_)
+          PROP=description
+          ;;
+      esac
+
+      if [[ -z "${PROP}" ]]; then
+        :
+      else
+
+        INDEX="${ITEM//[!0-9]/}"
+        jq --arg $PROP "${!ITEM}" ".policies[$INDEX].$PROP = \$$PROP" "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+
+      fi
+
+    done
+
+  fi
+
+done
 
 chmod a+r $configfile
 

@@ -63,3 +63,11 @@ spec:
               value: "{{ index .Values.desc2 }}"
             - name: NAME_2
               value: "{{ index .Values.name2 }}"
+            - name: POLICY_3
+              value: {{ index .Values.policy3 }}
+            - name: TOKEN_3
+              value: {{ index .Values.token3 }}
+            - name: DESC_3
+              value: "{{ index .Values.desc3 }}"
+            - name: NAME_3
+              value: "{{ index .Values.name3 }}"

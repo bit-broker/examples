@@ -4,6 +4,8 @@ FROM nginx:alpine
 ARG UID=101
 
 RUN apk update \
+    && apk upgrade \
+    && apk add bash \
     && apk add jq \
     && rm -rf /var/cache/apk/*
 

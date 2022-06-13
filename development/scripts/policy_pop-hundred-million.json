@@ -1,0 +1,30 @@
+{
+    "name": "Population over one hundred million",
+    "description": "Countries with a population over one hundred million",
+    "policy": {
+        "access_control": {
+            "enabled": true,
+            "quota": {
+                "max_number": 86400,
+                "interval_type": "day"
+            },
+            "rate": 250
+        },
+        "data_segment": {
+            "segment_query": {
+                "type": "country",
+                "entity.population": {
+                    "$gte": 100000000
+                }
+            },
+            "field_masks": []
+        },
+        "legal_context": [
+            {
+                "type": "attribution",
+                "text": "Data is supplied by Wikipedia",
+                "link": "https://en.wikipedia.org/"
+            }
+        ]
+    }
+}
