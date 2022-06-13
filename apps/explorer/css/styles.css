@@ -1,38 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap");
 
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap');
-
-
-
-
-.wrap{
+.wrap {
   /* background-color: beige; */
   width: 33.33%;
   align-items: center;
   justify-content: center;
   /* flex-direction: column; */
-  margin-bottom: 30px
-
+  margin-bottom: 30px;
 }
 
-
 dt {
-    float: left;
-    clear: left;
-    width: 110px;
-    font-weight: bold;
-    color: black;
-    margin-bottom: 5px;
+  float: left;
+  clear: left;
+  width: 110px;
+  font-weight: bold;
+  color: black;
+  margin-bottom: 5px;
 }
 
 dt::after {
-    content: ":";
+  content: ":";
 }
 
 dd {
-    margin: 0 0 0 60px;
-    padding: 0 0 0.5em 0;
+  margin: 0 0 0 60px;
+  padding: 0 0 0.5em 0;
 }
-
 
 a {
   text-decoration: none;
@@ -59,24 +52,27 @@ a:hover {
   color: white;
 }
 
-
-.result{
-
+.result {
   padding: 1rem;
   margin-bottom: 1rem;
-
-
 }
 
 .b-example-divider {
-height: 1rem;
-
+  height: 1rem;
 }
 
 .bbkurl {
   font-size: 1em;
-  background: #F4F2EF;
+  background: #f4f2ef;
   padding: 1em;
   margin: 0.5em 0;
   overflow: auto;
+}
+
+.timeseriesTable {
+  display: none;
+}
+
+.timeseriesChart {
+  display: block;
 }

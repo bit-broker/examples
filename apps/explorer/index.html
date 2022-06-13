@@ -129,25 +129,19 @@
         <h2 class="fw-bold">Results</h2>
       </div>
       
-      <div class="col-md-4 my-2 d-md-flex justify-content-md-end">
-        <button id="viewChart" type="button" class="btn btn-primary me-md-2" hidden >View as Chart</button>  
-        <button id="viewTable" type="button" class="btn btn-primary" hidden>View as Table</button>
-    </div>
     </div>
     
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-       
-       
+    <nav aria-label="Page navigation">
+      <ul class="pagination">  
         <li class="page-item">
-          <button hidden class="page-link previous" id="previous-top">Previous Page</button>
-          
+          <button hidden class="page-link previous" id="previous-top">Previous Page</button>    
         </li>
         <li class="page-item">
-          <button hidden class="page-link next" id="next-top">Next Page</button>
-          
+          <button hidden class="page-link next" id="next-top">Next Page</button>         
         </li>
-        
+        <li class="page-item">
+          <button hidden class="page-link timeseries" id="viewtable-top">View Timeseries Table</button>            
+        </li>       
       </ul>
     </nav>
     <div class="d-flex justify-content-center">
@@ -156,17 +150,19 @@
      </div>
     </div>
     <div class= "result" id="results"></div>
-    <nav aria-label="Page navigation example">
-      <ul class="pagination">
-        <li class="page-item">
-          <button hidden class="page-link previous" id="previous-bottom">Previous Page</button>
-          
-        </li>
-        <li class="page-item">
-          <button hidden class="page-link next" id="next-bottom">Next Page</button>
-        </li>
-      </ul>
-    </nav>
+    <nav aria-label="Page navigation">
+        <ul class="pagination">  
+          <li class="page-item">
+            <button hidden class="page-link previous" id="previous-bottom">Previous Page</button>    
+          </li>
+          <li class="page-item">
+            <button hidden class="page-link next" id="next-bottom">Next Page</button>         
+          </li>
+          <li class="page-item">
+            <button hidden class="page-link timeseries" id="viewtable-bottom">View Timeseries Table</button>            
+          </li>       
+        </ul>
+      </nav>
   </div>
   
 </div>
