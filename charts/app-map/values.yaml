@@ -28,6 +28,11 @@ token2: ""
 desc2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
 name2: "Natural World Heritage Sites"
 
+policy3: "pop-hundred-million"
+token3: ""
+desc3: "Countries with a population over one hundred million"
+name3: "Population over one hundred million"
+
 ## Enable or disable metrics for Prometheus
 ##
 metrics:

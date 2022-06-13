@@ -111,12 +111,19 @@ services:
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
+      TOKEN_3: ${BBK_POLICY_TOKEN_pop_hundred_million}
       POLICY_0: "access-all-areas"
       POLICY_1: "geo-british-isles"
       POLICY_2: "heritage-natural"
+      POLICY_3: "pop-hundred-million"
       DESC_0: "Global access to every record"
       DESC_1: "Everything within the geography of the British Isles"
       DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+      DESC_3: "Countries with a population over one hundred million"
+      NAME_0: "Global access to every record"
+      NAME_1: "Everything within the geography of the British Isles"
+      NAME_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+      NAME_3: "Population over one hundred million"
     ports:
       - 8008:8080
 
@@ -130,11 +137,18 @@ services:
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
+      TOKEN_3: ${BBK_POLICY_TOKEN_pop_hundred_million}
       POLICY_0: "access-all-areas"
       POLICY_1: "geo-british-isles"
       POLICY_2: "heritage-natural"
+      POLICY_3: "pop-hundred-million"
       DESC_0: "Global access to every record"
       DESC_1: "Everything within the geography of the British Isles"
       DESC_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+      DESC_3: "Countries with a population over one hundred million"
+      NAME_0: "Global access to every record"
+      NAME_1: "Everything within the geography of the British Isles"
+      NAME_2: "Natural landmarks or areas with legal protection by an international convention as defined by UNESCO"
+      NAME_3: "Population over one hundred million"
     ports:
       - 8009:8080

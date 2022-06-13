@@ -108,7 +108,7 @@ register_connector heritage heritagecultural 8006
 
 # create polices, users and access
 
-POLICY_LIST=("access-all-areas" "geo-british-isles" "heritage-natural")
+POLICY_LIST=("access-all-areas" "geo-british-isles" "heritage-natural" "pop-hundred-million")
 
 for POLICY_SLUG in ${POLICY_LIST[*]}; do
 

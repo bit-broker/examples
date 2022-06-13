@@ -59,7 +59,7 @@ delete_entity heritage
 
 # create polices & users
 
-POLICY_LIST=("access-all-areas" "geo-british-isles" "heritage-natural")
+POLICY_LIST=("access-all-areas" "geo-british-isles" "heritage-natural" "pop-hundred-million")
 
 for POLICY_SLUG in ${POLICY_LIST[*]}; do
     delete_policy $POLICY_SLUG
