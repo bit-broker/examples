@@ -528,12 +528,6 @@ const copyCurlToClipBoard = (url) => {
     const curlUrl =
         "curl" +
         " " +
-        "--location" +
-        " " +
-        "--request" +
-        " " +
-        "GET" +
-        " " +
         url +
         " " +
         "-H" +
