@@ -425,6 +425,12 @@ function consumerAPIFetch(url) {
     })
 
     .catch((error) => {
+       
+    if (error.status === 400) {
+        results.innerHTML = "Bad Request"
+     } if (error.status === 403) {
+        results.innerHTML = "Forbidden: No Access"
+     }
         console.error;
         spinner.setAttribute("hidden", "");
     });
@@ -527,6 +533,8 @@ const queryDropdownValue = (queries) => {
 const copyCurlToClipBoard = (url) => {
     const curlUrl =
         "curl" +
+        " " +
+        "GET" +
         " " +
         url +
         " " +
