@@ -389,7 +389,13 @@ function consumerAPIFetch(url) {
     previousUrl = url;
 
     fetch(url, requestOptions)
-    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+    .then((res) => {
+        if (!res.ok) {
+            return res.text().then(text => { throw new Error(text) })
+        }
+        return res;
+    })
+    .then(res => res.json())
     .then((data) => {
         results.innerHTML = "";
         spinner.setAttribute("hidden", "");
@@ -425,13 +431,9 @@ function consumerAPIFetch(url) {
     })
 
     .catch((error) => {
-       
-    if (error.status === 400) {
-        results.innerHTML = "Bad Request"
-     } if (error.status === 403) {
-        results.innerHTML = "Forbidden: No Access"
-     }
-        console.error;
+        // results.innerHTML = error
+        results.appendChild(renderJson("API Error", error))
+        console.error(error);
         spinner.setAttribute("hidden", "");
     });
 }
@@ -533,10 +535,12 @@ const queryDropdownValue = (queries) => {
 const copyCurlToClipBoard = (url) => {
     const curlUrl =
         "curl" +
+        " \"" +
+        url +
+        "\" " +
+        "-X" +
         " " +
         "GET" +
-        " " +
-        url +
         " " +
         "-H" +
         " " +
@@ -549,8 +553,8 @@ const copyCurlToClipBoard = (url) => {
         myPolicy;
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
-    });
-};
+    })
+}
 
 /* update the browser url to reflect a BBK Url
  */
@@ -586,10 +590,12 @@ const bbkUrltoAppUrl = (bbkUrl) => {
         let nonBaseUrl = bbkUrl.substring(baseURL.length);
         if (nonBaseUrl.indexOf("/") == 0) {
             nonBaseUrl = nonBaseUrl.substring(1);
+
         }
         let splitUrl = nonBaseUrl.split("/");
         if (splitUrl[0].indexOf("catalog") == 0) {
             let queryUrl = new URL(bbkUrl);
+
             if (queryUrl.searchParams.has("q")) {
                 let query = queryUrl.searchParams.get("q");
                 mergeQueryParam(appUrl, "q", query);
