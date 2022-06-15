@@ -8,6 +8,18 @@ All the deployments have a single connector hosting 'country' data, and two 'her
 
 ## Deployment
 
+NB a fundamental difference between the docker-compose & helm environments is that the docker-compose environment does not include the emissary API gateway, and the auth & rate services are stubbed. This means there is a key difference in the way the consumer API calls should be made:
+
+- In a Helm deployment, the consumer API calls only require the 'x-bbk-auth-token' header
+- In a docker-compose environment, the consumer API calls only both the 'x-bbk-auth-token' & 'x-bbk-audience' headers
+
+Both the map & explorer example apps have a config property devShimMode (which can be set though the docker env var DEV_SHIM_MODE)
+
+- when false, the apps only send the 'x-bbk-auth-token' header
+- when true, the apps send both the 'x-bbk-auth-token' & 'x-bbk-audience' headers
+
+devShimMode defaults to false, which is appropriate for Helm / production environments, but will be enabled when deploying using docker-compose.
+
 ### docker-compose
 
 First, clone the https://github.com/bit-broker/bit-broker repo.
