@@ -38,7 +38,7 @@ const BBK_ENTITY_TYPE = 2;
 const BBK_ENTITY_INSTANCE = 3;
 const BBK_TIMESERIES = 4;
 
-const default_limit = 10;
+let default_limit = 10;
 
 const queries = [{
         name: "type country",
@@ -776,6 +776,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     next.forEach((element) =>
         element.addEventListener("click", (event) => nextPage())
     );
+   
 
     const previous = document.querySelectorAll("button.previous");
     previous.forEach((element) =>
@@ -796,6 +797,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     const token = document.getElementById("token");
     token.addEventListener("change", (event) => (myToken = event.target.value));
+
+    const limit = document.getElementById("limit");
+    limit.addEventListener("change", (event) => (default_limit = event.target.value));
 
     const copyCurl = document.getElementById("idCopyCurlButton");
     copyCurl.addEventListener("click", function(e) {
