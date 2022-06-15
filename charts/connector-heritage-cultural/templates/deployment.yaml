@@ -60,3 +60,7 @@ spec:
               value: "8004"
             - name: APP_SERVER_METRICS
               value: "{{ .Values.metrics.enabled | default .Values.global.metrics.enabled }}"
+            - name: ENTITY_REF_CID
+              value: {{ .Values.entityRefConnectorId }}
+            - name: ENTITY_REF_PROP
+              value: {{ .Values.entityRefProp }}

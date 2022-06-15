@@ -55,6 +55,8 @@ services:
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-natural.json
       - DATA_FORMAT=json
+      - ENTITY_REF_CID=${BBK_ID_country}
+      - ENTITY_REF_PROP=entity.country
     depends_on:
       - data-server
     ports:
@@ -74,6 +76,8 @@ services:
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-cultural.json
       - DATA_FORMAT=json
+      - ENTITY_REF_CID=${BBK_ID_country}
+      - ENTITY_REF_PROP=entity.country
     depends_on:
       - data-server
     ports:

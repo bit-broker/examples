@@ -17,6 +17,8 @@ entity: "heritagesites"
 connectorId: ""
 filter: "CATEGORY_EQ_CULTURAL"
 token: ""
+entityRefConnectorId: ""
+entityRefProp: "entity.country"
 
 ## Enable or disable metrics for Prometheus
 ##
