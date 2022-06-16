@@ -483,14 +483,14 @@ const page = (up) => {
     if (newUrl.searchParams.has("offset")) {
         newOffset = parseInt(newUrl.searchParams.get("offset"));
     }
-    if (newUrl.searchParams.has("limit")) {
-        newLimit = parseInt(newUrl.searchParams.get("limit"));
-    }
 
     if (up) {
         newOffset += newLimit;
     } else {
         newOffset -= newLimit;
+        if (newOffset < 0) {
+            newOffset = 0;
+        }
     }
     newUrl.searchParams.set("offset", newOffset);
     newUrl.searchParams.set("limit", newLimit);
