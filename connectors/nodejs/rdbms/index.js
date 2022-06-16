@@ -24,6 +24,7 @@ This code is intended to help people implementing a data connector for their own
 
 It provides data from a database (PostGreSQL) data source.
 On starting the connector, it loads the dataset, upserts the data to the catalog, and makes a webhook available.
+It can also subsitute a specified connector id into bbk:// urls for a specified entity property
 
 The webhook conditionally fetches some extra entity data dynamically (from wikidata), and merges 
 it in the response.
@@ -42,6 +43,7 @@ of your bbk instance.
 require('dotenv').config();
 const fetch = require('node-fetch');
 const moment = require('moment');
+const _ = require('lodash');
 
 // --- local bbk libaries
 
@@ -56,6 +58,8 @@ const AUTHORIZE_KEY = process.env.AUTHORIZE_KEY;
 const WEBHOOK_PORT = process.env.WEBHOOK_PORT;
 const ENTITY_TYPE = process.env.ENTITY_TYPE;
 const FILTER = process.env.FILTER;
+const ENTITY_REF_CID = process.env.ENTITY_REF_CID;
+const ENTITY_REF_PROP = process.env.ENTITY_REF_PROP;
 
 // --- DB connection (pool setting to allow retry if DB service initially unavailable)
 
@@ -76,6 +80,16 @@ const db = require('knex')({ client: 'pg', connection: process.env.CONNECTOR_DAT
 
 function recordToBBKData(record) {
     record.properties.id = record.id.toString();
+
+    // replace referenced entity connector id in bbk:// url property if specified
+    if (ENTITY_REF_CID && ENTITY_REF_PROP) {
+        let prop = _.get(record.properties, ENTITY_REF_PROP);
+        if (prop && prop.indexOf('bbk://') == 0) {
+            let newProp = prop.replace('{cid}', ENTITY_REF_CID)
+            _.set(record.properties, ENTITY_REF_PROP,newProp );
+        }
+    }
+
     const {
         ['_wikidata']: deletedKey, ...otherKeys
     } = record.properties;

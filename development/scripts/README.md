@@ -122,8 +122,10 @@ helm install bbk-demo-apps . \
 --set bbk-demo-con-country.token=$BBK_TOKEN_country \
 --set bbk-demo-con-heritage-nat.connectorId=$BBK_ID_heritagenatural \
 --set bbk-demo-con-heritage-nat.token=$BBK_TOKEN_heritagenatural \
+--set bbk-demo-con-heritage-nat.entityRefConnectorId=$BBK_ID_country \
 --set bbk-demo-con-heritage-cult.connectorId=$BBK_ID_heritagecultural \
 --set bbk-demo-con-heritage-cult.token=$BBK_TOKEN_heritagecultural \
+--set bbk-demo-con-heritage-cult.entityRefConnectorId=$BBK_ID_country \
 --set bbk-demo-app-explorer.token0=$BBK_POLICY_TOKEN_access_all_areas \
 --set bbk-demo-app-explorer.token1=$BBK_POLICY_TOKEN_geo_british_isles \
 --set bbk-demo-app-explorer.token2=$BBK_POLICY_TOKEN_heritage_natural \

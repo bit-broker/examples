@@ -29,6 +29,9 @@
  *
  * The app supports 'deep linking' by using a set of query params, which can be converted to / from the bitbroker APIs
  * used by app.
+ * 
+ * Uses prism.js for JSON color highlighting, configuration per:
+ * https://prismjs.com/download.html#themes=prism&languages=json&plugins=autolinker+keep-markup
  */
 
 // Constants
@@ -37,6 +40,13 @@ const BBK_CATALOG = 1;
 const BBK_ENTITY_TYPE = 2;
 const BBK_ENTITY_INSTANCE = 3;
 const BBK_TIMESERIES = 4;
+
+
+const QUERY_PARAM_TIMESERIES = "ts";
+const QUERY_PARAM_CATALOG = "q";
+const QUERY_PARAM_POLICY = "policy";
+const QUERY_PARAM_ENTITY_TYPE = "entity";
+const QUERY_PARAM_ENTITY_ID = "id";
 
 const default_limit = 10;
 
@@ -49,7 +59,7 @@ const queries = [{
         query: '{"type":"heritage"}',
     },
     {
-        name: "country named 'United Kingdom",
+        name: "country named United Kingdom",
         query: '{"type":"country","name":"United Kingdom"}',
     },
     {
@@ -58,7 +68,7 @@ const queries = [{
     },
     {
         name: "Within 250km of New York",
-        query: '{ "entity.location": { "$near": { "$geometry": {"type": "Point","coordinates": [-74.0060, 40.71281] },"$min": 0, "$max": 250000 }}}',
+        query: '{"entity.location":{"$near":{"$geometry":{"type":"Point","coordinates":[-74.0060,40.71281]},"$min":0,"$max":250000}}}',
     },
 ];
 
@@ -75,11 +85,12 @@ let devShimMode = false;
  */
 
 const clickLink = (jsonString) => {
-    const urlRegex = /(\"https?:\/\/[^\s]+\")/g;
+
+    // regex to capture BBK consumer API urls...
+    let urlRegex = new RegExp( baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
 
     return jsonString.replace(urlRegex, function(url) {
-        let unQuotedUrl = url.substring(1, url.length - 1);
-        return `<a href="${unQuotedUrl}">${unQuotedUrl}</a>`;
+        return bbkUrltoAppUrl(url).toString();
     });
 };
 
@@ -116,8 +127,7 @@ const renderTS = (ts) => {
         const propName = document.createElement("div");
         propName.classList.add("col-md-2", "fw-bold");
 
-        propName.textContent = "timeseries ";
-        propName.appendChild(bbkUrl(value.url, key));
+        propName.textContent = `timeseries: ${key}`;
         row.appendChild(propName);
 
         const propValue = document.createElement("div");
@@ -126,8 +136,8 @@ const renderTS = (ts) => {
         const jsonPre = document.createElement("pre");
         const code = document.createElement("code");
         code.classList.add("language-json");
-        delete value.url;
-        code.innerHTML = JSON.stringify(value, null, 2);
+
+        code.innerHTML = clickLink(JSON.stringify(value, null, 2));
         jsonPre.appendChild(code);
         propValue.appendChild(jsonPre);
         Prism.highlightElement(code);
@@ -160,7 +170,7 @@ const renderJson = (prop, jsonString) => {
         const jsonPre = document.createElement("pre");
         const code = document.createElement("code");
         code.classList.add("language-json");
-        code.innerHTML = jsonString;
+        code.innerHTML = clickLink(jsonString);
         jsonPre.appendChild(code);
         propValue.appendChild(jsonPre);
         Prism.highlightElement(code);
@@ -537,7 +547,7 @@ const queryDropdownValue = (queries) => {
  */
 
 const copyCurlToClipBoard = (url) => {
-    const curlUrl =
+    let curlUrl =
         "curl" +
         " \"" +
         url +
@@ -549,12 +559,16 @@ const copyCurlToClipBoard = (url) => {
         "-H" +
         " " +
         "x-bbk-auth-token:" +
-        myToken +
-        " " +
-        "-H" +
-        " " +
-        "x-bbk-audience:" +
-        myPolicy;
+        myToken;
+        
+        if (devShimMode) {
+            curlUrl +=
+                " " +
+                "-H" +
+                " " +
+                "x-bbk-audience:" +
+                myPolicy;
+        }
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
     })
@@ -586,9 +600,9 @@ const bbkUrltoAppUrl = (bbkUrl) => {
         appUrl.searchParams.delete(key);
     });
     // seem to need to explicitly delete this query param?!
-    appUrl.searchParams.delete("q");
+    appUrl.searchParams.delete(QUERY_PARAM_CATALOG);
 
-    mergeQueryParam(appUrl, "policy", myPolicy);
+    mergeQueryParam(appUrl, QUERY_PARAM_POLICY, myPolicy);
 
     if (bbkUrl.indexOf(baseURL) == 0) {
         let nonBaseUrl = bbkUrl.substring(baseURL.length);
@@ -599,32 +613,31 @@ const bbkUrltoAppUrl = (bbkUrl) => {
         let splitUrl = nonBaseUrl.split("/");
         if (splitUrl[0].indexOf("catalog") == 0) {
             let queryUrl = new URL(bbkUrl);
-
-            if (queryUrl.searchParams.has("q")) {
-                let query = queryUrl.searchParams.get("q");
-                mergeQueryParam(appUrl, "q", query);
+            if (queryUrl.searchParams.has(QUERY_PARAM_CATALOG)) {
+                let query = queryUrl.searchParams.get(QUERY_PARAM_CATALOG);
+                mergeQueryParam(appUrl, QUERY_PARAM_CATALOG, query);
             }
-        } else if (splitUrl[0].indexOf("entity") == 0) {
+        } else if (splitUrl[0].indexOf(QUERY_PARAM_ENTITY_TYPE) == 0) {
             // extract entity
             let entityType = splitUrl[1];
             if (entityType.indexOf("?") >= 0) {
                 entityType = entityType.substring(0, entityType.indexOf("?"));
             }
-            mergeQueryParam(appUrl, "entity", entityType);
+            mergeQueryParam(appUrl, QUERY_PARAM_ENTITY_TYPE, entityType);
 
             if (splitUrl.length > 2) {
                 let entityId = splitUrl[2];
                 if (entityId.indexOf("?") >= 0) {
                     entityId = entityId.substring(0, entityId.indexOf("?"));
                 }
-                mergeQueryParam(appUrl, "id", entityId);
+                mergeQueryParam(appUrl, QUERY_PARAM_ENTITY_ID, entityId);
 
                 if (splitUrl.length > 4 && splitUrl[3].indexOf("timeseries") == 0) {
                     let timeseries = splitUrl[4];
                     if (timeseries.indexOf("?") >= 0) {
                         timeseries = timeseries.substring(0, timeseries.indexOf("?"));
                     }
-                    mergeQueryParam(appUrl, "timeseries", timeseries);
+                    mergeQueryParam(appUrl, QUERY_PARAM_TIMESERIES, timeseries);
                 }
             }
         }
@@ -646,11 +659,11 @@ const bbkUrlType = (bbkUrl) => {
         let splitUrl = nonBaseUrl.split("/");
         if (splitUrl[0].indexOf("catalog") == 0) {
             bbkUrlType = BBK_CATALOG;
-        } else if (splitUrl[0].indexOf("entity") == 0) {
+        } else if (splitUrl[0].indexOf(QUERY_PARAM_ENTITY_TYPE) == 0) {
             bbkUrlType = BBK_ENTITY_TYPE;
             if (splitUrl.length > 2) {
                 bbkUrlType = BBK_ENTITY_INSTANCE;
-                if (splitUrl.length > 4 && splitUrl[3].indexOf("timeseries") == 0) {
+                if (splitUrl.length > 4 && splitUrl[3].indexOf(QUERY_PARAM_TIMESERIES) == 0) {
                     bbkUrlType = BBK_TIMESERIES;
                 }
             }
@@ -665,17 +678,17 @@ const bbkUrlType = (bbkUrl) => {
  *   Catalog:    q= (i.e. exactly per the catalog api)
  *   Entity:     entity=country
  *              entity=country&id=db1cb554f3136d9b72d8d3695f9bfaef2c9c62c3
- *   Timeseries: entity=country&id=db1cb554f3136d9b72d8d3695f9bfaef2c9c62c3&timeseries=population
+ *   Timeseries: entity=country&id=db1cb554f3136d9b72d8d3695f9bfaef2c9c62c3&ts=population
  */
 
 const handleUrlParams = () => {
     const params = new URLSearchParams(window.location.search);
 
-    const catalog = params.get("q");
-    const policy = params.get("policy");
-    const entityType = params.get("entity");
-    const entityId = params.get("id");
-    const timeseries = params.get("timeseries");
+    const catalog = params.get(QUERY_PARAM_CATALOG);
+    const policy = params.get(QUERY_PARAM_POLICY);
+    const entityType = params.get(QUERY_PARAM_ENTITY_TYPE);
+    const entityId = params.get(QUERY_PARAM_ENTITY_ID);
+    const timeseries = params.get(QUERY_PARAM_TIMESERIES);
 
     if (catalog) {
         queryCatalog.value = catalog;
@@ -701,6 +714,8 @@ const handleUrlParams = () => {
         }
         if (url) {
             consumerAPIFetch(url);
+        } else {
+            console.warn("Couldn't parse actionable bitbroker url from app url");
         }
     }
 };
@@ -801,6 +816,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     const token = document.getElementById("token");
     token.addEventListener("change", (event) => (myToken = event.target.value));
+
+    const baseurlInput = document.getElementById("baseurl");
+    baseurlInput.addEventListener("change", (event) => (baseURL = event.target.value));
 
     const copyCurl = document.getElementById("idCopyCurlButton");
     copyCurl.addEventListener("click", function(e) {
