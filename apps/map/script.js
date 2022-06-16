@@ -18,6 +18,16 @@ function initMap() {
   document.querySelector('.no-data-info').style.visibility = 'hidden';
 }
 
+function headers(policy) {
+  let headers = {
+    'x-bbk-auth-token':  policy.token
+  };
+  if (window.config.devShimMode) {
+    headers['x-bbk-audience'] = policy.id
+  }
+  return headers;
+}
+
 function mergeQueryParam(name, value) {
   const url = new URL(window.location);
   if (!value) {
@@ -55,18 +65,12 @@ async function getData() {
   }
 
   const response = await fetch(`${window.config.services.consumer}/v1/entity/${selectedEntity.id}`, {
-    headers: {
-      'x-bbk-audience': selectedPolicy.id,
-      'x-bbk-auth-token': selectedPolicy.token
-    }
+    headers: headers(selectedPolicy)
   });
   const data = await response.json();
 
   const dataDetails = await Promise.all(data.map(d => fetch(d.url, {
-    headers: {
-      'x-bbk-audience': selectedPolicy.id,
-      'x-bbk-auth-token':  selectedPolicy.token
-    },
+    headers: headers(selectedPolicy)
   }).then(res => res.json())));
   window.data = dataDetails;
 
@@ -118,10 +122,7 @@ function initEvents() {
 
 async function getEntities() {
   const entities = await fetch(`${window.config.services.consumer}/v1/entity`, {
-    headers: {
-      'x-bbk-auth-token': window.selectedPolicy.token,
-      'x-bbk-audience': window.selectedPolicy.id,
-    },
+    headers: headers(window.selectedPolicy)
   }).then(res => res.json());
   window.entities = entities;
 }

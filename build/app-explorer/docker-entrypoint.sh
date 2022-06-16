@@ -10,6 +10,12 @@ else
   jq --arg baseUrl "$BASE_URL" '.baseUrl = $baseUrl' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
 fi
 
+if [[ -z "${DEV_SHIM_MODE}" ]]; then
+  :
+else
+  jq --argjson devShimMode $DEV_SHIM_MODE '.devShimMode = $devShimMode' "$configfile" > "$tmp" && mv "$tmp" "$configfile"
+fi
+
 PREFIX_LIST=("POLICY_ TOKEN_ NAME_ DESC_")
 
 for PREFIX in ${PREFIX_LIST[*]}; do

@@ -69,6 +69,7 @@ let myPolicy = null;
 
 let baseURL = "";
 let previousUrl = "";
+let devShimMode = false;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -349,13 +350,16 @@ function consumerAPIFetch(url) {
     paginationVisibility(false);
     timeSeriesButtonsVisibility(false);
 
-    const requestOptions = {
+    let requestOptions = {
         method: "GET",
         headers: {
-            "x-bbk-auth-token": myToken,
-            "x-bbk-audience": myPolicy,
-        },
+            "x-bbk-auth-token": myToken
+        }
     };
+
+    if (devShimMode) {
+        requestOptions.headers["x-bbk-audience"] = myPolicy;
+    }
 
     let urlType = bbkUrlType(url);
 
@@ -733,6 +737,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((config) => {
         baseURL = config.baseUrl;
+        devShimMode = config.devShimMode;
         document.getElementById("baseurl").value = baseURL;
 
         policyDropdownValue(config.policies);
