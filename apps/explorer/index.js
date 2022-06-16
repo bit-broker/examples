@@ -41,7 +41,6 @@ const BBK_ENTITY_TYPE = 2;
 const BBK_ENTITY_INSTANCE = 3;
 const BBK_TIMESERIES = 4;
 
-
 const QUERY_PARAM_TIMESERIES = "ts";
 const QUERY_PARAM_CATALOG = "q";
 const QUERY_PARAM_POLICY = "policy";
@@ -80,6 +79,7 @@ let myPolicy = null;
 let baseURL = "";
 let previousUrl = "";
 let devShimMode = false;
+let default_limit = 10;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -497,14 +497,14 @@ const page = (up) => {
     if (newUrl.searchParams.has("offset")) {
         newOffset = parseInt(newUrl.searchParams.get("offset"));
     }
-    if (newUrl.searchParams.has("limit")) {
-        newLimit = parseInt(newUrl.searchParams.get("limit"));
-    }
 
     if (up) {
         newOffset += newLimit;
     } else {
         newOffset -= newLimit;
+        if (newOffset < 0) {
+            newOffset = 0;
+        }
     }
     newUrl.searchParams.set("offset", newOffset);
     newUrl.searchParams.set("limit", newLimit);
@@ -797,6 +797,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         element.addEventListener("click", (event) => nextPage())
     );
 
+
     const previous = document.querySelectorAll("button.previous");
     previous.forEach((element) =>
         element.addEventListener("click", (event) => previousPage())
@@ -816,6 +817,18 @@ window.addEventListener("DOMContentLoaded", (event) => {
 
     const token = document.getElementById("token");
     token.addEventListener("change", (event) => (myToken = event.target.value));
+
+    const limit = document.getElementById("limit");
+    limit.addEventListener("change", (event) => {
+        if (limit.value > 250 || limit.value < 1) {
+            alert('Limit value must be greater than 1 and less than 250');
+        }
+        if (!isNaN(parseFloat(limit.value))) {
+            default_limit = Math.round(event.target.value)
+        } else {
+            default_limit = event.target.value
+        }
+    })
 
     const baseurlInput = document.getElementById("baseurl");
     baseurlInput.addEventListener("change", (event) => (baseURL = event.target.value));
