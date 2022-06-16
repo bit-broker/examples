@@ -47,8 +47,6 @@ const QUERY_PARAM_POLICY = "policy";
 const QUERY_PARAM_ENTITY_TYPE = "entity";
 const QUERY_PARAM_ENTITY_ID = "id";
 
-const default_limit = 10;
-
 const queries = [{
         name: "type country",
         query: '{"type":"country"}',
