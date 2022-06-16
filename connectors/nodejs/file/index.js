@@ -25,11 +25,12 @@ This code is intended to help people implementing a data connector for their own
 It provides data from a file-based data sources, loaded over REST at start up.
 It supports JSON formatted data, or, spreadsheet data (xlsx, csv et al) through the XLSX node module.
 On loading the dataset, it upserts the data to the catalog, and makes a webhook available.
+It can also subsitute a specified connector id into bbk:// urls for a specified entity property.
 
 The webhook conditionally fetches some extra entity data dynamically (from wikidata), and merges 
 it in the response.
 
-Th webhook also supports timeseries data where available on an entity (JSON source data only)
+The webhook also supports timeseries data where available on an entity (JSON source data only)
 
 If you do not know what a data connector is, please contact the controller
 of your bbk instance.
@@ -43,6 +44,7 @@ of your bbk instance.
 require('dotenv').config();
 const fetch = require('node-fetch');
 const moment = require('moment');
+const _ = require('lodash');
 const XLSX = require("xlsx");
 
 // --- local bbk libaries
@@ -59,6 +61,8 @@ const WEBHOOK_PORT = process.env.WEBHOOK_PORT;
 const ENTITY_TYPE = process.env.ENTITY_TYPE;
 const DATA_URL = process.env.DATA_URL;
 const DATA_FORMAT = process.env.DATA_FORMAT;
+const ENTITY_REF_CID = process.env.ENTITY_REF_CID;
+const ENTITY_REF_PROP = process.env.ENTITY_REF_PROP;
 
 let data = [];
 
@@ -104,7 +108,6 @@ class MyCatalog extends BBKCatalog {
             }
             delete record.entity.longitude;
             delete record.entity.latitude;;
-
         }
     }
 
@@ -132,6 +135,18 @@ class MyCatalog extends BBKCatalog {
             }
         })
         .then(json => {
+
+            // replace referenced entity connector id in bbk:// url property if specified
+            if (ENTITY_REF_CID && ENTITY_REF_PROP) {
+                json.forEach(record => {
+                    let prop = _.get(record, ENTITY_REF_PROP);
+                    if (prop && prop.indexOf('bbk://') == 0) {
+                        let newProp = prop.replace('{cid}', ENTITY_REF_CID)
+                        _.set(record, ENTITY_REF_PROP, newProp );
+                    }
+                });
+            }
+          
             data = json; // make json data available to webhook callbacks...
             return json.map(({ _population, _wikidata, ...item }) => item);
         })

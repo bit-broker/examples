@@ -38,7 +38,7 @@ spec:
             - containerPort: 8080
           env:
             - name: BASE_URL
-              value: "{{ .Values.global.bbkBaseUrl }}/consumer/v1/"
+              value: "{{ .Values.global.bbkBaseUrl }}/consumer/v1"
             - name: POLICY_0
               value: {{ index .Values.policy0 }}
             - name: TOKEN_0

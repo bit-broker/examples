@@ -55,6 +55,8 @@ services:
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-natural.json
       - DATA_FORMAT=json
+      - ENTITY_REF_CID=${BBK_ID_country}
+      - ENTITY_REF_PROP=entity.country
     depends_on:
       - data-server
     ports:
@@ -74,6 +76,8 @@ services:
       - WEBHOOK_PORT=8004
       - DATA_URL=http://data-server/heritage-site-cultural.json
       - DATA_FORMAT=json
+      - ENTITY_REF_CID=${BBK_ID_country}
+      - ENTITY_REF_PROP=entity.country
     depends_on:
       - data-server
     ports:
@@ -94,6 +98,7 @@ services:
     container_name: bbk-app-explorer
     environment:
       BASE_URL: http://bbk-consumer:8003/v1
+      DEV_SHIM_MODE: true
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
@@ -119,6 +124,8 @@ services:
       dockerfile: ./build/app-map/Dockerfile
     container_name: bbk-app-map
     environment:
+      BASE_URL: http://bbk-consumer:8003
+      DEV_SHIM_MODE: true
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
