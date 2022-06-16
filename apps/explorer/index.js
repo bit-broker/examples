@@ -547,7 +547,7 @@ const queryDropdownValue = (queries) => {
  */
 
 const copyCurlToClipBoard = (url) => {
-    const curlUrl =
+    let curlUrl =
         "curl" +
         " \"" +
         url +
@@ -559,12 +559,16 @@ const copyCurlToClipBoard = (url) => {
         "-H" +
         " " +
         "x-bbk-auth-token:" +
-        myToken +
-        " " +
-        "-H" +
-        " " +
-        "x-bbk-audience:" +
-        myPolicy;
+        myToken;
+        
+        if (devShimMode) {
+            curlUrl +=
+                " " +
+                "-H" +
+                " " +
+                "x-bbk-audience:" +
+                myPolicy;
+        }
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
     })
