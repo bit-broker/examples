@@ -4,6 +4,7 @@
     "coordinator": "http://bbk-coordinator:8001"
   },
   "useStaticPolicies": true,
+  "devShimMode": false,
   "policies": [
     {
       "id": "access-all-areas",

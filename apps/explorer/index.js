@@ -79,6 +79,7 @@ let myPolicy = null;
 
 let baseURL = "";
 let previousUrl = "";
+let devShimMode = false;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -359,13 +360,16 @@ function consumerAPIFetch(url) {
     paginationVisibility(false);
     timeSeriesButtonsVisibility(false);
 
-    const requestOptions = {
+    let requestOptions = {
         method: "GET",
         headers: {
-            "x-bbk-auth-token": myToken,
-            "x-bbk-audience": myPolicy,
-        },
+            "x-bbk-auth-token": myToken
+        }
     };
+
+    if (devShimMode) {
+        requestOptions.headers["x-bbk-audience"] = myPolicy;
+    }
 
     let urlType = bbkUrlType(url);
 
@@ -399,7 +403,13 @@ function consumerAPIFetch(url) {
     previousUrl = url;
 
     fetch(url, requestOptions)
-    .then((res) => (res.ok ? res.json() : Promise.reject(res)))
+    .then((res) => {
+        if (!res.ok) {
+            return res.text().then(text => { throw new Error(text) })
+        }
+        return res;
+    })
+    .then(res => res.json())
     .then((data) => {
         results.innerHTML = "";
         spinner.setAttribute("hidden", "");
@@ -435,7 +445,9 @@ function consumerAPIFetch(url) {
     })
 
     .catch((error) => {
-        console.error;
+        // results.innerHTML = error
+        results.appendChild(renderJson("API Error", error))
+        console.error(error);
         spinner.setAttribute("hidden", "");
     });
 }
@@ -537,14 +549,12 @@ const queryDropdownValue = (queries) => {
 const copyCurlToClipBoard = (url) => {
     const curlUrl =
         "curl" +
-        " " +
-        "--location" +
-        " " +
-        "--request" +
+        " \"" +
+        url +
+        "\" " +
+        "-X" +
         " " +
         "GET" +
-        " " +
-        url +
         " " +
         "-H" +
         " " +
@@ -557,8 +567,8 @@ const copyCurlToClipBoard = (url) => {
         myPolicy;
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
-    });
-};
+    })
+}
 
 /* update the browser url to reflect a BBK Url
  */
@@ -594,6 +604,7 @@ const bbkUrltoAppUrl = (bbkUrl) => {
         let nonBaseUrl = bbkUrl.substring(baseURL.length);
         if (nonBaseUrl.indexOf("/") == 0) {
             nonBaseUrl = nonBaseUrl.substring(1);
+
         }
         let splitUrl = nonBaseUrl.split("/");
         if (splitUrl[0].indexOf("catalog") == 0) {
@@ -737,6 +748,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     .then((res) => (res.ok ? res.json() : Promise.reject(res)))
     .then((config) => {
         baseURL = config.baseUrl;
+        devShimMode = config.devShimMode;
         document.getElementById("baseurl").value = baseURL;
 
         policyDropdownValue(config.policies);
