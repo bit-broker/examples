@@ -776,7 +776,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
     next.forEach((element) =>
         element.addEventListener("click", (event) => nextPage())
     );
-   
+
 
     const previous = document.querySelectorAll("button.previous");
     previous.forEach((element) =>
@@ -799,7 +799,16 @@ window.addEventListener("DOMContentLoaded", (event) => {
     token.addEventListener("change", (event) => (myToken = event.target.value));
 
     const limit = document.getElementById("limit");
-    limit.addEventListener("change", (event) => (default_limit = event.target.value));
+    limit.addEventListener("change", (event) => {
+        if (limit.value > 250 || limit.value < 1) {
+            alert('Limit value must be greater than 1 and less than 250');
+        }
+        if (!isNaN(parseFloat(limit.value))) {
+            default_limit = Math.round(event.target.value)
+        } else {
+            default_limit = event.target.value
+        }
+    })
 
     const copyCurl = document.getElementById("idCopyCurlButton");
     copyCurl.addEventListener("click", function(e) {
