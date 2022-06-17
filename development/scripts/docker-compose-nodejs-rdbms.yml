@@ -112,7 +112,7 @@ services:
     container_name: bbk-app-explorer
     environment:
       BASE_URL: http://bbk-consumer:8003/v1
-      DEV_SHIM_MODE: true
+      DEV_SHIM_MODE: "true"
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
@@ -139,7 +139,7 @@ services:
     container_name: bbk-app-map
     environment:
       BASE_URL: http://bbk-consumer:8003
-      DEV_SHIM_MODE: true
+      DEV_SHIM_MODE: "true"
       TOKEN_0: ${BBK_POLICY_TOKEN_access_all_areas}
       TOKEN_1: ${BBK_POLICY_TOKEN_geo_british_isles}
       TOKEN_2: ${BBK_POLICY_TOKEN_heritage_natural}
