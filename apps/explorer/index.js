@@ -85,12 +85,13 @@ let default_limit = 10;
 const clickLink = (jsonString) => {
 
     // regex to capture BBK consumer API urls...
-    let urlRegex = new RegExp( baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
+    let urlRegex = new RegExp(baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
 
-    return jsonString.replace(urlRegex, function(url) {
+    return jsonString.toString().replace(urlRegex, function(url) {
         return bbkUrltoAppUrl(url).toString();
     });
 };
+
 
 /* Render Clickable links for bit-broker urls
  */
@@ -558,15 +559,15 @@ const copyCurlToClipBoard = (url) => {
         " " +
         "x-bbk-auth-token:" +
         myToken;
-        
-        if (devShimMode) {
-            curlUrl +=
-                " " +
-                "-H" +
-                " " +
-                "x-bbk-audience:" +
-                myPolicy;
-        }
+
+    if (devShimMode) {
+        curlUrl +=
+            " " +
+            "-H" +
+            " " +
+            "x-bbk-audience:" +
+            myPolicy;
+    }
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
     })
@@ -827,6 +828,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
             default_limit = event.target.value
         }
     })
+
+    const flexCheckDefault = document.getElementById("flexCheckDefault");
+    flexCheckDefault.addEventListener("change", (event) => {
+        devShimMode = flexCheckDefault.checked;
+    });
 
     const baseurlInput = document.getElementById("baseurl");
     baseurlInput.addEventListener("change", (event) => (baseURL = event.target.value));
