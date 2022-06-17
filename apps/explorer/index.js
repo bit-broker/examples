@@ -48,24 +48,52 @@ const QUERY_PARAM_ENTITY_TYPE = "entity";
 const QUERY_PARAM_ENTITY_ID = "id";
 
 const queries = [{
-        name: "type country",
+        name: "All countries",
         query: '{"type":"country"}',
     },
     {
-        name: "type heritage",
-        query: '{"type":"heritage"}',
+        name: "Cultural heritage sites inscribed since 2000",
+        query: '{"$and":[{"type":"heritage"},{"entity.category":"cultural"},{"entity.inscribed":{"$gte":2000}}]}',
     },
     {
-        name: "country named United Kingdom",
+        name: "Country named 'United Kingdom'",
         query: '{"type":"country","name":"United Kingdom"}',
     },
     {
-        name: "The world except 'United Kingdom', 'Atlantis', 'India', 'France'",
+        name: "All countries except 'United Kingdom', 'Atlantis', 'India', 'France'",
         query: '{"type":"country","name":{"$nin":["United Kingdom","Atlantis","India","France"]}}',
+    },
+    {
+        name: "Asian countries with a population under half a million",
+        query: '{"$and": [{"type":"country"},{"entity.continent":"Asia"} {"entity.population":{"$lt":500000}}]}'
+    },
+    {
+        name: "Entities with a population timeseries",
+        query: '{"timeseries.population.value":{ "$eq":"people"}}'
+    },
+    {
+        name: "Countries that speak Danish",
+        query: '{"entity.languages":["Danish"]}'
+    },
+    {
+        name: "contains 'volcano' in description",
+        query: '{"entity.description":{"$regex":"volcano","$options":"i"}}',
     },
     {
         name: "Within 250km of New York",
         query: '{"entity.location":{"$near":{"$geometry":{"type":"Point","coordinates":[-74.0060,40.71281]},"$min":0,"$max":250000}}}',
+    },
+    {
+        name: "Within a geo-spatial polygon covering Australia",
+        query: '{"entity.location":{"$within":{"$geometry": {"type": "Polygon","coordinates":[[' +
+            '[129.8583984375,-10.876464994816283],' +
+            '[111.8408203125,-22.593726063929296],' +
+            '[114.2578125,-34.813803317113134],' +
+            '[147.91992187499997,-44.43377984606823],' +
+            '[155.302734375,-26.667095801104804],' +
+            '[142.3828125,-9.752370139173285],' +
+            '[129.8583984375,-10.876464994816283]' +
+            ']]}}}}'
     },
 ];
 
@@ -430,7 +458,7 @@ function consumerAPIFetch(url) {
         }
 
         if (Array.isArray(data)) {
-            if (url.indexOf("timeseries") >= 0) {
+            if (urlType == BBK_TIMESERIES)  {
                 results.append(formatTimeSeries(data));
             } else {
                 data.forEach((item) => {
