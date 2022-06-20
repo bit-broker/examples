@@ -87,7 +87,7 @@ const clickLink = (jsonString) => {
     // regex to capture BBK consumer API urls...
     let urlRegex = new RegExp(baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
 
-    return jsonString.toString().replace(urlRegex, function(url) {
+    return jsonString.replace(urlRegex, function(url) {
         return bbkUrltoAppUrl(url).toString();
     });
 };
@@ -444,8 +444,7 @@ function consumerAPIFetch(url) {
     })
 
     .catch((error) => {
-        // results.innerHTML = error
-        results.appendChild(renderJson("API Error", error))
+        results.appendChild(renderJson("API Error", error.toString()))
         console.error(error);
         spinner.setAttribute("hidden", "");
     });
@@ -829,9 +828,9 @@ window.addEventListener("DOMContentLoaded", (event) => {
         }
     })
 
-    const flexCheckDefault = document.getElementById("flexCheckDefault");
-    flexCheckDefault.addEventListener("change", (event) => {
-        devShimMode = flexCheckDefault.checked;
+    const devModeCheckBox = document.getElementById("devModeCheckBox");
+    devModeCheckBox.addEventListener("change", (event) => {
+        devShimMode = devModeCheckBox.checked;
     });
 
     const baseurlInput = document.getElementById("baseurl");
