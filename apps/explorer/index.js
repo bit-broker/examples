@@ -124,9 +124,9 @@ const renderTS = (ts) => {
         const row = document.createElement("div");
         row.classList.add("row");
         const propName = document.createElement("div");
-        propName.classList.add("col-md-2", "fw-bold");
+        propName.classList.add("col-md-2", "fw-bold", "pt-4");
 
-        propName.textContent = `timeseries: ${key}`;
+        propName.innerHTML = `<p class="text-end">timeseries: ${key}</p>`;
         row.appendChild(propName);
 
         const propValue = document.createElement("div");
@@ -155,10 +155,10 @@ const renderJson = (prop, jsonString) => {
     const row = document.createElement("div");
     row.classList.add("row");
     const propName = document.createElement("div");
-    propName.classList.add("col-md-2", "fw-bold");
+    propName.classList.add("col-md-2", "fw-bold", "pt-4");
     const propValue = document.createElement("div");
     propValue.classList.add("col-md-10");
-    propName.textContent = prop;
+    propName.innerHTML = `<p class="text-end">${prop}</p>`;
     row.appendChild(propName);
     if (prop == "url") {
         const jsonPre = document.createElement("pre");
