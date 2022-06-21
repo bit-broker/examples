@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,14 +6,13 @@
 <link rel="stylesheet" href="css/styles.css">
 <link rel="stylesheet" href="css/prism.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
-
 </head>
 <body class="bg-secondary">
   <div class="container">
 
   <div class="px-3 py-3 my-2 bg-light rounded text-center">
     <img class="d-block mx-auto mb-4" src="./assets/logo.svg" alt="" width="80" height="60">
-    <h1 class="display-5 fw-bold">BitBroker: Policy Based Data Explorer</h1>
+    <h3 class="display-6 fw-bold">BitBroker: Policy Based Data Explorer</h3>
     <div class="col-lg-6 mx-auto">
       <p class="lead mb-4">Select a policy, and explore the example queries against the sample data set of world countries and Unesco heritage sites.</p>
     </div>
@@ -24,94 +21,84 @@
   <div class="b-example-divider"></div>
 
   <div class="px-3 py-3 my-2 bg-light rounded">
-    <h2 class="fw-bold">Config</h2>
+   <h4 class="fw-bold">Config</h4>
    <div class="row">
-    <div class="col-md-2 my-2">
-      <div class="dropdown">
-        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-          Select Policy
-        </button>
-        <ul class="dropdown-menu" id="policyDropDown" aria-labelledby="dropdownMenuButton1">
-        </ul>
+
+    <div class="col-lg-2 my-2">
+      <div class="mb-2">
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Select Policy
+          </button>
+          <ul class="dropdown-menu" id="policyDropDown" aria-labelledby="dropdownMenuButton1">
+          </ul>
+        </div>
       </div>
     </div>
 
     <div class="col-md-5  my-2">
-      <input type="search"  id="policyId"  class="form-control " placeholder="Submit Policy Id"/>
-    </div>
-    <div class="col-md-5"></div>
-
-   </div>
-
-
-   <div class="row">
-  
-    <div class="col-2">
-      <div class="input-group">
-
+      <div class="mb-2">
+        <input type="search"  id="policyId"  class="form-control " placeholder="Submit Policy Id"/>
       </div>
-      
-    </div>
-    <div class=" col-5">
-      <div class="input-group">
-      <input type="search"  id="token"  class="form-control mr-3" placeholder="Submit Token"/>
-    </div>
-  </div>
-    <div class="col-5">
-      <div class="input-group">
-      
-    <input type="search"  id="baseurl"  class="form-control mr-3"/>
-    
-  </div>
-</div>
-
-  </div>
-
-
-    <div class="row">
-  
-      <div class="col-md-2">
-        
+      <div class="mb-2">
+        <input type="search"  id="token"  class="form-control mr-3" placeholder="Submit Token"/>
       </div>
-      <div class="col-md-5 my-2">
+      <div class="mb-2">
         <input type="text"  id="policydescription"  class="form-control " placeholder="Policy Description"/>
       </div>
-      <div class="col-md-3 my-2">
-        <input type="number"  id="limit"  class="form-control" min="0" max="250" step="5" placeholder="Set Query Limit"/>
     </div>
-    <div class="form-check col-md-2 my-3">
+
+    <div class="col-md-5 my-2">
+      <div class="mb-2">
+        <input type="search"  id="baseurl"  class="form-control mr-3"/>
+      </div>
+      <div class="mb-2">
+        <input type="number"  id="limit"  class="form-control" min="0" max="250" step="5" placeholder="Set Paging Limit"/>
+      </div>
+      <div class="mb-2 mt-3">
         <input class="form-check-input" type="checkbox" value="" id="devModeCheckBox">
         <label class="form-check-label" for="devModeCheckBox">
           Dev Mode
         </label>
       </div>
     </div>
+
+   </div>
   </div>
 
   <div class="b-example-divider"></div>
 
   <div class="px-3 py-3 my-2 bg-light rounded">
-    <h2 class="fw-bold">Catalog Query</h2>
-    <p><a href="https://www.bit-broker.io/docs/consumer/catalog/" target="new">Catalog Query Syntax</a></p>
+    <h4 class="fw-bold">Catalog Query</h4>
     <div class="row">
-      <div class="col-md-2 my-2">
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-            Example Queries
-          </button>
-          <ul class="dropdown-menu" id="queryDropDown" aria-labelledby="dropdownMenuButton2">
-          </ul>
+
+      <div class="col-xl-2 my-2">
+        <div class="mb-2">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
+              Example Queries
+            </button>
+            <ul class="dropdown-menu" id="queryDropDown" aria-labelledby="dropdownMenuButton2">
+            </ul>
+          </div>
         </div>
       </div>
 
-      <div class="col-md-9 my-2">
-        <input type="search"  id="queryCatalog" class="form-control mr-3" placeholder="Search Catalog" />
+      <div class="col-md-8 my-2">
+        <div class="mb-2">
+          <input type="search"  id="queryCatalog" class="form-control mr-3" placeholder="Search Catalog" />
+        </div>
       </div>
 
-      <div class="col-md-1 my-2">
-        <button id ="go" class="btn btn-primary mr-2" style='font-size:15px'>Go!</button>
+      <div class="col-md-2 my-2">
+        <div class="mb-2">
+          <button id ="go" class="btn btn-primary">Go!</button>
+         </div>
       </div>
 
+    </div>
+    <div class="row">
+      <p><a href="https://www.bit-broker.io/docs/consumer/catalog/" target="new">Catalog Query Syntax</a></p>   
     </div>
   </div>
 
@@ -119,19 +106,20 @@
 
   <div class="px-3 py-3 my-2 bg-light rounded">
     <div class="row">
-      <div class="col-md-2">
-        <h2 class="fw-bold">API Call</h2>
+      <div class="col-md-2 my-2">
+        <h4 class="fw-bold">API Call</h4>
       </div>
-      <div class="col-md-9 my-2">
+      <div class="col-md-8 my-2">
         <input type="text"  id="idApiUrl"  class="form-control" readonly/>
       </div>
-      <div class="col-md-1 my-2">
+      <div class="col-md-2 my-2">
         <button id="idCopyCurlButton" type="button" data-link="" class="btn btn-primary" hidden>Copy Curl</button>
       </div>
     </div>
+
     <div class="row">
       <div class="col-md-8 my-2">
-        <h2 class="fw-bold">Results</h2>
+        <h4 class="fw-bold">Results</h4>
       </div>
       
     </div>
@@ -173,14 +161,14 @@
 </div>
 <div class="container">
   <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
-    <p class="col-md-4 mb-0 text-muted">&copy; 2022 The BitBroker Team</p>
+    <p class="col-md-4 mb-0">&copy; 2022</p>
 
-    <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+    <a href="/" class="col-md-4 d-flex align-items-center justify-content-center mb-2 mb-md-0 me-md-auto link-dark text-decoration-none">
       <img class="d-block mx-auto mb-4" src="./assets/logo.svg" alt="" width="40" height="30">
     </a>
 
     <ul class="nav col-md-4 justify-content-end">
-      <li class="nav-item"><a href="https://bit-broker.io" class="nav-link px-2 text-muted">bit-broker.io</a></li>
+      <li class="nav-item"><a href="https://bit-broker.io" class="nav-link link-dark px-2">bit-broker.io</a></li>
     </ul>
   </footer>
 </div>
@@ -192,7 +180,5 @@
 <script src="index.js"> </script>
 <script src="prism.js"> </script>
 
-
 </body>
-
 </html>
