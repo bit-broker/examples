@@ -689,7 +689,7 @@ const bbkUrlType = (bbkUrl) => {
             bbkUrlType = BBK_ENTITY_TYPE;
             if (splitUrl.length > 2) {
                 bbkUrlType = BBK_ENTITY_INSTANCE;
-                if (splitUrl.length > 4 && splitUrl[3].indexOf(QUERY_PARAM_TIMESERIES) == 0) {
+                if (splitUrl.length > 4 && splitUrl[3].indexOf("timeseries") == 0) {
                     bbkUrlType = BBK_TIMESERIES;
                 }
             }
