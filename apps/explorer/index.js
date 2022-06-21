@@ -752,6 +752,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         baseURL = config.baseUrl;
         devShimMode = config.devShimMode;
         document.getElementById("baseurl").value = baseURL;
+        document.getElementById("devModeCheckBox").checked = devShimMode;
 
         policyDropdownValue(config.policies);
 
