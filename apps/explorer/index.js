@@ -65,7 +65,7 @@ const queries = [{
     },
     {
         name: "Asian countries with a population under half a million",
-        query: '{"$and": [{"type":"country"},{"entity.continent":"Asia"} {"entity.population":{"$lt":500000}}]}'
+        query: '{"$and": [{"type":"country"},{"entity.continent":"Asia"},{"entity.population":{"$lt":500000}}]}'
     },
     {
         name: "Entities with a population timeseries",
