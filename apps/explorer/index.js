@@ -85,12 +85,13 @@ let default_limit = 10;
 const clickLink = (jsonString) => {
 
     // regex to capture BBK consumer API urls...
-    let urlRegex = new RegExp( baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
+    let urlRegex = new RegExp(baseURL + '([-a-zA-Z0-9@:%_\+.~#?&//=]*)', 'g');
 
     return jsonString.replace(urlRegex, function(url) {
         return bbkUrltoAppUrl(url).toString();
     });
 };
+
 
 /* Render Clickable links for bit-broker urls
  */
@@ -443,8 +444,7 @@ function consumerAPIFetch(url) {
     })
 
     .catch((error) => {
-        // results.innerHTML = error
-        results.appendChild(renderJson("API Error", error))
+        results.appendChild(renderJson("API Error", error.toString()))
         console.error(error);
         spinner.setAttribute("hidden", "");
     });
@@ -558,15 +558,15 @@ const copyCurlToClipBoard = (url) => {
         " " +
         "x-bbk-auth-token:" +
         myToken;
-        
-        if (devShimMode) {
-            curlUrl +=
-                " " +
-                "-H" +
-                " " +
-                "x-bbk-audience:" +
-                myPolicy;
-        }
+
+    if (devShimMode) {
+        curlUrl +=
+            " " +
+            "-H" +
+            " " +
+            "x-bbk-audience:" +
+            myPolicy;
+    }
     navigator.clipboard.writeText(curlUrl).catch((err) => {
         console.error("copyCurlToClipBoard error: ", err);
     })
@@ -752,6 +752,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         baseURL = config.baseUrl;
         devShimMode = config.devShimMode;
         document.getElementById("baseurl").value = baseURL;
+        document.getElementById("devModeCheckBox").checked = devShimMode;
 
         policyDropdownValue(config.policies);
 
@@ -827,6 +828,11 @@ window.addEventListener("DOMContentLoaded", (event) => {
             default_limit = event.target.value
         }
     })
+
+    const devModeCheckBox = document.getElementById("devModeCheckBox");
+    devModeCheckBox.addEventListener("change", (event) => {
+        devShimMode = devModeCheckBox.checked;
+    });
 
     const baseurlInput = document.getElementById("baseurl");
     baseurlInput.addEventListener("change", (event) => (baseURL = event.target.value));
