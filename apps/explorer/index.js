@@ -106,6 +106,9 @@ let baseURL = "";
 let previousUrl = "";
 let devShimMode = false;
 let default_limit = 10;
+let timeseries_limit = 20;
+let latestTimeseries = 0;
+let earliestTimeseries = 0;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -426,6 +429,16 @@ function consumerAPIFetch(url) {
         }
     }
 
+    if (urlType == BBK_TIMESERIES) {
+        let newUrl = new URL(url);
+        if (newUrl.searchParams.has("limit") == false) {
+            newUrl.searchParams.set("limit", timeseries_limit);
+            
+        }
+        url = newUrl.toString();
+    }
+
+   
     updateBrowserUrl(url);
     previousUrl = url;
 
@@ -446,27 +459,31 @@ function consumerAPIFetch(url) {
         updateCopyCurlButton(previousUrl);
 
         paginationVisibility(
-            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE ? true : false
-        );
-
-        if (data.length === 0) {
-            paginationVisibility(false);
-            return (results.innerHTML = "No Results Found");
-        }
-
-        if (data.length < default_limit) {
-            next.forEach((element) => (element.disabled = true));
-        }
+            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE ||  urlType == BBK_TIMESERIES ? true : false
+        );   
 
         if (Array.isArray(data)) {
+
+            if (data.length === 0) {
+                paginationVisibility(false);
+                return (results.innerHTML = "No Results Found");
+            }
             if (urlType == BBK_TIMESERIES)  {
+                if (data.length < timeseries_limit) {
+                    next.forEach((element) => (element.disabled = true));
+                }
+                latestTimeseries = data[data.length - 1].from;
+                earliestTimeseries = data[0].from;
                 results.append(formatTimeSeries(data));
-            } else {
+            } else {        
+                if (data.length < default_limit) {
+                    next.forEach((element) => (element.disabled = true));
+                }
                 data.forEach((item) => {
                     results.append(formatResponse(item));
                 });
             }
-        } else {
+        } else {           
             results.append(formatResponse(data));
         }
     })
@@ -517,24 +534,50 @@ const previousPage = () => {
 };
 
 const page = (up) => {
-    let newUrl = new URL(previousUrl);
-    let newOffset = 0;
-    let newLimit = default_limit;
-    if (newUrl.searchParams.has("offset")) {
-        newOffset = parseInt(newUrl.searchParams.get("offset"));
-    }
+    let newUrl = new URL(previousUrl)
+    let urlType = bbkUrlType(previousUrl);
+    if (urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE) {
 
-    if (up) {
-        newOffset += newLimit;
-    } else {
-        newOffset -= newLimit;
-        if (newOffset < 0) {
-            newOffset = 0;
+        let newOffset = 0;
+        let newLimit = default_limit;
+        if (newUrl.searchParams.has("offset")) {
+            newOffset = parseInt(newUrl.searchParams.get("offset"));
         }
-    }
-    newUrl.searchParams.set("offset", newOffset);
-    newUrl.searchParams.set("limit", newLimit);
 
+        if (up) {
+            newOffset += newLimit;
+        } else {
+            newOffset -= newLimit;
+            if (newOffset < 0) {
+                newOffset = 0;
+            }
+        }
+        newUrl.searchParams.set("offset", newOffset);
+        newUrl.searchParams.set("limit", newLimit);
+    }
+    else if (urlType == BBK_TIMESERIES) {
+
+        let newLimit = timeseries_limit;
+        let duration = moment(latestTimeseries.toString()).unix() - moment(earliestTimeseries.toString()).unix();
+        let newStart = moment(earliestTimeseries.toString()).subtract(duration, "second");
+        console.log(latestTimeseries, earliestTimeseries)
+        newUrl.searchParams.set("limit", newLimit); 
+        if (newUrl.searchParams.has("duration") == false) {
+        newUrl.searchParams.set("duration", duration); 
+        }
+        if (newUrl.searchParams.has("start")) {
+           latestTimeseries = newUrl.searchParams.get("start"); 
+            }
+        if (up) {
+           newUrl.searchParams.set("start", latestTimeseries);
+        } else {
+           
+            newStartValue = newStart.year()
+            console.log('new value here!', newStartValue)
+            newUrl.searchParams.set("start", newStartValue);
+        }
+
+    }
     consumerAPIFetch(newUrl.toString());
 };
 
@@ -671,7 +714,7 @@ const bbkUrltoAppUrl = (bbkUrl) => {
     return appUrl;
 };
 
-/* determine type of BBK Consumer API call from url
+/* determine type of BBK Consumer API call from url (bbkUrl is typeof string)
  */
 
 const bbkUrlType = (bbkUrl) => {
