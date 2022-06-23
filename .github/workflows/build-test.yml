@@ -1,0 +1,129 @@
+name: Build and test
+on:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+  workflow_dispatch:
+
+jobs:
+   
+  build-launch-test:
+    runs-on: ubuntu-latest
+    steps:
+       
+      - name: Check out examples repo
+        uses: actions/checkout@master
+        with:
+          repository: bit-broker/examples
+          path: ./portal
+
+      - name: Check out bit-broker repo
+        uses: actions/checkout@master
+        with:
+          repository: bit-broker/bit-broker
+          path: ./bit-broker
+
+      - name: check ls
+        run: |
+          ls -la
+          ls -la ./examples
+          ls -la ./bit-broker
+
+
+      # get & persist host IP
+      - name: get host IP (eth0)
+        run: echo "host_ip=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+')" >> $GITHUB_ENV
+
+      # update etc/hosts to resolve service names
+      - name: Add hosts to /etc/hosts
+        run: |
+          echo "${{ env.host_ip }}  bbk-coordinator" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-contributor" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-consumer" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-database" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-policy-cache" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-auth-service" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-rate-limit" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbkt-webhook" | sudo tee -a /etc/hosts
+          cat /etc/hosts
+
+      # set up env files required for bbk deployment & test...
+      - name: Create .env file for docker
+        working-directory: bit-broker
+        run: cp .env.example .env
+
+      # add connector end-points to .env...
+      - name: Add connector end-points to .env...
+        working-directory: bit-broker
+        run: |
+          echo "TESTS_CON_COUNTRY = http://bbkt-webhook:8004" >> .env
+          echo "TESTS_CON_HERITAGE_NAT = http://bbkt-webhook:8005" >> .env
+          echo "TESTS_CON_HERITAGE_CULT = http://bbkt-webhook:8006" >> .env
+
+      - name: Create link to .env file for examples tests
+        run: ln -s ./bitbroker/.env ./examples/.env
+
+      # build and run bbk docker-compose for bit-broker core
+      - name: build and run docker-compose
+        working-directory: bit-broker/development/docker-compose
+        run: docker-compose up --build -d
+
+      - name: Set up node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+          cache-dependency-path:  examples/tests/package-lock.json
+
+      # install test suite dependencies
+      - name: install dependencies
+        working-directory: examples/tests
+        run: npm install
+
+      - name: install mocha
+        run: npm install mocha -g
+
+      # source config script
+      - name: examples config
+        working-directory: examples/development/scripts
+        run: . ./bbk-demo-config.sh
+
+      # build and run bbk docker-compose for bit-broker examples (file based connectors)
+      - name: build and run docker-compose
+        working-directory: examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-file.yml -up --build -d
+
+      # let deployment settle...
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
+
+      - name: run tests
+        working-directory: examples/test
+        run: npm test
+
+      # stop bbk docker-compose for bit-broker examples (file based connectors)
+      - name: Stop containers
+        if: always()
+        working-directory: examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-file.yml stop
+
+      # build and run bbk docker-compose for bit-broker examples (file based connectors)
+      - name: build and run docker-compose
+        working-directory: examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml -up --build -d
+
+      # let deployment settle...
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
+
+      - name: run tests
+        working-directory: examples/test
+        run: npm test
+
+      # stop bbk docker-compose for bit-broker examples (file based connectors)
+      - name: Stop containers
+        if: always()
+        working-directory: examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml down --remove-orphans
