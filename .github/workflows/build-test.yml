@@ -86,17 +86,7 @@ jobs:
       # source config script
       - name: examples config
         working-directory: examples/development/scripts
-        run: . ./bbk-demo-config.sh |
-          echo "BBK_ID_heritagecultural=$BBK_ID_heritagecultural" >> .env_compose
-          echo "BBK_TOKEN_heritagenatural=$BBK_TOKEN_heritagenatural" >> .env_compose
-          echo "BBK_ID_heritagenatural=$BBK_ID_heritagenatural" >> .env_compose
-          echo "BBK_ID_country=$BBK_ID_country" >> .env_compose
-          echo "BBK_POLICY_TOKEN_access_all_areas=$BBK_POLICY_TOKEN_access_all_areas" >> .env_compose
-          echo "BBK_POLICY_TOKEN_heritage_natural=$BBK_POLICY_TOKEN_heritage_natural" >> .env_compose
-          echo "BBK_POLICY_TOKEN_geo_british_isles=$BBK_POLICY_TOKEN_geo_british_isles" >> .env_compose
-          echo "BBK_TOKEN_heritagecultural=$BBK_TOKEN_heritagecultural" >> .env_compose
-          echo "BBK_POLICY_TOKEN_pop_hundred_million=$BBK_POLICY_TOKEN_pop_hundred_million" >> .env_compose
-          echo "BBK_TOKEN_country=$BBK_TOKEN_country" >> .env_compose
+        run: . ./bbk-demo-config.sh .env_compose
 
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
       - name: build and run docker-compose
