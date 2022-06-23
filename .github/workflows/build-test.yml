@@ -61,7 +61,9 @@ jobs:
           echo "TESTS_CON_HERITAGE_CULT = http://bbkt-webhook:8006" >> .env
 
       - name: Create link to .env file for examples tests
-        run: ln -s ./bitbroker/.env ./examples/.env
+        run: |
+          ln -s ./bitbroker/.env ./examples/.env
+          ls -la ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)

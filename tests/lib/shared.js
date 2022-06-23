@@ -25,7 +25,6 @@ Shared methods used by all test scripts
 // --- load configuration - do this first
 
 require('dotenv').config({ path: '../.env' });
-process.env.APP_DATABASE = process.env.APP_DATABASE.replace('CREDENTIALS', process.env.TESTS_USER);
 
 // --- dependancies
 
