@@ -122,7 +122,10 @@ jobs:
 
       - name: run tests
         working-directory: examples/tests
-        run: node all.js
+        run: |
+          pwd
+          cat ./examples/.env
+          node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
