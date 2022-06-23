@@ -64,7 +64,7 @@ jobs:
         run: ln -s ./bitbroker/.env ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
-      - name: build and run docker-compose
+      - name: build and run docker-compose (bit-broker core)
         working-directory: bit-broker/development/docker-compose
         run: docker-compose up --build -d
 
@@ -89,7 +89,7 @@ jobs:
         run: . ./bbk-demo-config.sh .env_compose
 
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
-      - name: build and run docker-compose
+      - name: build and run docker-compose (file based connectors)
         working-directory: examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
 
@@ -99,7 +99,7 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: examples/test
+        working-directory: examples/tests
         run: node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
@@ -108,8 +108,8 @@ jobs:
         working-directory: examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-file.yml stop
 
-      # build and run bbk docker-compose for bit-broker examples (file based connectors)
-      - name: build and run docker-compose
+      # build and run bbk docker-compose for bit-broker examples (rdbms based connectors)
+      - name: build and run docker-compose (rdbms based connectors)
         working-directory: examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
@@ -119,7 +119,7 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: examples/test
+        working-directory: examples/tests
         run: node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
