@@ -100,7 +100,7 @@ jobs:
 
       - name: run tests
         working-directory: examples/test
-        run: npm test
+        run: node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
@@ -120,7 +120,7 @@ jobs:
 
       - name: run tests
         working-directory: examples/test
-        run: npm test
+        run: node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
