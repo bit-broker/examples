@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@master
         with:
           repository: bit-broker/examples
-          path: ./portal
+          path: ./examples
 
       - name: Check out bit-broker repo
         uses: actions/checkout@master
