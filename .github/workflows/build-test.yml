@@ -102,8 +102,8 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: ./examples/tests
         run: |
+          cd examples/tests
           node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
@@ -123,8 +123,8 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: ./examples/tests
         run: |
+          cd examples/tests
           node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
