@@ -49,12 +49,12 @@ jobs:
 
       # set up env files required for bbk deployment & test...
       - name: Create .env file for docker
-        working-directory: bit-broker
+        working-directory: ./bit-broker
         run: cp .env.example .env
 
       # add connector end-points to .env...
       - name: Add connector end-points to .env...
-        working-directory: bit-broker
+        working-directory: ./bit-broker
         run: |
           echo "TESTS_CON_COUNTRY = http://bbkt-webhook:8004" >> .env
           echo "TESTS_CON_HERITAGE_NAT = http://bbkt-webhook:8005" >> .env
@@ -63,11 +63,12 @@ jobs:
 
       - name: Create link to .env file for examples tests
         run: |
-          ln -s ./bitbroker/.env ./examples/tests/.env
+          ln -s ./bitbroker/.env ./examples/.env
+          ls -la ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)
-        working-directory: bit-broker/development/docker-compose
+        working-directory: ./bit-broker/development/docker-compose
         run: docker-compose up --build -d
 
       - name: Set up node
@@ -79,7 +80,7 @@ jobs:
 
       # install test suite dependencies
       - name: install dependencies
-        working-directory: examples/tests
+        working-directory: ./examples/tests
         run: npm install
 
       - name: install mocha
@@ -87,12 +88,12 @@ jobs:
 
       # source config script
       - name: examples config
-        working-directory: examples/development/scripts
+        working-directory: ./examples/development/scripts
         run: . ./bbk-demo-config.sh .env_compose
 
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
       - name: build and run docker-compose (file based connectors)
-        working-directory: examples/development/scripts
+        working-directory: ./examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
@@ -101,19 +102,19 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: examples/tests
+        working-directory: ./examples/tests
         run: |
           node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
         if: always()
-        working-directory: examples/development/scripts
+        working-directory: ./examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-file.yml stop
 
       # build and run bbk docker-compose for bit-broker examples (rdbms based connectors)
       - name: build and run docker-compose (rdbms based connectors)
-        working-directory: examples/development/scripts
+        working-directory: ./examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
@@ -122,12 +123,12 @@ jobs:
         shell: bash
 
       - name: run tests
-        working-directory: examples/tests
+        working-directory: ./examples/tests
         run: |
           node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
         if: always()
-        working-directory: examples/development/scripts
+        working-directory: ./examples/development/scripts
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml down --remove-orphans
