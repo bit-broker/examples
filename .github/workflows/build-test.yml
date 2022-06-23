@@ -59,11 +59,11 @@ jobs:
           echo "TESTS_CON_COUNTRY = http://bbkt-webhook:8004" >> .env
           echo "TESTS_CON_HERITAGE_NAT = http://bbkt-webhook:8005" >> .env
           echo "TESTS_CON_HERITAGE_CULT = http://bbkt-webhook:8006" >> .env
+          cat .env
 
       - name: Create link to .env file for examples tests
         run: |
-          ln -s ./bitbroker/.env ./examples/.env
-          ls -la ./examples/.env
+          ln -s ./bitbroker/.env ./examples/tests/.env
 
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)
@@ -102,7 +102,8 @@ jobs:
 
       - name: run tests
         working-directory: examples/tests
-        run: node all.js
+        run: |
+          node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
@@ -123,8 +124,6 @@ jobs:
       - name: run tests
         working-directory: examples/tests
         run: |
-          pwd
-          cat ./examples/.env
           node all.js
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
