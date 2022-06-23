@@ -91,7 +91,7 @@ jobs:
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
       - name: build and run docker-compose
         working-directory: examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-file.yml -up --build -d
+        run: docker-compose -f ./docker-compose-nodejs-file.yml up --build -d
 
       # let deployment settle...
       - name: Sleep for 10 seconds
@@ -111,7 +111,7 @@ jobs:
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
       - name: build and run docker-compose
         working-directory: examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml -up --build -d
+        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml up --build -d
 
       # let deployment settle...
       - name: Sleep for 10 seconds
