@@ -1,0 +1,51 @@
+{
+    "id": "db1cb554f3136d9b72d8d3695f9bfaef2c9c62c3",
+    "url": "http://bbk-consumer:8003/v1/entity/country/:id",
+    "type": "country",
+    "name": "United Kingdom",
+    "entity": {
+        "area": 242900,
+        "code": "GB",
+        "link": "https://en.wikipedia.org/wiki/United_Kingdom",
+        "capital": "London",
+        "currency": {
+            "code": "GBP",
+            "name": "Sterling"
+        },
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                -3.435973,
+                55.378051
+            ]
+        },
+        "continent": "Europe",
+        "languages": [
+            "English",
+            "Gaeli",
+            "Kymri"
+        ],
+        "landlocked": false,
+        "population": 66040229,
+        "calling_code": 44,
+        "flag": "http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20%283-5%29.svg"
+    },
+    "instance": {
+        "independence": 1066
+    },
+    "timeseries": {
+        "population": {
+            "unit": "x1000",
+            "value": "people",
+            "period": "P1Y",
+            "url": "http://bbk-consumer:8003/v1/entity/country/:id/timeseries/population"
+        }
+    },
+    "legal": [
+        {
+            "type": "attribution",
+            "text": "Data is supplied by Wikipedia",
+            "link": "https://en.wikipedia.org/"
+        }
+    ]
+}

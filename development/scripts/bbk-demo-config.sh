@@ -22,7 +22,7 @@ WEBHOOK_BASE="http://bbkt-webhook"
 COORD_BASE="http://bbk-coordinator:8001"
 BOOTSTRAP_KEY="abc123"
 HELM_DEPLOY=0
-
+OUTPUT_ENV=$1
 
 # Functions
 
@@ -61,8 +61,15 @@ function register_connector() {
 
     ID=$(echo "$REGISTER_DETAILS" | jq -r '.id')
     TOKEN=$(echo "$REGISTER_DETAILS" | jq -r '.token')
-    export BBK_ID_$CONNECTOR="$ID"
-    export BBK_TOKEN_$CONNECTOR="$TOKEN"
+
+
+    if [ -z "$OUTPUT_ENV" ]; then
+        export BBK_ID_$CONNECTOR="$ID"
+        export BBK_TOKEN_$CONNECTOR="$TOKEN"
+    else 
+        echo "BBK_ID_$CONNECTOR=$ID" >> $OUTPUT_ENV
+        echo "BBK_TOKEN_$CONNECTOR=$TOKEN" >> $OUTPUT_ENV
+    fi
 }
 
 function add_policy () {
@@ -92,7 +99,11 @@ function create_policy_user_access () {
     echo "give user $USERID ($USER) access to policy $POLICY_SLUG"
     TOKEN="$(curl -sS -X POST $COORD_BASE/v1/user/$USERID/access/$POLICY_SLUG -H "x-bbk-auth-token:$BOOTSTRAP_KEY")"
     EXPORTVAR="BBK_POLICY_TOKEN_$(echo $POLICY_SLUG | tr '-' '_')"
-    export "$EXPORTVAR"="$TOKEN"
+    if [ -z "$OUTPUT_ENV" ]; then
+        export "$EXPORTVAR"="$TOKEN"
+    else
+        echo "$EXPORTVAR=$TOKEN" >> $OUTPUT_ENV
+    fi
 }
 
 # create country entity & connector

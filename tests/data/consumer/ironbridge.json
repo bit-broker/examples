@@ -1,0 +1,31 @@
+{
+    "id": "6295f4b0cfa3bec9456935af3b4a7b4dc9f57156",
+    "url": "http://bbk-consumer:8003/v1/entity/heritage/:id",
+    "type": "heritage",
+    "name": "Ironbridge Gorge",
+    "entity": {
+        "area": 0,
+        "link": "https://whc.unesco.org/en/list/371",
+        "image": "https://whc.unesco.org/uploads/thumbs/site_0371_0001-1200-630-20090923125000.jpg",
+        "country": "http://bbk-consumer:8003/v1/entity/country/db1cb554f3136d9b72d8d3695f9bfaef2c9c62c3",
+        "category": "cultural",
+        "location": {
+            "type": "Point",
+            "coordinates": [
+                -2.472777778,
+                52.62638889
+            ]
+        },
+        "inscribed": 1986,
+        "description": "Ironbridge is known throughout the world as the symbol of the Industrial Revolution. It contains all the elements of progress that contributed to the rapid development of this industrial region in the 18th century, from the mines themselves to the railway lines. Nearby, the blast furnace of Coalbrookdale, built in 1708, is a reminder of the discovery of coke. The bridge at Ironbridge, the world's first bridge constructed of iron, had a considerable influence on developments in the fields of technology and architecture."
+    },
+    "instance": {},
+    "timeseries": {},
+    "legal": [
+        {
+            "type": "attribution",
+            "text": "Data is supplied by Wikipedia",
+            "link": "https://en.wikipedia.org/"
+        }
+    ]
+}

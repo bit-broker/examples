@@ -1,0 +1,57 @@
+[
+    {
+        "slug": "country",
+        "properties": {
+            "name": "Countries",
+            "description": "All the countries in the world as defined by the UN",
+            "schema": {},
+            "timeseries": {
+                "population": {
+                    "period": "P1Y",
+                    "value": "people",
+                    "unit": "x1000"
+                }
+            }
+        },
+        "connectors": [
+            {
+                "slug": "wikipedia",
+                "properties": {
+                    "name": "Wikipedia",
+                    "description": "Country information from Wikipedia",
+                    "webhook": "http://bbkt-webhook:8888/",
+                    "cache": 0
+                }
+            }
+        ]
+    },
+    {
+        "slug": "heritage",
+        "properties": {
+            "name": "World Heritage Sites",
+            "description": "A landmark or area with legal protection by an international convention administered by UNESCO",
+            "schema": {},
+            "timeseries": {}
+        },
+        "connectors": [
+            {
+                "slug": "unesco-culture",
+                "properties": {
+                    "name": "UNESCO",
+                    "description": "Cultural World Heritage Sites information from UNESCO",
+                    "webhook": null,
+                    "cache": 0
+                }
+            },
+            {
+                "slug": "unesco-nature",
+                "properties": {
+                    "name": "UNESCO",
+                    "description": "Natural World Heritage Sites information from UNESCO",
+                    "webhook": null,
+                    "cache": 0
+                }
+            }
+        ]
+    }
+]
