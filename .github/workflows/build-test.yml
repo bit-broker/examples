@@ -59,11 +59,9 @@ jobs:
           echo "TESTS_CON_COUNTRY = http://bbkt-webhook:8004" >> .env
           echo "TESTS_CON_HERITAGE_NAT = http://bbkt-webhook:8005" >> .env
           echo "TESTS_CON_HERITAGE_CULT = http://bbkt-webhook:8006" >> .env
-          cat .env
 
       - name: Create .env file for examples
-          cp ./bit-broker/.env ./examples/.env
-          cat ./examples/.env
+        run: cp ./bit-broker/.env ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)
