@@ -63,7 +63,7 @@ jobs:
 
       - name: Create link to .env file for examples tests
         run: |
-          cp ./bitbroker/.env ./examples/.env
+          cp ./bit-broker/.env ./examples/.env
           cat -la ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
