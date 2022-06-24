@@ -48,7 +48,7 @@ jobs:
           cat /etc/hosts
 
       # set up env files required for bbk deployment & test...
-      - name: Create .env file for docker
+      - name: Create .env file for bit-broker core
         working-directory: ./bit-broker
         run: cp .env.example .env
 
@@ -61,8 +61,7 @@ jobs:
           echo "TESTS_CON_HERITAGE_CULT = http://bbkt-webhook:8006" >> .env
           cat .env
 
-      - name: Create link to .env file for examples tests
-        run: |
+      - name: Create .env file for examples
           cp ./bit-broker/.env ./examples/.env
           cat ./examples/.env
 
@@ -81,6 +80,11 @@ jobs:
       - name: install mocha
         run: npm install mocha -g
 
+      # install test suite dependencies
+      - name: install dependencies
+        working-directory: ./examples/tests
+        run: npm install
+
       # source config script
       - name: examples config
         working-directory: ./examples/development/scripts
@@ -96,14 +100,21 @@ jobs:
         run: sleep 10s
         shell: bash
 
-      # install test suite dependencies
-      - name: install dependencies
-        working-directory: ./examples/tests
-        run: npm install
+      # check connector endpoints
+      - name: Check Connector endpoints
+        run: |
+          curl -s http://bbkt-webhook:8004
+          curl -s http://bbkt-webhook:8005
+          curl -s http://bbkt-webhook:8006
 
       - name: run tests
         working-directory: ./examples/tests
         run: npm test
+
+      - name: dump logs
+        if: always()
+        working-directory: ./examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-file.yml logs
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
@@ -121,9 +132,21 @@ jobs:
         run: sleep 10s
         shell: bash
 
+      # check connector endpoints
+      - name: Check Connector endpoints
+        run: |
+          curl -s http://bbkt-webhook:8004
+          curl -s http://bbkt-webhook:8005
+          curl -s http://bbkt-webhook:8006
+
       - name: run tests
         working-directory: ./examples/tests
         run: npm test
+
+      - name: dump logs
+        if: always()
+        working-directory: ./examples/development/scripts
+        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml logs
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
