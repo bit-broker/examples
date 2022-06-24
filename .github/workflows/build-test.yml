@@ -45,6 +45,7 @@ jobs:
           echo "${{ env.host_ip }}	bbk-auth-service" | sudo tee -a /etc/hosts
           echo "${{ env.host_ip }}	bbk-rate-limit" | sudo tee -a /etc/hosts
           echo "${{ env.host_ip }}	bbkt-webhook" | sudo tee -a /etc/hosts
+          echo "${{ env.host_ip }}	bbk-con-db" | sudo tee -a /etc/hosts
           cat /etc/hosts
 
       # set up env files required for bbk deployment & test...
@@ -126,8 +127,8 @@ jobs:
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
-      - name: Sleep for 60 seconds
-        run: sleep 60s
+      - name: Sleep for 15 seconds
+        run: sleep 15s
         shell: bash
 
       # check connector endpoints
