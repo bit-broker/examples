@@ -23,13 +23,6 @@ jobs:
           repository: bit-broker/bit-broker
           path: ./bit-broker
 
-      - name: check ls
-        run: |
-          ls -la
-          ls -la ./examples
-          ls -la ./bit-broker
-
-
       # get & persist host IP
       - name: get host IP (eth0)
         run: echo "host_ip=$(ip addr show eth0 | grep -Po 'inet \K[\d.]+')" >> $GITHUB_ENV
@@ -95,25 +88,13 @@ jobs:
         run: docker-compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
-      - name: Sleep for 15 seconds
-        run: sleep 15s
+      - name: Sleep for 10 seconds
+        run: sleep 10s
         shell: bash
-
-      # check connector endpoints
-      - name: Check Connector endpoints
-        run: |
-          curl -s http://bbkt-webhook:8004
-          curl -s http://bbkt-webhook:8005
-          curl -s http://bbkt-webhook:8006
 
       - name: run tests
         working-directory: ./examples/tests
         run: npm test
-
-      - name: dump logs
-        if: always()
-        working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-file.yml logs
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
@@ -127,25 +108,13 @@ jobs:
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
-      - name: Sleep for 15 seconds
-        run: sleep 15s
+      - name: Sleep for 10 seconds
+        run: sleep 10s
         shell: bash
-
-      # check connector endpoints
-      - name: Check Connector endpoints
-        run: |
-          curl -s http://bbkt-webhook:8004
-          curl -s http://bbkt-webhook:8005
-          curl -s http://bbkt-webhook:8006
 
       - name: run tests
         working-directory: ./examples/tests
         run: npm test
-
-      - name: dump logs
-        if: always()
-        working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml logs
 
       # stop bbk docker-compose for bit-broker examples (file based connectors)
       - name: Stop containers
