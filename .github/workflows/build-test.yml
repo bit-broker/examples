@@ -63,8 +63,8 @@ jobs:
 
       - name: Create link to .env file for examples tests
         run: |
-          ln -s ./bitbroker/.env ./examples/.env
-          ls -la ./examples/.env
+          cp ./bitbroker/.env ./examples/.env
+          cat -la ./examples/.env
 
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)
@@ -77,11 +77,6 @@ jobs:
           node-version: 16.x
           cache: 'npm'
           cache-dependency-path:  examples/tests/package-lock.json
-
-      # install test suite dependencies
-      - name: install dependencies
-        working-directory: ./examples/tests
-        run: npm install
 
       - name: install mocha
         run: npm install mocha -g
@@ -100,6 +95,11 @@ jobs:
       - name: Sleep for 10 seconds
         run: sleep 10s
         shell: bash
+
+      # install test suite dependencies
+      - name: install dependencies
+        working-directory: ./examples/tests
+        run: npm install
 
       - name: run tests
         working-directory: ./examples/tests
