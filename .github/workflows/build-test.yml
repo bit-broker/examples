@@ -94,8 +94,8 @@ jobs:
         run: docker-compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
-      - name: Sleep for 10 seconds
-        run: sleep 20s
+      - name: Sleep for 15 seconds
+        run: sleep 15s
         shell: bash
 
       # check connector endpoints
@@ -126,8 +126,8 @@ jobs:
         run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
-      - name: Sleep for 10 seconds
-        run: sleep 20s
+      - name: Sleep for 60 seconds
+        run: sleep 60s
         shell: bash
 
       # check connector endpoints
