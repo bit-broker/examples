@@ -67,7 +67,7 @@ const pool = {
     "min": 2,
     "max": 6,
     "createTimeoutMillis": 3000,
-    "acquireTimeoutMillis": 30000,
+    "acquireTimeoutMillis": 60000, // 60 seconds
     "idleTimeoutMillis": 30000,
     "reapIntervalMillis": 1000,
     "createRetryIntervalMillis": 100,
