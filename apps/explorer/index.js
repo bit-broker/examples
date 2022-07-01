@@ -433,12 +433,12 @@ function consumerAPIFetch(url) {
         let newUrl = new URL(url);
         if (newUrl.searchParams.has("limit") == false) {
             newUrl.searchParams.set("limit", timeseries_limit);
-            
+
         }
         url = newUrl.toString();
     }
 
-   
+
     updateBrowserUrl(url);
     previousUrl = url;
 
@@ -459,8 +459,8 @@ function consumerAPIFetch(url) {
         updateCopyCurlButton(previousUrl);
 
         paginationVisibility(
-            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE ||  urlType == BBK_TIMESERIES ? true : false
-        );   
+            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE || urlType == BBK_TIMESERIES ? true : false
+        );
 
         if (Array.isArray(data)) {
 
@@ -468,14 +468,14 @@ function consumerAPIFetch(url) {
                 paginationVisibility(false);
                 return (results.innerHTML = "No Results Found");
             }
-            if (urlType == BBK_TIMESERIES)  {
+            if (urlType == BBK_TIMESERIES) {
                 if (data.length < timeseries_limit) {
                     next.forEach((element) => (element.disabled = true));
                 }
                 latestTimeseries = data[data.length - 1].from;
                 earliestTimeseries = data[0].from;
                 results.append(formatTimeSeries(data));
-            } else {        
+            } else {
                 if (data.length < default_limit) {
                     next.forEach((element) => (element.disabled = true));
                 }
@@ -483,7 +483,7 @@ function consumerAPIFetch(url) {
                     results.append(formatResponse(item));
                 });
             }
-        } else {           
+        } else {
             results.append(formatResponse(data));
         }
     })
@@ -554,27 +554,24 @@ const page = (up) => {
         }
         newUrl.searchParams.set("offset", newOffset);
         newUrl.searchParams.set("limit", newLimit);
-    }
-    else if (urlType == BBK_TIMESERIES) {
+    } else if (urlType == BBK_TIMESERIES) {
 
         let newLimit = timeseries_limit;
         let duration = moment(latestTimeseries.toString()).unix() - moment(earliestTimeseries.toString()).unix();
-        let newStart = moment(earliestTimeseries.toString()).subtract(duration, "second");
         console.log(latestTimeseries, earliestTimeseries)
-        newUrl.searchParams.set("limit", newLimit); 
+        newUrl.searchParams.set("limit", newLimit);
         if (newUrl.searchParams.has("duration") == false) {
-        newUrl.searchParams.set("duration", duration); 
+            newUrl.searchParams.set("duration", duration);
         }
-        if (newUrl.searchParams.has("start")) {
-           latestTimeseries = newUrl.searchParams.get("start"); 
-            }
         if (up) {
-           newUrl.searchParams.set("start", latestTimeseries);
+            newUrl.searchParams.set("start", latestTimeseries);
+
         } else {
-           
-            newStartValue = newStart.year()
-            console.log('new value here!', newStartValue)
-            newUrl.searchParams.set("start", newStartValue);
+            let newStart = moment(earliestTimeseries.toString()).subtract(duration, "second");
+            console.log("newstart", newStart.toString())
+            // newStartValue = newStart.year()
+            console.log('new value here!', newStart.year())
+            newUrl.searchParams.set("start", newStart.year());
         }
 
     }
