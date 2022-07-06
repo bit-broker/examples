@@ -109,6 +109,7 @@ let default_limit = 10;
 let timeseries_limit = 20;
 let latestTimeseries = 0;
 let earliestTimeseries = 0;
+let nextTimeseries = 0;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -469,11 +470,17 @@ function consumerAPIFetch(url) {
                 return (results.innerHTML = "No Results Found");
             }
             if (urlType == BBK_TIMESERIES) {
-                if (data.length < timeseries_limit) {
-                    next.forEach((element) => (element.disabled = true));
-                }
+                // if (data.length < timeseries_limit) {
+                //     next.forEach((element) => (element.disabled = true));
+                // }
+
                 latestTimeseries = data[data.length - 1].from;
                 earliestTimeseries = data[0].from;
+                if (data.length > 1) {
+                    nextTimeseries = data[1].from;
+                } else {
+                    nextTimeseries = data[0].from;
+                }
                 results.append(formatTimeSeries(data));
             } else {
                 if (data.length < default_limit) {
@@ -555,21 +562,30 @@ const page = (up) => {
         newUrl.searchParams.set("offset", newOffset);
         newUrl.searchParams.set("limit", newLimit);
     } else if (urlType == BBK_TIMESERIES) {
+        let initialDuration = moment.duration(moment(nextTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
+        let backupDuration = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
+        let duration = initialDuration.asSeconds() * timeseries_limit
+        let secondDuration = backupDuration.asSeconds()
+        // if (initialDuration > secondDuration*1.5) {
+        //     duration = secondDuration
+        // }
+        console.log(nextTimeseries, earliestTimeseries)
+        console.log('initialduration', initialDuration)
+        console.log('duration', duration)
 
-        let newLimit = timeseries_limit;
-        let duration = moment(latestTimeseries.toString()).unix() - moment(earliestTimeseries.toString()).unix();
-        console.log(latestTimeseries, earliestTimeseries)
-        newUrl.searchParams.set("limit", newLimit);
+        newUrl.searchParams.set("limit", timeseries_limit);
         if (newUrl.searchParams.has("duration") == false) {
             newUrl.searchParams.set("duration", duration);
         }
         if (up) {
-            newUrl.searchParams.set("start", latestTimeseries);
+            let newStart = moment(earliestTimeseries.toString()).add(duration, 's');
+            console.log("newStart", newStart.toString());
+            newUrl.searchParams.set("start", newStart.year());
 
         } else {
-            let newStart = moment(earliestTimeseries.toString()).subtract(duration, "second");
+            let newStart = moment(earliestTimeseries.toString()).subtract(duration, 's');
+            console.log('updated duration', duration)
             console.log("newstart", newStart.toString())
-            // newStartValue = newStart.year()
             console.log('new value here!', newStart.year())
             newUrl.searchParams.set("start", newStart.year());
         }
