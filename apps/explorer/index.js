@@ -222,6 +222,11 @@ const formatTimeSeriesChart = (result) => {
         return e.from;
     });
 
+    const titles = Object.keys(result[0])
+    const xTitle = titles[0];
+    const yTitle = titles[1];
+    
+
     const data = result.map(function(e) {
         return e.value;
     });
@@ -232,7 +237,7 @@ const formatTimeSeriesChart = (result) => {
         data: {
             labels: labels,
             datasets: [{
-                label: "Yearly Population",
+                label: "Timeseries Data",
                 fill: true,
                 lineTension: 0.1,
                 backgroundColor: "rgba(0, 119, 204, 0.3)",
@@ -242,12 +247,11 @@ const formatTimeSeriesChart = (result) => {
             }, ],
         },
         options: {
-            responsive: "true",
             scales: {
                 x: {
                     title: {
                         display: true,
-                        text: "Year",
+                        text: xTitle,
                         color: "#00008b",
                         font: {
                             fontFamily: "Arial",
@@ -262,7 +266,7 @@ const formatTimeSeriesChart = (result) => {
                 y: {
                     title: {
                         display: true,
-                        text: "Population",
+                        text: yTitle,
                         color: "#00008b",
                         font: {
                             fontFamily: "Arial",
@@ -297,13 +301,17 @@ const formatTimeSeriesTable = (result) => {
 
     table.appendChild(thead);
 
+    const titles = Object.keys(result[0])
+    const xTitle = titles[0];
+    const yTitle = titles[1];
+
     const tr = document.createElement("tr");
 
     const th = document.createElement("th");
-    th.appendChild(document.createTextNode("Year"));
+    th.appendChild(document.createTextNode(xTitle));
     tr.appendChild(th);
     const th2 = document.createElement("th");
-    th2.appendChild(document.createTextNode("Population"));
+    th2.appendChild(document.createTextNode(yTitle));
     tr.appendChild(th2);
     thead.appendChild(tr);
     const year = result.map(function(e) {
@@ -312,6 +320,7 @@ const formatTimeSeriesTable = (result) => {
     const population = result.map(function(e) {
         return e.value;
     });
+    
     for (let i = 0; i < result.length; i++) {
         const tr2 = document.createElement("tr");
         const td = document.createElement("td");
@@ -464,15 +473,19 @@ function consumerAPIFetch(url) {
         );
 
         if (Array.isArray(data)) {
+            if (urlType == BBK_TIMESERIES) {
+                if (data.length === 0) {
+                    latestTimeseries = 0;
+                    paginationVisibility(true);
+                    return (results.innerHTML = "No Results Found");
+                }
+            }
 
             if (data.length === 0) {
                 paginationVisibility(false);
                 return (results.innerHTML = "No Results Found");
             }
             if (urlType == BBK_TIMESERIES) {
-                // if (data.length < timeseries_limit) {
-                //     next.forEach((element) => (element.disabled = true));
-                // }
 
                 latestTimeseries = data[data.length - 1].from;
                 earliestTimeseries = data[0].from;
@@ -561,33 +574,45 @@ const page = (up) => {
         }
         newUrl.searchParams.set("offset", newOffset);
         newUrl.searchParams.set("limit", newLimit);
+
+        /* use start and duration for timeseries pagination
+         */
+
     } else if (urlType == BBK_TIMESERIES) {
+
+        /* get duration by calculating difference between two returned timeseries data elements 
+         */
         let initialDuration = moment.duration(moment(nextTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
         let backupDuration = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
         let duration = initialDuration.asSeconds() * timeseries_limit
         let secondDuration = backupDuration.asSeconds()
-        // if (initialDuration > secondDuration*1.5) {
-        //     duration = secondDuration
-        // }
+        if (initialDuration > secondDuration * 2) {
+            duration = secondDuration
+        }
         console.log(nextTimeseries, earliestTimeseries)
         console.log('initialduration', initialDuration)
         console.log('duration', duration)
 
         newUrl.searchParams.set("limit", timeseries_limit);
-        if (newUrl.searchParams.has("duration") == false) {
+        if (newUrl.searchParams.has("duration") ) {
+            duration = parseInt(newUrl.searchParams.get("duration"));
+        }  else {
             newUrl.searchParams.set("duration", duration);
         }
         if (up) {
             let newStart = moment(earliestTimeseries.toString()).add(duration, 's');
-            console.log("newStart", newStart.toString());
-            newUrl.searchParams.set("start", newStart.year());
+            console.log("newStart", newStart.toISOString());
+            newUrl.searchParams.set("start", newStart.toISOString());
 
         } else {
             let newStart = moment(earliestTimeseries.toString()).subtract(duration, 's');
+            if (latestTimeseries == 0) {
+                newStart = moment(earliestTimeseries.toString());
+            }
             console.log('updated duration', duration)
             console.log("newstart", newStart.toString())
-            console.log('new value here!', newStart.year())
-            newUrl.searchParams.set("start", newStart.year());
+            console.log('new value here!', newStart.toISOString())
+            newUrl.searchParams.set("start", newStart.toISOString());
         }
 
     }
