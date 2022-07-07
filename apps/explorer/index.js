@@ -575,34 +575,46 @@ const page = (up) => {
         newUrl.searchParams.set("offset", newOffset);
         newUrl.searchParams.set("limit", newLimit);
 
-        /* use start and duration for timeseries pagination
-         */
-
     } else if (urlType == BBK_TIMESERIES) {
 
-        /* get duration by calculating difference between two returned timeseries data elements 
-         */
-        let initialDuration = moment.duration(moment(nextTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
-        let backupDuration = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
-        let duration = initialDuration.asSeconds() * timeseries_limit
-        let secondDuration = backupDuration.asSeconds()
-        if (initialDuration > secondDuration * 2) {
-            duration = secondDuration
+        /* Timeseries paging is different to regular API paging in one key respect; whilst we still have a limit, there is no offset, so we have to use start & duration
+            instead. Here we try to determine a default duration by looking at the interval between data points in the initial tmeseries data page, and multiplying by the default paging limit.
+            This approach has limitations in the presence of timeseries data with gaps. This implementation  has some issues when handling time periods which arent a constant multiple of seconds / 
+            milliseonds (e.g. months / years)
+        */
+
+        let durationSecs = 0 ;
+        if (latestTimeseries != 0) { // we have a non-empty results set we can use to determine a duration...
+
+            let singleInterval = moment.duration(moment(nextTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
+            let totalInterval = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
+
+            durationSecs = singleInterval.asSeconds() * timeseries_limit;
+            let totalDurationsecs = totalInterval.asSeconds()
+
+            if (durationSecs > totalDurationsecs * 2) {
+                // sanity check duration in case we have gaps in timeseries data
+                durationSecs = totalDurationsecs;
+            }
         }
 
         newUrl.searchParams.set("limit", timeseries_limit);
         if (newUrl.searchParams.has("duration")) {
-            duration = parseInt(newUrl.searchParams.get("duration"));
+            durationSecs = parseInt(newUrl.searchParams.get("duration"));
         } else {
-            newUrl.searchParams.set("duration", duration);
+            newUrl.searchParams.set("duration", durationSecs);
         }
+
         if (up) {
-            let newStart = moment(earliestTimeseries.toString()).add(duration, 's');
+            let newStart = moment(earliestTimeseries.toString()).add(durationSecs, 's');
+            if (latestTimeseries == 0) { // last results set empty
+                newStart = moment(earliestTimeseries.toString());
+            }
             newUrl.searchParams.set("start", newStart.toISOString());
 
         } else {
-            let newStart = moment(earliestTimeseries.toString()).subtract(duration, 's');
-            if (latestTimeseries == 0) {
+            let newStart = moment(earliestTimeseries.toString()).subtract(durationSecs, 's');
+            if (latestTimeseries == 0) { // last results set empty
                 newStart = moment(earliestTimeseries.toString());
             }
 
