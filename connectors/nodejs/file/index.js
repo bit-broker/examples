@@ -147,8 +147,13 @@ class MyCatalog extends BBKCatalog {
                 });
             }
           
-            data = json; // make json data available to webhook callbacks...
-            return json.map(({ _population, _wikidata, ...item }) => item);
+            data = _.cloneDeep(json); ; // make raw json data available to webhook callbacks...
+            
+            json.forEach(record => {
+                let removeList  = Object.keys(record).filter(v => v.startsWith("_"));
+                removeList.forEach(key => delete record[key]);
+            });
+            return json
         })
         .then(items => {
             return this.session(BBKCatalog.SESSION_STREAM, BBKCatalog.ACTION_UPSERT, items)
@@ -192,11 +197,13 @@ class MyWebhook extends BBKWebhook {
                 })
                 .then(res => res.json())
                 .then(json => {
-                    let clean_record = (({ _population, _wikidata, ...x }) => x)(record);
+                    let clean_record = _.cloneDeep(record)
+                    let removeList  = Object.keys(clean_record).filter(v => v.startsWith("_"));
+                    removeList.forEach(key => delete clean_record[key]);
                     if (json?.results?.bindings[0]?.flag?.value !== undefined) {
                         clean_record.entity.flag = json.results.bindings[0].flag.value;
                     }
-                    cb(clean_record); // will HTTP/404
+                    cb(clean_record); 
                 })
                 .catch(function(err) {
                     const reason = new Error(`webhook error`);
@@ -205,8 +212,10 @@ class MyWebhook extends BBKWebhook {
                     cb(null); // will HTTP/404
                 });
             } else {
-                let clean_record = (({ _population, _wikidata, ...x }) => x)(record);
-                cb(clean_record); // will HTTP/404
+                let clean_record = _.cloneDeep(record)
+                let removeList  = Object.keys(clean_record).filter(v => v.startsWith("_"));
+                removeList.forEach(key => delete clean_record[key]);
+                cb(clean_record); 
             }
         } else {
             cb(null); // will HTTP/404
