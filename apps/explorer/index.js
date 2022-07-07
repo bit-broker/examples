@@ -589,9 +589,6 @@ const page = (up) => {
         if (initialDuration > secondDuration * 2) {
             duration = secondDuration
         }
-        console.log(nextTimeseries, earliestTimeseries)
-        console.log('initialduration', initialDuration)
-        console.log('duration', duration)
 
         newUrl.searchParams.set("limit", timeseries_limit);
         if (newUrl.searchParams.has("duration") ) {
@@ -601,7 +598,6 @@ const page = (up) => {
         }
         if (up) {
             let newStart = moment(earliestTimeseries.toString()).add(duration, 's');
-            console.log("newStart", newStart.toISOString());
             newUrl.searchParams.set("start", newStart.toISOString());
 
         } else {
@@ -609,9 +605,7 @@ const page = (up) => {
             if (latestTimeseries == 0) {
                 newStart = moment(earliestTimeseries.toString());
             }
-            console.log('updated duration', duration)
-            console.log("newstart", newStart.toString())
-            console.log('new value here!', newStart.toISOString())
+    
             newUrl.searchParams.set("start", newStart.toISOString());
         }
 
