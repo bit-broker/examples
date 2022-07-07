@@ -225,7 +225,7 @@ const formatTimeSeriesChart = (result) => {
     const titles = Object.keys(result[0])
     const xTitle = titles[0];
     const yTitle = titles[1];
-    
+
 
     const data = result.map(function(e) {
         return e.value;
@@ -320,7 +320,7 @@ const formatTimeSeriesTable = (result) => {
     const population = result.map(function(e) {
         return e.value;
     });
-    
+
     for (let i = 0; i < result.length; i++) {
         const tr2 = document.createElement("tr");
         const td = document.createElement("td");
@@ -591,9 +591,9 @@ const page = (up) => {
         }
 
         newUrl.searchParams.set("limit", timeseries_limit);
-        if (newUrl.searchParams.has("duration") ) {
+        if (newUrl.searchParams.has("duration")) {
             duration = parseInt(newUrl.searchParams.get("duration"));
-        }  else {
+        } else {
             newUrl.searchParams.set("duration", duration);
         }
         if (up) {
@@ -605,7 +605,7 @@ const page = (up) => {
             if (latestTimeseries == 0) {
                 newStart = moment(earliestTimeseries.toString());
             }
-    
+
             newUrl.searchParams.set("start", newStart.toISOString());
         }
 
