@@ -234,7 +234,7 @@ class MyWebhook extends BBKWebhook {
         var record = data.find(x => x.id === eid)
         if (record) {
             let ts_prop = `_${ tsid }`; // stored in test data with a leading underscore
-            if (record.hasOwnProperty(ts_prop)) {
+            if ((record.hasOwnProperty(ts_prop)) && (Array.isArray(record[ts_prop]))) {
 
                 let timeseries = record[ts_prop] || [];
 
