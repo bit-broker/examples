@@ -106,6 +106,9 @@ let baseURL = "";
 let previousUrl = "";
 let devShimMode = false;
 let default_limit = 10;
+let timeseries_limit = 20;
+let latestTimeseries = 0;
+let earliestTimeseries = 0;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -206,6 +209,14 @@ const renderJson = (prop, jsonString) => {
     return row;
 };
 
+const extractTimeSeriesName = (url) => {
+
+    let tmp = url.split('/');
+    let ts_name = tmp[tmp.length - 1];
+    ts_name = ts_name.substring(0, ts_name.indexOf("?"));
+    return ts_name
+}
+
 /* Render TimeSeries Data as Chart
  */
 
@@ -214,9 +225,19 @@ const formatTimeSeriesChart = (result) => {
     const canvas = document.createElement("canvas");
     canvas.id = "canvas";
 
+    let ts_name = "";
+    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
+        ts_name = extractTimeSeriesName(previousUrl);
+    }
+
     const labels = result.map(function(e) {
         return e.from;
     });
+
+    const titles = Object.keys(result[0])
+    const xTitle = titles[0];
+    const yTitle = ts_name;
+
 
     const data = result.map(function(e) {
         return e.value;
@@ -228,7 +249,7 @@ const formatTimeSeriesChart = (result) => {
         data: {
             labels: labels,
             datasets: [{
-                label: "Yearly Population",
+                label: ts_name,
                 fill: true,
                 lineTension: 0.1,
                 backgroundColor: "rgba(0, 119, 204, 0.3)",
@@ -238,12 +259,11 @@ const formatTimeSeriesChart = (result) => {
             }, ],
         },
         options: {
-            responsive: "true",
             scales: {
                 x: {
                     title: {
                         display: true,
-                        text: "Year",
+                        text: xTitle,
                         color: "#00008b",
                         font: {
                             fontFamily: "Arial",
@@ -258,7 +278,7 @@ const formatTimeSeriesChart = (result) => {
                 y: {
                     title: {
                         display: true,
-                        text: "Population",
+                        text: yTitle,
                         color: "#00008b",
                         font: {
                             fontFamily: "Arial",
@@ -293,21 +313,31 @@ const formatTimeSeriesTable = (result) => {
 
     table.appendChild(thead);
 
+    let ts_name = "";
+    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
+        ts_name = extractTimeSeriesName(previousUrl);
+    }
+
+    const titles = Object.keys(result[0])
+    const xTitle = titles[0];
+    const yTitle = ts_name;
+
     const tr = document.createElement("tr");
 
     const th = document.createElement("th");
-    th.appendChild(document.createTextNode("Year"));
+    th.appendChild(document.createTextNode(xTitle));
     tr.appendChild(th);
     const th2 = document.createElement("th");
-    th2.appendChild(document.createTextNode("Population"));
+    th2.appendChild(document.createTextNode(yTitle));
     tr.appendChild(th2);
     thead.appendChild(tr);
     const year = result.map(function(e) {
         return e.from;
     });
-    const population = result.map(function(e) {
+    const values = result.map(function(e) {
         return e.value;
     });
+
     for (let i = 0; i < result.length; i++) {
         const tr2 = document.createElement("tr");
         const td = document.createElement("td");
@@ -315,7 +345,7 @@ const formatTimeSeriesTable = (result) => {
         tr2.appendChild(td);
 
         const td2 = document.createElement("td");
-        td2.appendChild(document.createTextNode(population[i]));
+        td2.appendChild(document.createTextNode(values[i]));
         tr2.appendChild(td2);
 
         tbody.appendChild(tr2);
@@ -426,6 +456,16 @@ function consumerAPIFetch(url) {
         }
     }
 
+    if (urlType == BBK_TIMESERIES) {
+        let newUrl = new URL(url);
+        if (newUrl.searchParams.has("limit") == false) {
+            newUrl.searchParams.set("limit", timeseries_limit);
+
+        }
+        url = newUrl.toString();
+    }
+
+
     updateBrowserUrl(url);
     previousUrl = url;
 
@@ -446,22 +486,31 @@ function consumerAPIFetch(url) {
         updateCopyCurlButton(previousUrl);
 
         paginationVisibility(
-            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE ? true : false
+            urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE || urlType == BBK_TIMESERIES ? true : false
         );
 
-        if (data.length === 0) {
-            paginationVisibility(false);
-            return (results.innerHTML = "No Results Found");
-        }
-
-        if (data.length < default_limit) {
-            next.forEach((element) => (element.disabled = true));
-        }
-
         if (Array.isArray(data)) {
-            if (urlType == BBK_TIMESERIES)  {
+            if (urlType == BBK_TIMESERIES) {
+                if (data.length === 0) {
+                    latestTimeseries = 0;
+                    paginationVisibility(true);
+                    return (results.innerHTML = "No Results Found");
+                }
+            }
+
+            if (data.length === 0) {
+                paginationVisibility(false);
+                return (results.innerHTML = "No Results Found");
+            }
+            if (urlType == BBK_TIMESERIES) {
+
+                latestTimeseries = data[data.length - 1].from;
+                earliestTimeseries = data[0].from;
                 results.append(formatTimeSeries(data));
             } else {
+                if (data.length < default_limit) {
+                    next.forEach((element) => (element.disabled = true));
+                }
                 data.forEach((item) => {
                     results.append(formatResponse(item));
                 });
@@ -517,24 +566,65 @@ const previousPage = () => {
 };
 
 const page = (up) => {
-    let newUrl = new URL(previousUrl);
-    let newOffset = 0;
-    let newLimit = default_limit;
-    if (newUrl.searchParams.has("offset")) {
-        newOffset = parseInt(newUrl.searchParams.get("offset"));
-    }
+    let newUrl = new URL(previousUrl)
+    let urlType = bbkUrlType(previousUrl);
+    if (urlType == BBK_CATALOG || urlType == BBK_ENTITY_TYPE) {
 
-    if (up) {
-        newOffset += newLimit;
-    } else {
-        newOffset -= newLimit;
-        if (newOffset < 0) {
-            newOffset = 0;
+        let newOffset = 0;
+        let newLimit = default_limit;
+        if (newUrl.searchParams.has("offset")) {
+            newOffset = parseInt(newUrl.searchParams.get("offset"));
         }
-    }
-    newUrl.searchParams.set("offset", newOffset);
-    newUrl.searchParams.set("limit", newLimit);
 
+        if (up) {
+            newOffset += newLimit;
+        } else {
+            newOffset -= newLimit;
+            if (newOffset < 0) {
+                newOffset = 0;
+            }
+        }
+        newUrl.searchParams.set("offset", newOffset);
+        newUrl.searchParams.set("limit", newLimit);
+
+    } else if (urlType == BBK_TIMESERIES) {
+
+        /* Timeseries paging is different to regular API paging in one key respect; whilst we still have a limit, there is no offset, so we have to use start & duration
+            instead. Here we try to determine a default duration by looking at the interval across the data points in the initial timeseries data page.
+            This approach has limitations in the presence of timeseries data with gaps. This implementation has some issues when handling time periods which arent a constant multiple of seconds / 
++            milliseonds (e.g. months / years) - i.e. it doesnt always calculate an exact number of years.
+        */
+
+        let durationSecs = 0 ;
+        if (latestTimeseries != 0) { // we have a non-empty results set we can use to determine a duration...
+            let totalInterval = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
+            durationSecs = totalInterval.asSeconds();
+        }
+
+        newUrl.searchParams.set("limit", timeseries_limit);
+        if (newUrl.searchParams.has("duration")) {
+            durationSecs = parseInt(newUrl.searchParams.get("duration"));
+        } else {
+            newUrl.searchParams.set("duration", durationSecs);
+        }
+
+        if (up) {
+            let newStart = moment(earliestTimeseries.toString()).add(durationSecs, 's');
+            if (latestTimeseries == 0) { // last results set empty
+                newStart = moment(earliestTimeseries.toString());
+            }
+            newUrl.searchParams.set("start", newStart.toISOString());
+
+        } else {
+            let newStart = moment(earliestTimeseries.toString()).subtract(durationSecs, 's');
+            if (latestTimeseries == 0) { // last results set empty
+                newStart = moment(earliestTimeseries.toString());
+            }
+
+            newUrl.searchParams.set("start", newStart.toISOString());
+        }
+
+    }
     consumerAPIFetch(newUrl.toString());
 };
 
@@ -671,7 +761,7 @@ const bbkUrltoAppUrl = (bbkUrl) => {
     return appUrl;
 };
 
-/* determine type of BBK Consumer API call from url
+/* determine type of BBK Consumer API call from url (bbkUrl is typeof string)
  */
 
 const bbkUrlType = (bbkUrl) => {
