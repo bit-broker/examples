@@ -109,7 +109,6 @@ let default_limit = 10;
 let timeseries_limit = 20;
 let latestTimeseries = 0;
 let earliestTimeseries = 0;
-let nextTimeseries = 0;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -210,6 +209,14 @@ const renderJson = (prop, jsonString) => {
     return row;
 };
 
+const extractTimeSeriesName = (url) => {
+
+    let tmp = url.split('/');
+    let ts_name = tmp[tmp.length - 1];
+    ts_name = ts_name.substring(0, ts_name.indexOf("?"));
+    return ts_name
+}
+
 /* Render TimeSeries Data as Chart
  */
 
@@ -218,13 +225,18 @@ const formatTimeSeriesChart = (result) => {
     const canvas = document.createElement("canvas");
     canvas.id = "canvas";
 
+    let ts_name = "";
+    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
+        ts_name = extractTimeSeriesName(previousUrl);
+    }
+
     const labels = result.map(function(e) {
         return e.from;
     });
 
     const titles = Object.keys(result[0])
     const xTitle = titles[0];
-    const yTitle = titles[1];
+    const yTitle = ts_name;
 
 
     const data = result.map(function(e) {
@@ -237,7 +249,7 @@ const formatTimeSeriesChart = (result) => {
         data: {
             labels: labels,
             datasets: [{
-                label: "Timeseries Data",
+                label: ts_name,
                 fill: true,
                 lineTension: 0.1,
                 backgroundColor: "rgba(0, 119, 204, 0.3)",
@@ -301,9 +313,14 @@ const formatTimeSeriesTable = (result) => {
 
     table.appendChild(thead);
 
+    let ts_name = "";
+    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
+        ts_name = extractTimeSeriesName(previousUrl);
+    }
+
     const titles = Object.keys(result[0])
     const xTitle = titles[0];
-    const yTitle = titles[1];
+    const yTitle = ts_name;
 
     const tr = document.createElement("tr");
 
@@ -317,7 +334,7 @@ const formatTimeSeriesTable = (result) => {
     const year = result.map(function(e) {
         return e.from;
     });
-    const population = result.map(function(e) {
+    const values = result.map(function(e) {
         return e.value;
     });
 
@@ -328,7 +345,7 @@ const formatTimeSeriesTable = (result) => {
         tr2.appendChild(td);
 
         const td2 = document.createElement("td");
-        td2.appendChild(document.createTextNode(population[i]));
+        td2.appendChild(document.createTextNode(values[i]));
         tr2.appendChild(td2);
 
         tbody.appendChild(tr2);
@@ -489,11 +506,6 @@ function consumerAPIFetch(url) {
 
                 latestTimeseries = data[data.length - 1].from;
                 earliestTimeseries = data[0].from;
-                if (data.length > 1) {
-                    nextTimeseries = data[1].from;
-                } else {
-                    nextTimeseries = data[0].from;
-                }
                 results.append(formatTimeSeries(data));
             } else {
                 if (data.length < default_limit) {
@@ -578,24 +590,15 @@ const page = (up) => {
     } else if (urlType == BBK_TIMESERIES) {
 
         /* Timeseries paging is different to regular API paging in one key respect; whilst we still have a limit, there is no offset, so we have to use start & duration
-            instead. Here we try to determine a default duration by looking at the interval between data points in the initial tmeseries data page, and multiplying by the default paging limit.
-            This approach has limitations in the presence of timeseries data with gaps. This implementation  has some issues when handling time periods which arent a constant multiple of seconds / 
-            milliseonds (e.g. months / years)
+            instead. Here we try to determine a default duration by looking at the interval across the data points in the initial timeseries data page.
+            This approach has limitations in the presence of timeseries data with gaps. This implementation has some issues when handling time periods which arent a constant multiple of seconds / 
++            milliseonds (e.g. months / years) - i.e. it doesnt always calculate an exact number of years.
         */
 
         let durationSecs = 0 ;
         if (latestTimeseries != 0) { // we have a non-empty results set we can use to determine a duration...
-
-            let singleInterval = moment.duration(moment(nextTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
             let totalInterval = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
-
-            durationSecs = singleInterval.asSeconds() * timeseries_limit;
-            let totalDurationsecs = totalInterval.asSeconds()
-
-            if (durationSecs > totalDurationsecs * 2) {
-                // sanity check duration in case we have gaps in timeseries data
-                durationSecs = totalDurationsecs;
-            }
+            durationSecs = totalInterval.asSeconds();
         }
 
         newUrl.searchParams.set("limit", timeseries_limit);
