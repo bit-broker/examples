@@ -25,7 +25,6 @@ COPY apps/explorer/css/styles.css ./css
 COPY apps/explorer/css/prism.css ./css
 COPY apps/explorer/index.js .
 COPY apps/explorer/prism.js .
-COPY apps/explorer/moment.js .
 COPY apps/explorer/config/example-config.json ./config/config.json
 
 RUN chown -R nginx:nginx /usr/share/nginx/html

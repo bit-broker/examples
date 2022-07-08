@@ -230,24 +230,18 @@ const formatTimeSeriesChart = (result) => {
         ts_name = extractTimeSeriesName(previousUrl);
     }
 
-    const labels = result.map(function(e) {
-        return e.from;
-    });
-
     const titles = Object.keys(result[0])
     const xTitle = titles[0];
     const yTitle = ts_name;
 
-
     const data = result.map(function(e) {
-        return e.value;
+        return {x: new moment.utc(e.from.toString()), y: e.value}
     });
 
     const ctx = canvas.getContext("2d");
     const myChart = new Chart(ctx, {
         type: "line",
         data: {
-            labels: labels,
             datasets: [{
                 label: ts_name,
                 fill: true,
@@ -273,6 +267,7 @@ const formatTimeSeriesChart = (result) => {
                             size: 15,
                         },
                     },
+                    type: 'time',
                 },
 
                 y: {
