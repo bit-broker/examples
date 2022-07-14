@@ -109,6 +109,7 @@ let default_limit = 10;
 let timeseries_limit = 20;
 let latestTimeseries = 0;
 let earliestTimeseries = 0;
+let timeseriesChartState = true;
 
 /* Convert http(s) urls to clickable links inline
  */
@@ -217,81 +218,6 @@ const extractTimeSeriesName = (url) => {
     return ts_name
 }
 
-/* Render TimeSeries Data as Chart
- */
-
-const formatTimeSeriesChart = (result) => {
-    const dl = document.createElement("div");
-    const canvas = document.createElement("canvas");
-    canvas.id = "canvas";
-
-    let ts_name = "";
-    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
-        ts_name = extractTimeSeriesName(previousUrl);
-    }
-
-    const titles = Object.keys(result[0])
-    const xTitle = titles[0];
-    const yTitle = ts_name;
-
-    const data = result.map(function(e) {
-        return {x: new moment.utc(e.from.toString()), y: e.value}
-    });
-
-    const ctx = canvas.getContext("2d");
-    const myChart = new Chart(ctx, {
-        type: "line",
-        data: {
-            datasets: [{
-                label: ts_name,
-                fill: true,
-                lineTension: 0.1,
-                backgroundColor: "rgba(0, 119, 204, 0.3)",
-                borderColor: "#00008b",
-                fontColor: "#00008b",
-                data: data,
-            }, ],
-        },
-        options: {
-            scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: xTitle,
-                        color: "#00008b",
-                        font: {
-                            fontFamily: "Arial",
-                            margin: 25,
-                            padding: 4,
-                            borderThickness: 2,
-                            size: 15,
-                        },
-                    },
-                    type: 'time',
-                },
-
-                y: {
-                    title: {
-                        display: true,
-                        text: yTitle,
-                        color: "#00008b",
-                        font: {
-                            fontFamily: "Arial",
-                            margin: 25,
-                            padding: 4,
-                            borderThickness: 2,
-                            size: 15,
-                        },
-                    },
-                },
-            },
-        },
-    });
-
-    dl.appendChild(canvas);
-
-    return dl;
-};
 
 /* Render TimeSeries Data as Table
  */
@@ -350,6 +276,83 @@ const formatTimeSeriesTable = (result) => {
     return table;
 };
 
+/* Render TimeSeries Data as Chart
+ */
+
+const formatTimeSeriesChart = (result) => {
+    const dl = document.createElement("div");
+    const canvas = document.createElement("canvas");
+    canvas.id = "canvas";
+
+    let ts_name = "";
+    if (bbkUrlType(previousUrl) == BBK_TIMESERIES) {
+        ts_name = extractTimeSeriesName(previousUrl);
+    }
+
+    const titles = Object.keys(result[0])
+    const xTitle = titles[0];
+    const yTitle = ts_name;
+
+    const data = result.map(function(e) {
+        return { x: new moment.utc(e.from.toString()), y: e.value }
+    });
+
+    const ctx = canvas.getContext("2d");
+    const myChart = new Chart(ctx, {
+        type: "line",
+        data: {
+            datasets: [{
+                label: ts_name,
+                fill: true,
+                lineTension: 0.1,
+                backgroundColor: "rgba(0, 119, 204, 0.3)",
+                borderColor: "#00008b",
+                fontColor: "#00008b",
+                data: data,
+            }, ],
+        },
+        options: {
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: xTitle,
+                        color: "#00008b",
+                        font: {
+                            fontFamily: "Arial",
+                            margin: 25,
+                            padding: 4,
+                            borderThickness: 2,
+                            size: 15,
+                        },
+                    },
+                    type: 'time',
+                },
+
+                y: {
+                    title: {
+                        display: true,
+                        text: yTitle,
+                        color: "#00008b",
+                        font: {
+                            fontFamily: "Arial",
+                            margin: 25,
+                            padding: 4,
+                            borderThickness: 2,
+                            size: 15,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    dl.appendChild(canvas);
+
+    return dl;
+};
+
+
 /* format timeseries response data
  */
 
@@ -360,6 +363,15 @@ const formatTimeSeries = (response) => {
     dl1.classList.add("timeseriesTable");
     const dl2 = document.createElement("div");
     dl2.classList.add("timeseriesChart");
+
+    if (timeseriesChartState === true) {
+        dl1.style.display = "none";
+        dl2.style.display = "block";
+
+    } else {
+        dl2.style.display = "none";
+        dl1.style.display = "block";
+    }
 
     dl1.appendChild(formatTimeSeriesTable(response));
     dl.appendChild(dl1);
@@ -590,7 +602,7 @@ const page = (up) => {
 +            milliseonds (e.g. months / years) - i.e. it doesnt always calculate an exact number of years.
         */
 
-        let durationSecs = 0 ;
+        let durationSecs = 0;
         if (latestTimeseries != 0) { // we have a non-empty results set we can use to determine a duration...
             let totalInterval = moment.duration(moment(latestTimeseries.toString()).diff(moment(earliestTimeseries.toString())));
             durationSecs = totalInterval.asSeconds();
@@ -831,25 +843,27 @@ const handleUrlParams = () => {
     }
 };
 
-/* toggle timeseries button
- */
+// /* toggle timeseries button
+//  */
 
 const toggleTimeseries = () => {
     const timeseries = document.querySelectorAll("button.timeseries");
     const timeseriesTable = document.querySelector(".timeseriesTable");
     const timeseriesChart = document.querySelector(".timeseriesChart");
     if (timeseriesTable && timeseriesChart) {
-        if (timeseriesTable.style.display === "block") {
-            timeseriesTable.style.display = "none";
-            timeseriesChart.style.display = "block";
-            timeseries.forEach(
-                (element) => (element.innerText = "View Timeseries Table")
-            );
-        } else {
-            timeseriesChart.style.display = "none";
+        if (timeseriesChartState === true) {
+            timeseriesChartState = false
             timeseriesTable.style.display = "block";
+            timeseriesChart.style.display = "none";
             timeseries.forEach(
                 (element) => (element.innerText = "View Timeseries Chart")
+            );
+        } else {
+            timeseriesChartState = true
+            timeseriesChart.style.display = "block";
+            timeseriesTable.style.display = "none";
+            timeseries.forEach(
+                (element) => (element.innerText = "View Timeseries Table")
             );
         }
     }
@@ -866,6 +880,7 @@ window.addEventListener("DOMContentLoaded", (event) => {
         devShimMode = config.devShimMode;
         document.getElementById("baseurl").value = baseURL;
         document.getElementById("devModeCheckBox").checked = devShimMode;
+
 
         policyDropdownValue(config.policies);
 
@@ -915,10 +930,14 @@ window.addEventListener("DOMContentLoaded", (event) => {
         element.addEventListener("click", (event) => previousPage())
     );
 
+
+
     const timeseries = document.querySelectorAll("button.timeseries");
     timeseries.forEach((element) =>
         element.addEventListener("click", (event) => toggleTimeseries())
     );
+
+
 
     const go = document.getElementById("go");
 
