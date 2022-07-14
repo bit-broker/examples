@@ -85,7 +85,7 @@ function create_policy_user () {
     USER="$POLICY_SLUG-user"
 
     echo "create consumer user: $USER"
-    curl -sS -X POST $COORD_BASE/v1/user -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d "{\"name\":\"$USER\",\"email\":\"$USER@domain.com\"}"
+    curl -sS -X POST $COORD_BASE/v1/user -H "x-bbk-auth-token:$BOOTSTRAP_KEY" -H "Content-Type: application/json" -d "{\"name\":\"$USER\",\"email\":\"$USER@domain.com\",\"organization\":\"domain.com\"}"
 }
 
 function create_policy_user_access () {
