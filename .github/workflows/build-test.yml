@@ -6,11 +6,11 @@ on:
   workflow_dispatch:
 
 jobs:
-   
+
   build-launch-test:
     runs-on: ubuntu-latest
     steps:
-       
+
       - name: Check out examples repo
         uses: actions/checkout@master
         with:
@@ -60,7 +60,7 @@ jobs:
       # build and run bbk docker-compose for bit-broker core
       - name: build and run docker-compose (bit-broker core)
         working-directory: ./bit-broker/development/docker-compose
-        run: docker-compose up --build -d
+        run: docker compose up --build -d
 
       - name: Set up node
         uses: actions/setup-node@v2
@@ -85,7 +85,7 @@ jobs:
       # build and run bbk docker-compose for bit-broker examples (file based connectors)
       - name: build and run docker-compose (file based connectors)
         working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
+        run: docker compose -f ./docker-compose-nodejs-file.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
       - name: Sleep for 10 seconds
@@ -100,12 +100,12 @@ jobs:
       - name: Stop containers
         if: always()
         working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-file.yml stop
+        run: docker compose -f ./docker-compose-nodejs-file.yml stop
 
       # build and run bbk docker-compose for bit-broker examples (rdbms based connectors)
       - name: build and run docker-compose (rdbms based connectors)
         working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
+        run: docker compose -f ./docker-compose-nodejs-rdbms.yml --env-file ./.env_compose up --build -d
 
       # let deployment settle...
       - name: Sleep for 10 seconds
@@ -120,4 +120,4 @@ jobs:
       - name: Stop containers
         if: always()
         working-directory: ./examples/development/scripts
-        run: docker-compose -f ./docker-compose-nodejs-rdbms.yml down --remove-orphans
+        run: docker compose -f ./docker-compose-nodejs-rdbms.yml down --remove-orphans
