@@ -14,7 +14,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
-FROM flyway/flyway:8.5.5
+FROM flyway/flyway:9.19.1
 
 # Add migration files except V0.0
 ADD ./database/V1.0__bbk_connector.sql /flyway/sql/V1.0__bbk_connector.sql
